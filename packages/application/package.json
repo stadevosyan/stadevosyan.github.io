@@ -8,7 +8,7 @@
     "dependencies": {
         "@progress/kendo-drawing": "~1.11.0",
         "@progress/kendo-licensing": "~1.2.0",
-        "@progress/kendo-react-animation": "~4.10.0",
+        "@progress/kendo-react-animation": "~5.9.0",
         "@progress/kendo-react-inputs": "~4.10.0",
         "@progress/kendo-react-intl": "~4.10.0",
         "@servicetitan/confirm": "~22.4.2",
