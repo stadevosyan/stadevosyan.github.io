@@ -1,20 +1,17 @@
 import { FC } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
-import { Stack } from '@servicetitan/design-system';
-
 import { Login } from '../login/components/login';
 import { Register } from '../register/components/register';
+import { ForgotPassword } from '../forgot-password/components/forgot-password';
+import { AuthPaths } from '../../common/utils/paths';
 
 export const AuthRouter: FC = () => (
-    <Stack alignItems="center" justifyContent="center" className="flex-auto">
-        <div style={{ width: 300 }}>
-            <Switch>
-                <Route path="/login" component={Login} />
-                <Route path="/register" component={Register} />
+    <Switch>
+        <Route path={AuthPaths.login} component={Login} />
+        <Route path={AuthPaths.register} component={Register} />
+        <Route path={AuthPaths.forgotPassword} component={ForgotPassword} />
 
-                <Redirect from="/*" to="/login" />
-            </Switch>
-        </div>
-    </Stack>
+        <Redirect from="/*" to={AuthPaths.login} />
+    </Switch>
 );

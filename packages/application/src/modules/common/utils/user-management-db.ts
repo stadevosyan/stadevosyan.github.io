@@ -6,21 +6,24 @@ import { getRandomId } from './get-random-id';
 
 export const John = {
     id: 1,
-    login: 'john',
+    fullName: 'john',
+    email: 'sdfsa@jkhk.com',
     password: 'test',
     role: 'Admin',
 } as User;
 
 export const Mike = {
     id: 2,
-    login: 'mike',
+    fullName: 'mike',
+    email: 'sdfsa@jkhk.com',
     password: 'test',
     role: 'Admin',
 } as User;
 
 export const Sam = {
     id: 3,
-    login: 'sam',
+    fullName: 'sam',
+    email: 'sdfsa@jkhk.com',
     password: 'test',
     role: 'Student',
 } as User;
@@ -36,8 +39,8 @@ class UserManagementDB {
         return cloneDeep(this.users);
     }
 
-    getByLogin(login: string) {
-        return cloneDeep(this.users.find(user => user.login === login));
+    getByLogin(email: string) {
+        return cloneDeep(this.users.find(user => user.email === email));
     }
 
     create(data: User) {

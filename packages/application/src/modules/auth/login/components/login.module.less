@@ -1,0 +1,29 @@
+.login-page {
+    :global(.Page__content) {
+        height: 100%;
+    }
+}
+
+.login-section-container {
+    width: 40%;
+}
+.login-right-area {
+    margin-left: 80px;
+    width: 60%;
+    background-image: url('../../../common/assets/main-background.png');
+    background-repeat: no-repeat;
+}
+
+@media screen and (max-width: 750px) {
+    .login-section-container {
+        width: 100%;
+    }
+
+    .login-right-area {
+        display: none;
+    }
+}
+
+.password-field {
+    margin-bottom: 12px !important;
+}
