@@ -17,7 +17,7 @@ export const Login: FC<RouteComponentProps> = () => {
                     <LoginForm />
                     <BodyText size="medium" className="m-t-6">
                         Եթե դեռ գրանցված չեք համակարգում,{' '}
-                        <Link href={'#' + AuthPaths.register} className="fw-bold" primary text>
+                        <Link href={AuthPaths.register} className="fw-bold" primary text>
                             ստեղծեք նոր հաշիվ&nbsp;→
                         </Link>
                     </BodyText>
