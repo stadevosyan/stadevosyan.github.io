@@ -11,7 +11,7 @@
         "test": "startup test"
     },
     "devDependencies": {
-        "@servicetitan/restrict-imports": "~21.10.0",
+        "@servicetitan/restrict-imports": "~22.0.3",
         "@servicetitan/startup": "~21.10.0",
         "eslint-config-folder-schema": "file:./packages/eslint-config-folder-schema"
     },
