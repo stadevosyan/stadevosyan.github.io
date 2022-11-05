@@ -46,7 +46,7 @@ export const MainWrapper: FC = ({ children }) => {
                     <Sidebar.Section>
                         <SideNav>
                             <SideNav.Item>
-                                <Link to="/books">Բոլոր գրքերը</Link>
+                                <Link to="/">Բոլոր գրքերը</Link>
                             </SideNav.Item>
                             <SideNav.Item>
                                 <Link to="/contacts">Կոնտակտներ</Link>

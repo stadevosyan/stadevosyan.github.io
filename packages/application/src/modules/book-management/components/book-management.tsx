@@ -8,6 +8,9 @@ import { NewBookTakeover } from './new-book-takeover';
 import { NewBookStore } from '../stores/new-book.store';
 import { BooksStore } from '../stores/books.store';
 
+import * as Styles from './book-managment.module.less';
+import { bookList } from './book-managment.module.less';
+
 export const BookManagement = provide({ singletons: [NewBookStore] })(
     observer(() => {
         const [newBookStore, bookStore] = useDependencies(NewBookStore, BooksStore);
@@ -47,7 +50,7 @@ export const BookManagement = provide({ singletons: [NewBookStore] })(
                     </Stack>
                 </Stack>
                 {/* <Placeholder text="Բարի գալուստ " />*/}
-                <Stack wrap="wrap" spacing={2}>
+                <Stack wrap="wrap" className={Styles.bookList} spacing={2}>
                     {[...Array.from(Array(30).keys())].map((e, i) => (
                         <Stack.Item key={e}>
                             <BookCard onClick={handleSelectBook} />
