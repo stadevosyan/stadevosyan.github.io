@@ -1,11 +1,11 @@
 import { FC } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { useDependencies, provide } from '@servicetitan/react-ioc';
 
 import { observer } from 'mobx-react';
 
-import { Form, Link, ButtonGroup, Button, Banner, Headline } from '@servicetitan/design-system';
+import { Form, ButtonGroup, Button, Banner, Headline } from '@servicetitan/design-system';
 
 import { LoginStore } from '../stores/login.store';
 
@@ -54,7 +54,7 @@ export const LoginForm: FC = provide({ singletons: [LoginStore] })(
                     type="password"
                     className={Styles.passwordField}
                 />
-                <Link href={'#' + AuthPaths.forgotPassword} primary text className="fw-bold">
+                <Link to={AuthPaths.forgotPassword} className="fw-bold">
                     Մոռացել եմ գաղտնաբառը
                 </Link>
 

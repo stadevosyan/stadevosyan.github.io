@@ -1,7 +1,7 @@
 import { FC } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 
-import { BodyText, Link, Page, Stack } from '@servicetitan/design-system';
+import { BodyText, Page, Stack } from '@servicetitan/design-system';
 
 import * as Styles from './login.module.less';
 import { LogoSection } from './logo-section';
@@ -17,7 +17,7 @@ export const Login: FC<RouteComponentProps> = () => {
                     <LoginForm />
                     <BodyText size="medium" className="m-t-6">
                         Եթե դեռ գրանցված չեք համակարգում,{' '}
-                        <Link href={'#' + AuthPaths.register} className="fw-bold" primary text>
+                        <Link to={AuthPaths.register} className="fw-bold">
                             ստեղծեք նոր հաշիվ&nbsp;→
                         </Link>
                     </BodyText>

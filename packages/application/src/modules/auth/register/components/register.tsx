@@ -120,7 +120,7 @@ const Footer = () => {
     return (
         <div className="m-l-auto">
             <ButtonGroup>
-                <Button small color="grey" href={'#' + AuthPaths.login}>
+                <Button small color="grey" href={AuthPaths.login}>
                     Չեղարկել
                 </Button>
                 <Button small primary onClick={handleSubmit}>
