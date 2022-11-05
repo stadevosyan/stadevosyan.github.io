@@ -1,0 +1,4 @@
+{
+    "extends": "@servicetitan/startup/tsconfig/base",
+    "include": ["**/__tests__/**/*"]
+}

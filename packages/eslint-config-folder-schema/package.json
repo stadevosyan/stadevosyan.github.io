@@ -1,0 +1,22 @@
+{
+    "name": "eslint-config-folder-schema",
+    "version": "0.0.0",
+    "description": "",
+    "private": true,
+    "main": "./dist/index.js",
+    "typings": "./dist/index.d.ts",
+    "dependencies": {
+        "@servicetitan/eslint-plugin-folder-schema": "~21.10.0",
+        "@servicetitan/folder-lint": "~21.10.0"
+    },
+    "devDependencies": {
+        "@types/eslint": "~8.4.5",
+        "eslint": "~8.20.0"
+    },
+    "peerDependencies": {
+        "eslint": "~8.20.0"
+    },
+    "cli": {
+        "webpack": false
+    }
+}

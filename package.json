@@ -1,0 +1,21 @@
+{
+    "name": "root",
+    "version": "0.0.0",
+    "description": "",
+    "private": true,
+    "scripts": {
+        "bootstrap": "node bootstrap.js",
+        "prestart": "npm run bootstrap && startup build --scope eslint-config-folder-schema",
+        "start": "npm run lint && startup start --scope application",
+        "lint": "startup lint",
+        "test": "startup test"
+    },
+    "devDependencies": {
+        "@servicetitan/restrict-imports": "~21.10.0",
+        "@servicetitan/startup": "~21.10.0",
+        "eslint-config-folder-schema": "file:./packages/eslint-config-folder-schema"
+    },
+    "workspaces": [
+        "packages/*"
+    ]
+}

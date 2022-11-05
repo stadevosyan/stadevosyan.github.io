@@ -1,0 +1,10 @@
+@import '~reset-css/reset.css';
+@import '~@servicetitan/tokens/dist/tokens.css';
+@import '~@servicetitan/anvil-fonts/dist/css/anvil-fonts.css';
+@import '~@servicetitan/design-system/dist/system.min.css';
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}

@@ -1,0 +1,10 @@
+{
+    "extends": "@servicetitan/startup/tsconfig/base",
+    "compilerOptions": {
+        "outDir": "dist",
+        "rootDir": "src",
+        "module": "commonjs"
+    },
+    "include": ["src/**/*"],
+    "exclude": ["src/**/__tests__/**/*"]
+}
