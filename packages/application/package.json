@@ -14,7 +14,7 @@
         "@servicetitan/confirm": "~22.4.2",
         "@servicetitan/confirm-navigation": "~22.4.2",
         "@servicetitan/culture": "~22.4.2",
-        "@servicetitan/data-query": "~22.4.2",
+        "@servicetitan/data-query": "~23.0.4",
         "@servicetitan/design-system": "~11.9.0",
         "@servicetitan/form": "~22.4.2",
         "@servicetitan/link-item": "~22.4.2",
