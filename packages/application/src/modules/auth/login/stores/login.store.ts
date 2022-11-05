@@ -37,7 +37,7 @@ export class LoginStore {
         await this.authStore.login(formStateToJS(this.form));
 
         this.setError(
-            !this.authStore.isAuthenticated ? 'Incorrect username or password.' : undefined
+            !this.authStore.isAuthenticated ? 'Սխալ էլեկտրոնային հասցե կամ ծածկագիր' : undefined
         );
 
         return this.authStore.isAuthenticated;

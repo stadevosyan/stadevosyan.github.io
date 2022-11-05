@@ -1,96 +1,132 @@
 import { FC } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 
-import { observer } from 'mobx-react';
-
-import { Text, Form, Link, ButtonGroup, Button } from '@servicetitan/design-system';
-
-import { UserRole } from '../../../common/api/auth.api';
+import { Form, ButtonGroup, Button, Page, Headline, Divider } from '@servicetitan/design-system';
 
 import { RegisterStore } from '../stores/register.store';
 
-import { Label, enumToOptions } from '@servicetitan/form';
-
-const rolesOptions = enumToOptions(UserRole);
+import { Label } from '@servicetitan/form';
+import { BackTo } from '../../components/back-to/back-to';
+import { AuthPaths } from '../../../common/utils/paths';
+import { observer } from 'mobx-react';
+import * as Styles from './register.module.less';
 
 export const Register: FC<RouteComponentProps> = provide({ singletons: [RegisterStore] })(
-    observer(({ history }) => {
+    observer(() => {
         const [registerStore] = useDependencies(RegisterStore);
 
         const {
             form: {
-                $: { login, passwords, role },
+                $: { fullName, email, password, phone },
             },
         } = registerStore;
-        const {
-            $: { password, passwordConfirmation },
-        } = passwords;
-
-        const handleSubmit = async () => {
-            const isSuccessful = await registerStore.register();
-
-            if (isSuccessful) {
-                history.push('/login');
-            }
-        };
 
         return (
-            <Form onSubmit={handleSubmit}>
-                <Text el="div" className="m-b-4 ta-center" size={4}>
-                    Register
-                </Text>
+            <Page maxWidth="narrow" footer={<Footer />}>
+                <div className={Styles.backToSection}>
+                    <BackTo />
+                </div>
+                <Headline el="div" className="m-b-4" size="large">
+                    Ստեղծել նոր հաշիվ
+                </Headline>
 
-                <Form.Input
-                    label={<Label label="Login" hasError={login.hasError} error={login.error} />}
-                    value={login.value}
-                    onChange={login.onChangeHandler}
-                    error={login.hasError}
-                />
+                <Divider spacing="5" />
 
-                <Form.Input
-                    label={
-                        <Label
-                            label="Password"
-                            hasError={passwords.hasError}
-                            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-                            error={passwords.error || undefined}
-                        />
-                    }
-                    value={password.value}
-                    onChange={password.onChangeHandler}
-                    error={passwords.hasError}
-                    type="password"
-                />
+                <Form
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gridRowGap: '32px',
+                        gridColumnGap: '32px',
+                        justifyItems: 'stretch',
+                        alignItems: 'start',
+                    }}
+                >
+                    {/* image upload here*/}
 
-                <Form.Input
-                    label={
-                        <Label label="Password Confirmation" hasError={passwords.hasFormError} />
-                    }
-                    value={passwordConfirmation.value}
-                    onChange={passwordConfirmation.onChangeHandler}
-                    error={passwords.hasFormError}
-                    type="password"
-                />
+                    <Form.Input
+                        label={
+                            <Label
+                                label="Անուն Ազգանուն"
+                                hasError={fullName.hasError}
+                                error={fullName.error}
+                            />
+                        }
+                        value={fullName.value}
+                        onChange={fullName.onChangeHandler}
+                        error={fullName.hasError}
+                    />
 
-                <Form.Select
-                    label="Role"
-                    value={role.value}
-                    onChange={role.onChangeHandler}
-                    options={rolesOptions}
-                />
+                    <Form.Input
+                        label={
+                            <Label
+                                label="Էլեկտրոնային հասցե"
+                                hasError={email.hasError}
+                                error={email.error}
+                            />
+                        }
+                        value={email.value}
+                        onChange={email.onChangeHandler}
+                        error={email.hasError}
+                    />
 
-                <ButtonGroup fullWidth>
-                    <Link href="#/login" primary text className="align-self-center">
-                        Sign In
-                    </Link>
+                    <Form.Input
+                        label={
+                            <Label
+                                label="Հեռախոսահամար"
+                                hasError={phone.hasError}
+                                error={phone.error}
+                            />
+                        }
+                        value={phone.value}
+                        onChange={phone.onChangeHandler}
+                        error={phone.hasError}
+                    />
 
-                    <Button full primary type="submit">
-                        Create
-                    </Button>
-                </ButtonGroup>
-            </Form>
+                    <Form.Input
+                        label={
+                            <Label
+                                label="Ստեղծել գաղտնաբառ"
+                                hasError={password.hasError}
+                                error={password.error ?? undefined}
+                            />
+                        }
+                        value={password.value}
+                        onChange={password.onChangeHandler}
+                        error={password.hasError}
+                        type="password"
+                    />
+                </Form>
+            </Page>
         );
     })
 );
+
+const Footer = () => {
+    const [registerStore] = useDependencies(RegisterStore);
+
+    const history = useHistory();
+
+    const handleSubmit = async () => {
+        const isSuccessful = await registerStore.register();
+
+        if (isSuccessful) {
+            history.push(AuthPaths.login);
+        }
+    };
+
+    return (
+        <div className="m-l-auto">
+            <ButtonGroup>
+                <Button small color="grey" href={'#' + AuthPaths.login}>
+                    Չեղարկել
+                </Button>
+                <Button small primary onClick={handleSubmit}>
+                    Ստեղծել հաշիվ
+                </Button>
+            </ButtonGroup>
+        </div>
+    );
+};

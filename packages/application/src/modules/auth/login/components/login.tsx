@@ -1,64 +1,29 @@
 import { FC } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { useDependencies, provide } from '@servicetitan/react-ioc';
+import { BodyText, Link, Page, Stack } from '@servicetitan/design-system';
 
-import { observer } from 'mobx-react';
+import * as Styles from './login.module.less';
+import { LogoSection } from './logo-section';
+import { LoginForm } from './login-form';
+import { AuthPaths } from '../../../common/utils/paths';
 
-import { Text, Form, Link, ButtonGroup, Button, Banner } from '@servicetitan/design-system';
-
-import { LoginStore } from '../stores/login.store';
-
-export const Login: FC<RouteComponentProps> = provide({ singletons: [LoginStore] })(
-    observer(({ history }) => {
-        const [loginStore] = useDependencies(LoginStore);
-
-        const { form, isDirty, error } = loginStore;
-        const {
-            $: { login, password },
-        } = form;
-
-        const handleSubmit = async () => {
-            const isSuccessful = await loginStore.login();
-
-            if (isSuccessful) {
-                history.push('/');
-            }
-        };
-
-        return (
-            <Form onSubmit={handleSubmit}>
-                <Text el="div" className="m-b-4 ta-center" size={4}>
-                    Login
-                </Text>
-
-                {error && <Banner status="critical" title={error} className="m-b-3" />}
-
-                <Form.Input
-                    label="Login"
-                    value={login.value}
-                    onChange={login.onChangeHandler}
-                    error={login.hasError}
-                />
-
-                <Form.Input
-                    label="Password"
-                    value={password.value}
-                    onChange={password.onChangeHandler}
-                    error={password.hasError}
-                    type="password"
-                />
-
-                <ButtonGroup fullWidth>
-                    <Link href="#/register" primary text className="align-self-center">
-                        Sign Up
-                    </Link>
-
-                    <Button full primary type="submit" disabled={!isDirty || form.hasError}>
-                        Login
-                    </Button>
-                </ButtonGroup>
-            </Form>
-        );
-    })
-);
+export const Login: FC<RouteComponentProps> = () => {
+    return (
+        <Page maxWidth="default" className={Styles.loginPage}>
+            <Stack direction="row" className="h-100">
+                <div className={Styles.loginSectionContainer}>
+                    <LogoSection />
+                    <LoginForm />
+                    <BodyText size="medium" className="m-t-6">
+                        Եթե դեռ գրանցված չեք համակարգում,{' '}
+                        <Link href={'#' + AuthPaths.register} className="fw-bold" primary text>
+                            ստեղծեք նոր հաշիվ&nbsp;→
+                        </Link>
+                    </BodyText>
+                </div>
+                <div className={Styles.loginRightArea} />
+            </Stack>
+        </Page>
+    );
+};

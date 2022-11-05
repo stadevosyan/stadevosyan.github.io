@@ -1,17 +1,20 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
 
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import { AuthApi, LoginRequest, User, UserRole } from '../api/auth.api';
+import { AuthApi, LoginRequest, User } from '../api/auth.api';
 
 @injectable()
 export class AuthStore {
-    // @observable user?: User;
-    @observable user?: User = {
-        id: 1,
-        login: 'john',
-        password: 'test',
-        role: UserRole.Admin,
-    };
+    @observable user?: User;
+
+    /*
+     * @observable user?: User = {
+     *     id: 1,
+     *     login: 'john',
+     *     password: 'test',
+     *     role: UserRole.Admin,
+     * };
+     */
 
     @computed
     get isAuthenticated() {

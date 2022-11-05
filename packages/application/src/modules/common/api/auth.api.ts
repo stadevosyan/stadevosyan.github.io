@@ -54,7 +54,9 @@ export interface LoginRequest {
 
 export interface User {
     id: number;
-    login: string;
+    fullName: string;
+    email: string;
+    phone: string;
     password: string;
     role: UserRole;
 }
