@@ -18,7 +18,7 @@
         "@servicetitan/design-system": "~11.9.0",
         "@servicetitan/form": "~22.4.2",
         "@servicetitan/link-item": "~22.4.2",
-        "@servicetitan/log-service": "~21.10.0",
+        "@servicetitan/log-service": "~22.0.3",
         "@servicetitan/react-ioc": "~21.10.0",
         "@servicetitan/suppress-warnings": "~21.10.0",
         "@servicetitan/table": "~22.4.2",
