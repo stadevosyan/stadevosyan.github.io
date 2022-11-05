@@ -1,9 +1,0 @@
-version: 2
-updates:
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-  reviewers:
-  - "xarety"
-  open-pull-requests-limit: 100
