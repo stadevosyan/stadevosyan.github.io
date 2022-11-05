@@ -1,42 +1,44 @@
 import { FC } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 
-import { observer } from 'mobx-react';
-
-import { Text, Form, Link, ButtonGroup, Button } from '@servicetitan/design-system';
+import { Text, Form, Link, ButtonGroup, Button, Page } from '@servicetitan/design-system';
 
 import { UserRole } from '../../../common/api/auth.api';
 
 import { RegisterStore } from '../stores/register.store';
 
 import { Label, enumToOptions } from '@servicetitan/form';
+import { BackTo } from '../../components/back-to';
 
 const rolesOptions = enumToOptions(UserRole);
 
-export const Register: FC<RouteComponentProps> = provide({ singletons: [RegisterStore] })(
-    observer(({ history }) => {
-        const [registerStore] = useDependencies(RegisterStore);
+export const Register: FC<RouteComponentProps> = provide({ singletons: [RegisterStore] })(() => {
+    const [registerStore] = useDependencies(RegisterStore);
 
-        const {
-            form: {
-                $: { login, passwords, role },
-            },
-        } = registerStore;
-        const {
-            $: { password, passwordConfirmation },
-        } = passwords;
+    const {
+        form: {
+            $: { login, passwords, role },
+        },
+    } = registerStore;
+    const {
+        $: { password, passwordConfirmation },
+    } = passwords;
 
-        const handleSubmit = async () => {
-            const isSuccessful = await registerStore.register();
+    const history = useHistory();
 
-            if (isSuccessful) {
-                history.push('/login');
-            }
-        };
+    const handleSubmit = async () => {
+        const isSuccessful = await registerStore.register();
 
-        return (
+        if (isSuccessful) {
+            history.push('/login');
+        }
+    };
+
+    return (
+        <Page maxWidth="narrow">
+            <BackTo />
             <Form onSubmit={handleSubmit}>
                 <Text el="div" className="m-b-4 ta-center" size={4}>
                     Register
@@ -91,6 +93,6 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
                     </Button>
                 </ButtonGroup>
             </Form>
-        );
-    })
-);
+        </Page>
+    );
+});
