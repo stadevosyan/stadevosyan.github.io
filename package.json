@@ -12,7 +12,7 @@
     },
     "devDependencies": {
         "@servicetitan/restrict-imports": "~21.10.0",
-        "@servicetitan/startup": "~21.10.0",
+        "@servicetitan/startup": "~22.0.3",
         "eslint-config-folder-schema": "file:./packages/eslint-config-folder-schema"
     },
     "workspaces": [
