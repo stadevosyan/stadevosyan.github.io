@@ -7,7 +7,7 @@
     "typings": "./dist/index.d.ts",
     "dependencies": {
         "@servicetitan/eslint-plugin-folder-schema": "~21.10.0",
-        "@servicetitan/folder-lint": "~21.10.0"
+        "@servicetitan/folder-lint": "~22.0.3"
     },
     "devDependencies": {
         "@types/eslint": "~8.4.5",
