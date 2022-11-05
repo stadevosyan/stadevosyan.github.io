@@ -17,6 +17,7 @@
         "@servicetitan/data-query": "^23.0.4",
         "@servicetitan/design-system": "^12.8.0",
         "@servicetitan/form": "^23.0.4",
+        "@servicetitan/form-state": "^23.0.4",
         "@servicetitan/link-item": "^23.0.4",
         "@servicetitan/log-service": "^22.0.3",
         "@servicetitan/react-ioc": "^22.0.3",
@@ -33,16 +34,16 @@
         "mobx-react": "~7.5.0",
         "mobx-utils": "^6.0.5",
         "moment": "^2.29.4",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
         "react-router-dom": "^5.3.4",
         "reset-css": "^5.0.1",
         "resumablejs": "^1.1.0"
     },
     "devDependencies": {
         "@types/lodash": "^4.14.188",
-        "@types/react": "^18.0.25",
-        "@types/react-dom": "^18.0.8",
+        "@types/react": "^17.0.52",
+        "@types/react-dom": "^17.0.18",
         "@types/react-router-dom": "^5.3.2"
     }
 }
