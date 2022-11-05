@@ -1,21 +1,21 @@
 import { Button, Form, Headline, Stack, ToggleSwitch } from '@servicetitan/design-system';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { observer } from 'mobx-react';
-
-import { BookCard } from '../../common/components/book-card/book-card';
-import { NewBookTakeover } from './new-book-takeover/new-book-takeover';
-import { NewBookStore } from './stores/new-book.store';
-import { UserStore } from './stores/user.store';
 import { useHistory } from 'react-router-dom';
 
-export const User = provide({ singletons: [UserStore, NewBookStore] })(
+import { BookCard } from '../../common/components/book-card/book-card';
+import { NewBookTakeover } from './new-book-takeover';
+import { NewBookStore } from '../stores/new-book.store';
+import { BooksStore } from '../stores/books.store';
+
+export const BookManagement = provide({ singletons: [NewBookStore] })(
     observer(() => {
-        const [newBookStore, userStore] = useDependencies(NewBookStore, UserStore);
+        const [newBookStore, bookStore] = useDependencies(NewBookStore, BooksStore);
         const history = useHistory();
 
-        const handleSelectBook = (data: any) => {
-            // userStore.handleSelect // process logic
-            history.push(`/book/${data.id}`);
+        const handleSelectBook = async (data: any) => {
+            await bookStore.handleSelect(data); // process logic
+            history.push(`/book/${3}`);
         };
 
         return (

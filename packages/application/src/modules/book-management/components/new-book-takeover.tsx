@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, ButtonGroup, Takeover } from '@servicetitan/design-system';
 import { observer } from 'mobx-react';
 import { useDependencies } from '@servicetitan/react-ioc';
@@ -20,7 +19,7 @@ export const NewBookTakeover = observer(() => {
                     <Button primary>Ավելացնել</Button>
                 </ButtonGroup>
             }
-            onBack={function () {}}
+            onBack={newBookStore.handleClose}
             onClose={newBookStore.handleClose}
         >
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean id accumsan augue.

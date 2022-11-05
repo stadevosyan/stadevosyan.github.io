@@ -9,7 +9,7 @@ import {
     SideNav,
     Stack,
 } from '@servicetitan/design-system';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import * as Styles from './main-wrapper.module.less';
@@ -46,21 +46,19 @@ export const MainWrapper: FC = ({ children }) => {
                     <Sidebar.Section>
                         <SideNav>
                             <SideNav.Item>
-                                <Link to="/users">Բոլոր գրքերը</Link>
+                                <Link to="/books">Բոլոր գրքերը</Link>
                             </SideNav.Item>
                             <SideNav.Item>
-                                <Link to="/admin">Կոնտակտներ</Link>
+                                <Link to="/contacts">Կոնտակտներ</Link>
                             </SideNav.Item>
                         </SideNav>
                     </Sidebar.Section>
                     <Sidebar.Section>
-                        <Card onClick={() => setActive(4)} active={active === 4}>
-                            <SideNav>
-                                <SideNav.Item onClick={() => setActive(3)} active={active === 3}>
-                                    Իմ հաշիվը
-                                </SideNav.Item>
-                            </SideNav>
-                        </Card>
+                        <SideNav>
+                            <SideNav.Item onClick={() => setActive(3)} active={active === 3}>
+                                <Link to="/account">Իմ հաշիվը</Link>
+                            </SideNav.Item>
+                        </SideNav>
                     </Sidebar.Section>
                 </Sidebar>
             }
