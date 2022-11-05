@@ -10,7 +10,7 @@
         "@progress/kendo-licensing": "~1.2.0",
         "@progress/kendo-react-animation": "~4.10.0",
         "@progress/kendo-react-inputs": "~4.10.0",
-        "@progress/kendo-react-intl": "~4.10.0",
+        "@progress/kendo-react-intl": "~5.9.0",
         "@servicetitan/confirm": "~22.4.2",
         "@servicetitan/confirm-navigation": "~22.4.2",
         "@servicetitan/culture": "~22.4.2",
