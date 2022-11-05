@@ -29,10 +29,10 @@ export const App = provide({ singletons: [AuthApi, AuthStore, BooksStore] })(
                         ) : (
                             <MainWrapper>
                                 <Switch>
-                                    <Route path="/account" component={Account} />
-                                    <Route path="/contacts" component={Contacts} />
-                                    <Route path="/books" component={BookManagement} />
+                                    <Route path="/" exact component={BookManagement} />
                                     <Route path="/book/:id" exact component={BookDetails} />
+                                    <Route path="/account" exact component={Account} />
+                                    <Route path="/contacts" exact component={Contacts} />
 
                                     <Redirect from="/*" to="/users" />
                                 </Switch>
