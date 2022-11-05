@@ -1,5 +1,5 @@
 import { BodyText, Stack } from '@servicetitan/design-system';
-import { Logo } from '../../../../assets/svg/logo';
+import { Logo } from '../../../common/components/logo';
 
 export const LogoSection = () => {
     return (

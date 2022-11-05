@@ -10,6 +10,7 @@ import { Form, Link, ButtonGroup, Button, Banner, Headline } from '@servicetitan
 import { LoginStore } from '../stores/login.store';
 
 import * as Styles from './login.module.less';
+import { AuthPaths } from '../../../common/utils/paths';
 
 export const LoginForm: FC = provide({ singletons: [LoginStore] })(
     observer(() => {
@@ -53,7 +54,7 @@ export const LoginForm: FC = provide({ singletons: [LoginStore] })(
                     type="password"
                     className={Styles.passwordField}
                 />
-                <Link href="#/register" primary text className="fw-bold">
+                <Link href={`#/forgot-password`} primary text className="fw-bold">
                     Մոռացել եմ գաղտնաբառը
                 </Link>
 

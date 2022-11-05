@@ -1,6 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { BodyText } from '@servicetitan/design-system';
-import * as Styles from 'back-to.module.less';
+import * as Styles from './back-to.module.less';
 
 export const BackTo = () => {
     const history = useHistory();

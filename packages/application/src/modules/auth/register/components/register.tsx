@@ -10,7 +10,7 @@ import { UserRole } from '../../../common/api/auth.api';
 import { RegisterStore } from '../stores/register.store';
 
 import { Label, enumToOptions } from '@servicetitan/form';
-import { BackTo } from '../../components/back-to';
+import { BackTo } from '../../components/back-to/back-to';
 
 const rolesOptions = enumToOptions(UserRole);
 
