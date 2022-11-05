@@ -54,7 +54,7 @@ export const LoginForm: FC = provide({ singletons: [LoginStore] })(
                     type="password"
                     className={Styles.passwordField}
                 />
-                <Link href={`#/forgot-password`} primary text className="fw-bold">
+                <Link href={'#' + AuthPaths.forgotPassword} primary text className="fw-bold">
                     Մոռացել եմ գաղտնաբառը
                 </Link>
 

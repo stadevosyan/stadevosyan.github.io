@@ -11,6 +11,7 @@ import { RegisterStore } from '../stores/register.store';
 
 import { Label, enumToOptions } from '@servicetitan/form';
 import { BackTo } from '../../components/back-to/back-to';
+import { AuthPaths } from '../../../common/utils/paths';
 
 const rolesOptions = enumToOptions(UserRole);
 
@@ -32,7 +33,7 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
         const isSuccessful = await registerStore.register();
 
         if (isSuccessful) {
-            history.push('/login');
+            history.push(AuthPaths.login);
         }
     };
 
@@ -84,7 +85,7 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
                 />
 
                 <ButtonGroup fullWidth>
-                    <Link href="#/login" primary text className="align-self-center">
+                    <Link href={'#' + AuthPaths.login} primary text className="align-self-center">
                         Sign In
                     </Link>
 
