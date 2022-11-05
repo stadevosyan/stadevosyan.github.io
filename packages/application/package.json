@@ -22,7 +22,7 @@
         "@servicetitan/react-ioc": "~21.10.0",
         "@servicetitan/suppress-warnings": "~21.10.0",
         "@servicetitan/table": "~22.4.2",
-        "@servicetitan/tokens": "~11.9.0",
+        "@servicetitan/tokens": "~12.2.0",
         "@servicetitan/web-components": "~21.10.0",
         "accounting": "~0.4.1",
         "axios": "~0.24.0",
