@@ -1,5 +1,4 @@
 import { BodyText, Headline, Stack, Tab, TabGroup } from '@servicetitan/design-system';
-import { useParams } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { useDependencies } from '@servicetitan/react-ioc';
 import { BooksStore } from '../../stores/books.store';
@@ -8,7 +7,6 @@ import { BookSummary } from './book-summary';
 
 export const BookDetails = observer(() => {
     const [{ setActiveTab, activeTab }] = useDependencies(BooksStore);
-    const params = useParams<{ id: string }>();
 
     return (
         <Stack direction="column" className="filters p-b-3">
