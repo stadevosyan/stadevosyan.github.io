@@ -47,55 +47,31 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
                     {/* image upload here*/}
 
                     <Form.Input
-                        label={
-                            <Label
-                                label="Անուն Ազգանուն"
-                                hasError={fullName.hasError}
-                                error={fullName.error}
-                            />
-                        }
+                        label={<Label label="Անուն Ազգանուն" hasError={fullName.hasError} />}
                         value={fullName.value}
                         onChange={fullName.onChangeHandler}
-                        error={fullName.hasError}
+                        error={fullName.error}
                     />
 
                     <Form.Input
-                        label={
-                            <Label
-                                label="Էլեկտրոնային հասցե"
-                                hasError={email.hasError}
-                                error={email.error}
-                            />
-                        }
+                        label={<Label label="Էլեկտրոնային հասցե" hasError={email.hasError} />}
                         value={email.value}
                         onChange={email.onChangeHandler}
-                        error={email.hasError}
+                        error={email.error}
                     />
 
                     <Form.Input
-                        label={
-                            <Label
-                                label="Հեռախոսահամար"
-                                hasError={phone.hasError}
-                                error={phone.error}
-                            />
-                        }
+                        label={<Label label="Հեռախոսահամար" hasError={phone.hasError} />}
                         value={phone.value}
                         onChange={phone.onChangeHandler}
-                        error={phone.hasError}
+                        error={phone.error}
                     />
 
                     <Form.Input
-                        label={
-                            <Label
-                                label="Ստեղծել գաղտնաբառ"
-                                hasError={password.hasError}
-                                error={password.error ?? undefined}
-                            />
-                        }
+                        label={<Label label="Ստեղծել գաղտնաբառ" hasError={password.hasError} />}
                         value={password.value}
                         onChange={password.onChangeHandler}
-                        error={password.hasError}
+                        error={password.error}
                         type="password"
                     />
                 </Form>
