@@ -4,14 +4,8 @@ import { AxiosPromise } from 'axios';
 
 import { UserManagementDB } from '../utils/user-management-db';
 
-export interface IAuthApi {
-    login(request: LoginRequest): AxiosPromise<User>;
-    register(user: User): AxiosPromise<User>;
-    isLoginInUse(login: string): AxiosPromise<boolean>;
-}
-
 @injectable()
-export class AuthApi implements IAuthApi {
+export class AuthApi {
     login({ login, password }: LoginRequest): AxiosPromise<User> {
         const user = UserManagementDB.getByLogin(login);
 
@@ -28,14 +22,13 @@ export class AuthApi implements IAuthApi {
         return this.resolve(user);
     }
 
-    passwordReset(email: string): AxiosPromise<boolean> {
+    // requests password reset for the email, backend generates email with redirect url, having some validation key and the email
+    passwordResetRequest(email: string): AxiosPromise<boolean> {
         return this.resolve(!!email);
     }
 
-    isLoginInUse(login: string): AxiosPromise<boolean> {
-        const user = UserManagementDB.getByLogin(login);
-
-        return this.resolve(!!user);
+    passwordReset(email: string, validationKey: string, newPassword: string) {
+        return this.resolve(email + validationKey + newPassword);
     }
 
     private resolve<T = void>(data?: T) {

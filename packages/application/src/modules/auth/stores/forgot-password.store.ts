@@ -27,7 +27,7 @@ export class ForgotPasswordStore {
         }
 
         const { email } = formStateToJS(this.form);
-        const response = await this.authApi.passwordReset(email);
+        const response = await this.authApi.passwordResetRequest(email);
 
         return !!response;
     };
