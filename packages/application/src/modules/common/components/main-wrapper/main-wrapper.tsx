@@ -1,7 +1,6 @@
 import {
     Avatar,
     BodyText,
-    Card,
     Icon,
     Layout,
     Page,
@@ -9,10 +8,8 @@ import {
     SideNav,
     Stack,
 } from '@servicetitan/design-system';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { Link } from 'react-router-dom';
-
-import * as Styles from './main-wrapper.module.less';
 
 function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
