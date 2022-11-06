@@ -5,13 +5,12 @@ import { provide, useDependencies } from '@servicetitan/react-ioc';
 
 import { Form, ButtonGroup, Button, Page, Headline, Divider } from '@servicetitan/design-system';
 
-import { RegisterStore } from '../stores/register.store';
-
 import { Label } from '@servicetitan/form';
 import { BackTo } from '../../components/back-to/back-to';
 import { AuthPaths } from '../../../common/utils/paths';
 import { observer } from 'mobx-react';
 import * as Styles from './register.module.less';
+import { RegisterStore } from '../../stores/register.store';
 
 export const Register: FC<RouteComponentProps> = provide({ singletons: [RegisterStore] })(
     observer(() => {

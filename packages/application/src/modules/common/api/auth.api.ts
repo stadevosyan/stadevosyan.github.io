@@ -28,6 +28,10 @@ export class AuthApi implements IAuthApi {
         return this.resolve(user);
     }
 
+    passwordReset(email: string): AxiosPromise<boolean> {
+        return this.resolve(!!email);
+    }
+
     isLoginInUse(login: string): AxiosPromise<boolean> {
         const user = UserManagementDB.getByLogin(login);
 

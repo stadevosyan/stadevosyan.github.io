@@ -7,10 +7,9 @@ import { observer } from 'mobx-react';
 
 import { Form, ButtonGroup, Button, Banner, Headline } from '@servicetitan/design-system';
 
-import { LoginStore } from '../stores/login.store';
-
 import * as Styles from './login.module.less';
 import { AuthPaths } from '../../../common/utils/paths';
+import { LoginStore } from '../../stores/login.store';
 
 export const LoginForm: FC = provide({ singletons: [LoginStore] })(
     observer(() => {

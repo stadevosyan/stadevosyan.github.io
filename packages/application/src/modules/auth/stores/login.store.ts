@@ -4,8 +4,8 @@ import { makeObservable, observable, action, computed } from 'mobx';
 
 import { FormState } from 'formstate';
 
-import { AuthStore } from '../../../common/stores/auth.store';
 import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
+import { AuthStore } from '../../common/stores/auth.store';
 
 @injectable()
 export class LoginStore {

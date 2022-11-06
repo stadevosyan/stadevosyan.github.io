@@ -2,8 +2,7 @@ import { inject, injectable } from '@servicetitan/react-ioc';
 
 import { FormState } from 'formstate';
 import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
-
-import { AuthApi, UserRole } from '../../../common/api/auth.api';
+import { AuthApi, UserRole } from '../../common/api/auth.api';
 
 @injectable()
 export class RegisterStore {
