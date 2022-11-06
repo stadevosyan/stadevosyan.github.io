@@ -5,7 +5,8 @@ import { makeObservable, observable, action, computed } from 'mobx';
 import { FormState } from 'formstate';
 
 import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
-import { AuthStore } from '../../common/stores/auth.store';
+import { AUTHENTICATED_USER_KEY, AuthStore } from '../../common/stores/auth.store';
+import { Storage } from '../../common/utils/storage';
 
 @injectable()
 export class LoginStore {
@@ -40,6 +41,7 @@ export class LoginStore {
             !this.authStore.isAuthenticated ? 'Սխալ էլեկտրոնային հասցե կամ ծածկագիր' : undefined
         );
 
+        Storage.setItem(AUTHENTICATED_USER_KEY, this.authStore.user);
         return this.authStore.isAuthenticated;
     }
 
