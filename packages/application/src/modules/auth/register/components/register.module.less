@@ -1,4 +1,15 @@
+@import (reference) '~@servicetitan/tokens/dist/tokens.less';
+
 .back-to-section {
-    margin-left: -20px;
+    margin-left: -@spacing-2;
     margin-bottom: 44px;
+}
+
+.form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-row-gap: @spacing-4;
+    grid-column-gap: @spacing-4;
+    justify-items: stretch;
+    align-items: start;
 }

@@ -33,16 +33,7 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
 
                 <Divider spacing="5" />
 
-                <Form
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gridRowGap: '32px',
-                        gridColumnGap: '32px',
-                        justifyItems: 'stretch',
-                        alignItems: 'start',
-                    }}
-                >
+                <Form className={Styles.form}>
                     {/* image upload here*/}
 
                     <Form.Input
