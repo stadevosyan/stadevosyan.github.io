@@ -1,0 +1,25 @@
+@import (reference) '~@servicetitan/tokens/dist/tokens.less';
+
+.logo-card {
+    position: relative;
+    box-sizing: border-box;
+    width: 160px;
+    height: 200px;
+    //padding: @spacing-1;
+
+    .logo-action {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: @spacing-2;
+    }
+
+    &:not(:hover) .logo-action {
+        display: none;
+    }
+
+    img {
+        width: 100%;
+        height: auto;
+    }
+}

@@ -5,7 +5,8 @@
 
 # Node.js
 node_modules/
-
+.vscode
+.idea
 *.css.d.ts
 /coverage/
 dist/

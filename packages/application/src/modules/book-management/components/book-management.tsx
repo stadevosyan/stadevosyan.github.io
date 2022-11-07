@@ -21,7 +21,7 @@ export const BookManagement = provide({ singletons: [NewBookStore] })(
         };
 
         return (
-            <Stack direction="column">
+            <Stack direction="column" className="p-3">
                 <Stack direction="column" className="filters p-b-3">
                     <Stack>
                         <Headline className="m-b-2 t-truncate" size="large">

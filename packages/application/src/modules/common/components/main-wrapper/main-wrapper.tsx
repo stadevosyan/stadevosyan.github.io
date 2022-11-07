@@ -8,21 +8,26 @@ import {
     SideNav,
     Stack,
 } from '@servicetitan/design-system';
-import { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { FC, useCallback } from 'react';
+import { Link, matchPath, useHistory } from 'react-router-dom';
 
-function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
-}
-
-const setActive = (_int: number) => {};
-const active = getRandomInt(5);
+import * as Styles from './main-wrapper.module.less';
 
 export const MainWrapper: FC = ({ children }) => {
+    const history = useHistory();
+
+    const isActive = useCallback(
+        path => {
+            return !!matchPath(history.location.pathname, { path, exact: true });
+        },
+        [history.location.pathname]
+    );
+
     return (
         <Page
             maxWidth="wide"
             style={{ height: '100%' }}
+            className={Styles.mainRoot}
             actionToolbar={{
                 sticky: true,
                 content: (
@@ -42,19 +47,29 @@ export const MainWrapper: FC = ({ children }) => {
                     <Icon iconName="odometer" />
                     <Sidebar.Section>
                         <SideNav>
-                            <SideNav.Item>
-                                <Link to="/">Բոլոր գրքերը</Link>
-                            </SideNav.Item>
-                            <SideNav.Item>
-                                <Link to="/contacts">Կոնտակտներ</Link>
-                            </SideNav.Item>
+                            <Link to="/">
+                                <SideNav.Item active={isActive('/')}>
+                                    <Icon name="access_alarms" className="m-r-1" />
+                                    Բոլոր գրքերը
+                                </SideNav.Item>
+                            </Link>
+                            <Link to="/contacts">
+                                {' '}
+                                <SideNav.Item active={isActive('/contacts')}>
+                                    <Icon name="library_books" className="m-r-1" />
+                                    Կոնտակտներ{' '}
+                                </SideNav.Item>
+                            </Link>
                         </SideNav>
                     </Sidebar.Section>
                     <Sidebar.Section>
                         <SideNav>
-                            <SideNav.Item onClick={() => setActive(3)} active={active === 3}>
-                                <Link to="/account">Իմ հաշիվը</Link>
-                            </SideNav.Item>
+                            <Link to="/account">
+                                <SideNav.Item active={isActive('/account')}>
+                                    <Icon name="person_outline" className="m-r-1" />
+                                    Իմ հաշիվը
+                                </SideNav.Item>
+                            </Link>
                         </SideNav>
                     </Sidebar.Section>
                 </Sidebar>
