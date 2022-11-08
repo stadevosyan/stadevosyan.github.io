@@ -1,23 +1,25 @@
 import { Button, Form, Headline, Stack, ToggleSwitch } from '@servicetitan/design-system';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { observer } from 'mobx-react';
-import { useHistory } from 'react-router-dom';
+import { generatePath, useHistory } from 'react-router-dom';
 
 import { BookCard } from '../../common/components/book-card/book-card';
 import { NewBookTakeover } from './new-book-takeover';
 import { NewBookStore } from '../stores/new-book.store';
 import { BooksStore } from '../stores/books.store';
+import { FilePickerStore } from '../../common/stores/file-picker.store';
+import { PrivatePaths } from '../../common/utils/paths';
 
 import * as Styles from './book-managment.module.less';
 
-export const BookManagement = provide({ singletons: [NewBookStore] })(
+export const BookManagement = provide({ singletons: [NewBookStore, FilePickerStore] })(
     observer(() => {
         const [newBookStore, bookStore] = useDependencies(NewBookStore, BooksStore);
         const history = useHistory();
 
         const handleSelectBook = async (data: any) => {
             await bookStore.handleSelect(data); // process logic
-            history.push(`/book/${3}`);
+            history.push(generatePath(PrivatePaths.bookById, { id: 3 }));
         };
 
         return (

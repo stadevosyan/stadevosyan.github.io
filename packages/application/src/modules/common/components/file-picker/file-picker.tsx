@@ -60,51 +60,51 @@ export const FilePicker: FC<FilePickerProps> = observer(
                     />
                 ) : (
                     <Card raised padding="thin" className={Styles.logoCard}>
-                        {/* <Card.Section>*/}
-                        <img src={fileStore.imageUrl} alt="cover" />
-                        <div className={Styles.logoAction}>
-                            <ButtonGroup>
-                                {replaceable && (
-                                    <Tooltip el="div" text="Փոխել">
-                                        <Button
-                                            outline
-                                            iconName="edit"
-                                            onClick={handleClick}
-                                            className="shadow-1-i bg-white-i"
-                                        />
-                                        <input
-                                            hidden
-                                            type="file"
-                                            accept="image/png, image/jpeg, .svg"
-                                            ref={fileRef}
-                                            onChange={handleReplace}
-                                        />
-                                    </Tooltip>
-                                )}
-                                {downloadable && (
-                                    <Tooltip el="div" text="Ներբերել">
-                                        <Button
-                                            outline
-                                            iconName="file_download"
-                                            onClick={fileStore.download}
-                                            disabled={fileStore.imageToUpload !== undefined}
-                                            className="shadow-1-i bg-white-i"
-                                        />
-                                    </Tooltip>
-                                )}
-                                {deletable && (
-                                    <Tooltip el="div" text="հեռացնել">
-                                        <Button
-                                            outline
-                                            iconName="delete"
-                                            onClick={fileStore.deleteImage}
-                                            className="shadow-1-i bg-white-i"
-                                        />
-                                    </Tooltip>
-                                )}
-                            </ButtonGroup>
-                        </div>
-                        {/* </Card.Section>*/}
+                        <Card.Section className="border-style-none p-0-i">
+                            <img src={fileStore.imageUrl} alt="cover" />
+                            <div className={Styles.logoAction}>
+                                <ButtonGroup>
+                                    {replaceable && (
+                                        <Tooltip el="div" text="Փոխել">
+                                            <Button
+                                                outline
+                                                iconName="edit"
+                                                onClick={handleClick}
+                                                className="shadow-1-i bg-white-i"
+                                            />
+                                            <input
+                                                hidden
+                                                type="file"
+                                                accept="image/png, image/jpeg, .svg"
+                                                ref={fileRef}
+                                                onChange={handleReplace}
+                                            />
+                                        </Tooltip>
+                                    )}
+                                    {downloadable && (
+                                        <Tooltip el="div" text="Ներբերել">
+                                            <Button
+                                                outline
+                                                iconName="file_download"
+                                                onClick={fileStore.download}
+                                                disabled={fileStore.imageToUpload !== undefined}
+                                                className="shadow-1-i bg-white-i"
+                                            />
+                                        </Tooltip>
+                                    )}
+                                    {deletable && (
+                                        <Tooltip el="div" text="հեռացնել">
+                                            <Button
+                                                outline
+                                                iconName="delete"
+                                                onClick={fileStore.deleteImage}
+                                                className="shadow-1-i bg-white-i"
+                                            />
+                                        </Tooltip>
+                                    )}
+                                </ButtonGroup>
+                            </div>
+                        </Card.Section>
                     </Card>
                 )}
                 {fileStore.recommendLargerImage && banner && (

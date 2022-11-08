@@ -15,6 +15,7 @@ import { Account } from './modules/account/components/account';
 import { Contacts } from './modules/contacts/components/contacts';
 
 import * as Styles from './app.module.css';
+import { PrivatePaths } from './modules/common/utils/paths';
 
 export const App = provide({ singletons: [AuthApi, AuthStore, BooksStore] })(
     observer(() => {
@@ -29,12 +30,20 @@ export const App = provide({ singletons: [AuthApi, AuthStore, BooksStore] })(
                         ) : (
                             <MainWrapper>
                                 <Switch>
-                                    <Route path="/" exact component={BookManagement} />
-                                    <Route path="/book/:id" exact component={BookDetails} />
-                                    <Route path="/account" exact component={Account} />
-                                    <Route path="/contacts" exact component={Contacts} />
+                                    <Route
+                                        path={PrivatePaths.books}
+                                        exact
+                                        component={BookManagement}
+                                    />
+                                    <Route
+                                        exact
+                                        path={PrivatePaths.bookById}
+                                        component={BookDetails}
+                                    />
+                                    <Route path={PrivatePaths.account} exact component={Account} />
+                                    <Route path={PrivatePaths.contact} exact component={Contacts} />
 
-                                    <Redirect from="/*" to="/users" />
+                                    <Redirect from="/*" to={PrivatePaths.books} />
                                 </Switch>
                             </MainWrapper>
                         )}

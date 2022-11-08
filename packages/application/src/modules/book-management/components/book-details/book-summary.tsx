@@ -1,4 +1,4 @@
-import { Button, Divider, Form, Stack } from '@servicetitan/design-system';
+import { BodyText, Button, Divider, Form, Stack } from '@servicetitan/design-system';
 import { FilePicker } from '../../../common/components/file-picker/file-picker';
 
 export const BookSummary = () => {
@@ -13,26 +13,35 @@ export const BookSummary = () => {
                         typesNote: 'Թույլատրված ֆայլերի տեսակները: jpeg, png, jpg, svg',
                     }}
                 />
-                <Form.Togglebox
-                    control="radio"
-                    value={1}
-                    /*
-                     * checked={value === 1}
-                     * onClick={value => setValue(value)}
-                     */
-                    title="Հասանելի"
-                    label=""
-                />
-                <Form.Togglebox
-                    control="radio"
-                    value={1}
-                    /*
-                     * checked={value === 1}
-                     * onClick={value => setValue(value)}
-                     */
-                    title="Վարձակալված"
-                    label=""
-                />
+                <Stack direction="column" className="m-l-2">
+                    <BodyText className="m-b-2 t-truncate" size="small" bold>
+                        Հասանելիություն
+                    </BodyText>
+                    <Form.Group className="align-items-stretch m-r-1">
+                        <Form.Togglebox
+                            control="radio"
+                            value={1}
+                            /*
+                             * checked={value === 1}
+                             * onClick={value => setValue(value)}
+                             */
+                            title="Հասանելի"
+                            label=""
+                        />
+                        <Form.Togglebox
+                            control="radio"
+                            value={1}
+                            /*
+                             * checked={value === 1}
+                             * onClick={value => setValue(value)}
+                             */
+                            title="Վարձակալված"
+                            label=""
+                        />
+                    </Form.Group>
+                </Stack>
+
+
             </Form.Group>
             <Divider className="m-y-3" />
             <Form.Group widths="equal" className="">

@@ -10,7 +10,9 @@ import {
 } from '@servicetitan/design-system';
 import { observer } from 'mobx-react';
 import { useDependencies } from '@servicetitan/react-ioc';
+
 import { NewBookStore } from '../stores/new-book.store';
+import { FilePicker } from '../../common/components/file-picker/file-picker';
 
 export const NewBookTakeover = observer(() => {
     const [newBookStore] = useDependencies(NewBookStore);
@@ -34,9 +36,13 @@ export const NewBookTakeover = observer(() => {
         >
             <Layout type="island">
                 <Stack direction="column">
-                    <Stack.Item>
-                        <Button iconName="add_a_photo">Կցել գրքի լուսանկարը</Button>
-                    </Stack.Item>
+                    <FilePicker
+                        replaceable
+                        buttonProps={{
+                            buttonLabel: 'Կցել գրքի լուսանկարը',
+                            typesNote: 'Թույլատրված ֆայլերի տեսակները: jpeg, png, jpg, svg',
+                        }}
+                    />
                     <Divider className="m-y-3" />
                     <Form>
                         <Form.Group widths="equal" className="">

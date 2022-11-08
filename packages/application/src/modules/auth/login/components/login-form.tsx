@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { Form, ButtonGroup, Button, Banner, Headline } from '@servicetitan/design-system';
 
 import * as Styles from './login.module.less';
-import { AuthPaths } from '../../../common/utils/paths';
+import { AuthPaths, PrivatePaths } from '../../../common/utils/paths';
 import { LoginStore } from '../../stores/login.store';
 
 export const LoginForm: FC = provide({ singletons: [LoginStore] })(
@@ -26,7 +26,7 @@ export const LoginForm: FC = provide({ singletons: [LoginStore] })(
             const isSuccessful = await loginStore.login();
 
             if (isSuccessful) {
-                history.push('/');
+                history.push(PrivatePaths.books);
             }
         };
 

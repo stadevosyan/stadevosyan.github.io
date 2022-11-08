@@ -10,6 +10,7 @@ import {
 } from '@servicetitan/design-system';
 import { FC, useCallback } from 'react';
 import { Link, matchPath, useHistory } from 'react-router-dom';
+import { PrivatePaths } from '../../utils/paths';
 
 import * as Styles from './main-wrapper.module.less';
 
@@ -47,15 +48,15 @@ export const MainWrapper: FC = ({ children }) => {
                     <Icon iconName="odometer" />
                     <Sidebar.Section>
                         <SideNav>
-                            <Link to="/">
-                                <SideNav.Item active={isActive('/')}>
+                            <Link to={PrivatePaths.books}>
+                                <SideNav.Item active={isActive(PrivatePaths.book)}>
                                     <Icon name="access_alarms" className="m-r-1" />
                                     Բոլոր գրքերը
                                 </SideNav.Item>
                             </Link>
-                            <Link to="/contacts">
+                            <Link to={PrivatePaths.contacts}>
                                 {' '}
-                                <SideNav.Item active={isActive('/contacts')}>
+                                <SideNav.Item active={isActive(PrivatePaths.contact)}>
                                     <Icon name="library_books" className="m-r-1" />
                                     Կոնտակտներ{' '}
                                 </SideNav.Item>
@@ -64,8 +65,8 @@ export const MainWrapper: FC = ({ children }) => {
                     </Sidebar.Section>
                     <Sidebar.Section>
                         <SideNav>
-                            <Link to="/account">
-                                <SideNav.Item active={isActive('/account')}>
+                            <Link to={PrivatePaths.account}>
+                                <SideNav.Item active={isActive(PrivatePaths.account)}>
                                     <Icon name="person_outline" className="m-r-1" />
                                     Իմ հաշիվը
                                 </SideNav.Item>
