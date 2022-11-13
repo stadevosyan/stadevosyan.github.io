@@ -1,0 +1,87 @@
+{% capture ClassName %}{{ Class | replace: "Api", "" }}Api{% endcapture %}
+
+{% if HasOperations -%}
+{% if GenerateClientInterfaces -%}
+export interface I{{ ClassName }} {
+{%     for operation in Operations -%}
+    {% template Client.Method.Documentation %}
+    {{ operation.MethodAccessModifier }}{{ operation.ActualOperationName }}({% for parameter in operation.Parameters %}{{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}, {% endfor %}cancelToken?: CancelToken): AxiosPromise<{{ operation.ResultType }}>;
+{%     endfor -%}}
+{% endif -%}
+
+interface ClientApiConfig {
+    baseUrl: string;
+    axios: AxiosInstance;
+}
+
+export const BASE_URL_TOKEN_{{ ClassName }} = symbolToken<string>('BASE_URL_TOKEN', false);
+export const AXIOS_TOKEN_{{ ClassName }} = symbolToken<string>('AXIOS_TOKEN', false);
+
+@injectable()
+export class {{ ClassName }} {% if HasBaseClass %}extends {{ BaseClass }} {% endif %}{% if GenerateClientInterfaces %}implements I{{ ClassName }} {% endif %}{
+    protected jsonParseReviver: {% if SupportsStrictNullChecks %}((key: string, value: any) => any) | undefined{% else %}(key: string, value: any) => any{% endif %} = undefined;
+    protected readonly opts: ClientApiConfig;
+
+{% if HasExtendedConstructor == false -%}
+    constructor({%if HasConfigurationClass %}
+        configuration: {{ ConfigurationClass }},{% endif %}
+        @inject(BASE_URL_TOKEN_{{ ClassName }}) @optional() baseUrl = '',
+        @inject(AXIOS_TOKEN_{{ ClassName }}) @optional() axiosInstance = axios,
+    ) {
+{%     if HasBaseClass -%}
+        super({% if HasConfigurationClass %}configuration{% endif %});
+{%     endif -%}
+{%     if UseGetBaseUrlMethod -%}
+        this.baseUrl = baseUrl || this.getBaseUrl("{{ BaseUrl }}");
+{%     endif -%}
+
+        this.opts = {
+            baseUrl,
+            axios: axiosInstance,
+        };
+    }
+{% endif -%}
+{% if HasExtensionCode -%}
+
+    {{ ExtensionCode }}
+{% endif -%}
+{% for operation in Operations -%}
+
+    {% template Client.Method.Documentation %}
+    {{ operation.MethodAccessModifier }}{{ operation.ActualOperationName }}({% for parameter in operation.Parameters %}{{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %}?{% endif %}: {{ parameter.Type }}{{ parameter.TypePostfix }}, {% endfor %}cancelToken?: CancelToken): AxiosPromise<{{ operation.ResultType }}> {
+        {% template Client.RequestUrl %}
+
+{%     if operation.HasBody -%}
+        {% template Client.RequestBody %}
+
+{%     endif -%}
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+{%     if operation.HasBody -%}
+            data: content_,
+{%     endif -%}
+{%     if operation.IsFile -%}
+            responseType: 'blob',
+{%     endif -%}
+            url: url_,
+            method: "{{ operation.HttpMethodUpper | upcase }}",
+            headers: {
+{%     for parameter in operation.HeaderParameters -%}
+                "{{ parameter.Name }}": {{ parameter.VariableName }} !== undefined && {{ parameter.VariableName }} !== null ? "" + {{ parameter.VariableName }} : "",
+{%     endfor -%}
+{%     if operation.HasFormParameters == false -%}
+                "Content-Type": "{{ operation.Consumes }}",
+{%     endif -%}
+{%     if operation.HasResultType and operation.HasAcceptHeaderParameterParameter == false -%}
+                "Accept": "{{ operation.Produces }}"
+{%     endif -%}
+            }
+        };
+
+        return this.opts.axios.request<{{ operation.ResultType }}>(options_);
+    }
+{% endfor -%}
+}
+
+{% endif -%}
