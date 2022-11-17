@@ -4,7 +4,7 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { Stack } from '@servicetitan/design-system';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 
-import { AuthApi } from './modules/common/api/auth.api';
+import { BASE_URL_TOKEN_ELibraryApi, ELibraryApi } from './modules/common/api/e-library.client';
 import { AuthStore } from './modules/common/stores/auth.store';
 import { AuthRouter } from './modules/auth/components/auth-router';
 import { MainWrapper } from './modules/common/components/main-wrapper/main-wrapper';
@@ -16,7 +16,20 @@ import { Contacts } from './modules/contacts/components/contacts';
 
 import * as Styles from './app.module.css';
 
-export const App = provide({ singletons: [AuthApi, AuthStore, BooksStore] })(
+const isProd = process.env.NODE_ENV === 'production';
+const url = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
+
+export const App = provide({
+    singletons: [
+        ELibraryApi,
+        AuthStore,
+        BooksStore,
+        {
+            provide: BASE_URL_TOKEN_ELibraryApi,
+            useValue: url,
+        },
+    ],
+})(
     observer(() => {
         const [{ isAuthenticated }] = useDependencies(AuthStore);
 
