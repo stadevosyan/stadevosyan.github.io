@@ -59,10 +59,7 @@ export class ELibraryApi {
         return this.opts.axios.request<void>(options_);
     }
 
-    /**
-     * @return Signed in
-     */
-    authController_signInUser(body: LoginUserDto, cancelToken?: CancelToken): AxiosPromise<void> {
+    authController_signInUser(body: LoginUserDto, cancelToken?: CancelToken): AxiosPromise<LoginResponseDto> {
         let url_ = "/auth/signin";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -76,13 +73,14 @@ export class ELibraryApi {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
-        return this.opts.axios.request<void>(options_);
+        return this.opts.axios.request<LoginResponseDto>(options_);
     }
 
-    usersController_getUsers(name: string | undefined, page: number | undefined, pageSize: number | undefined, cancelToken?: CancelToken): AxiosPromise<void> {
+    usersController_getUsers(name: string | undefined, page: number | undefined, pageSize: number | undefined, cancelToken?: CancelToken): AxiosPromise<GetUsersResponseDto> {
         let url_ = "/users?";
         if (name === null)
             throw new Error("The parameter 'name' cannot be null.");
@@ -105,10 +103,11 @@ export class ELibraryApi {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
-        return this.opts.axios.request<void>(options_);
+        return this.opts.axios.request<GetUsersResponseDto>(options_);
     }
 
     usersController_getUserById(id: number, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
@@ -415,6 +414,58 @@ export interface ILoginUserDto {
     [key: string]: any;
 }
 
+export class LoginResponseDto implements ILoginResponseDto {
+    access_token!: string;
+    refresh_token!: string;
+
+    [key: string]: any;
+
+    constructor(data?: ILoginResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.access_token = _data["access_token"];
+            this.refresh_token = _data["refresh_token"];
+        }
+    }
+
+    static fromJS(data: any): LoginResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoginResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["access_token"] = this.access_token;
+        data["refresh_token"] = this.refresh_token;
+        return data;
+    }
+}
+
+export interface ILoginResponseDto {
+    access_token: string;
+    refresh_token: string;
+
+    [key: string]: any;
+}
+
 export class UserEntity implements IUserEntity {
     email!: string;
     password!: string;
@@ -487,6 +538,69 @@ export interface IUserEntity {
     id: number;
     created_at: Date;
     updated_at: Date;
+
+    [key: string]: any;
+}
+
+export class GetUsersResponseDto implements IGetUsersResponseDto {
+    data!: UserEntity[];
+    count!: number;
+
+    [key: string]: any;
+
+    constructor(data?: IGetUsersResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.data = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(UserEntity.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): GetUsersResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetUsersResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IGetUsersResponseDto {
+    data: UserEntity[];
+    count: number;
 
     [key: string]: any;
 }

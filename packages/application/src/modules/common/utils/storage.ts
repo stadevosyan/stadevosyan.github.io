@@ -1,7 +1,11 @@
 export class Storage {
     static getItem(key: string) {
         const data = localStorage.getItem(key);
-        return data && JSON.parse(data);
+
+        if (data && data === Object(data)) {
+            return JSON.parse(data);
+        }
+        return data;
     }
 
     static setItem(key: string, value: unknown): void {

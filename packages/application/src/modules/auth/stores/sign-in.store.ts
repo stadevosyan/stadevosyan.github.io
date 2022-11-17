@@ -40,7 +40,7 @@ export class SignInStore {
     }
 
     // TODO understand why to return is authenticated
-    async login() {
+    login = async () => {
         if (!this.isDirty) {
             return;
         }
@@ -49,7 +49,7 @@ export class SignInStore {
         this.setLoginStatus(LoadStatus.Loading);
         const res = await this.form.validate();
         if (res.hasError) {
-            this.setLoginStatus(LoadStatus.Ok);
+            this.setLoginStatus(LoadStatus.Error);
             return false;
         }
         commitFormState(this.form);
@@ -67,8 +67,7 @@ export class SignInStore {
             this.setLoginStatus(LoadStatus.Error);
             this.setError('Սխալ էլեկտրոնային հասցե կամ ծածկագիր');
         }
-        return this.authStore.isAuthenticated;
-    }
+    };
 
     @action private setLoginStatus = (status: LoadStatus) => (this.loginStatus = status);
 

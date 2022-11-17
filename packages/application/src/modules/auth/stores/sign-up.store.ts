@@ -17,7 +17,6 @@ export class SignUpStore {
         phoneNumber: InputFieldState<string>;
     }>;
 
-    // ELibraryApi
     constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
         makeObservable(this);
         this.form = new FormState({
@@ -61,14 +60,16 @@ export class SignUpStore {
         const { name, phoneNumber, password, email } = formStateToJS(this.form);
 
         try {
-            const user = await this.api.authController_signUpUser({
+            await this.api.authController_signUpUser({
                 name,
                 password,
                 email,
                 phoneNumber,
             } as CreateUserDto);
+
             this.setRegisterStatus(LoadStatus.Ok);
-            return !!user;
+
+            return true;
         } catch {
             this.setRegisterStatus(LoadStatus.Error);
         }

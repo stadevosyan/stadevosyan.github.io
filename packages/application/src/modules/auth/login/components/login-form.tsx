@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
 import { useDependencies, provide } from '@servicetitan/react-ioc';
@@ -14,26 +14,23 @@ import * as Styles from './login.module.less';
 
 export const LoginForm: FC = provide({ singletons: [SignInStore] })(
     observer(() => {
-        const [signInStore] = useDependencies(SignInStore);
+        const [{ form, error, loginStatus, login }] = useDependencies(SignInStore);
 
         const history = useHistory();
 
-        const { form, error, loginStatus } = signInStore;
         const {
             $: { email, password },
         } = form;
 
-        const handleSubmit = async () => {
-            const isSuccessful = await signInStore.login();
-
-            if (isSuccessful) {
+        useEffect(() => {
+            if (loginStatus === LoadStatus.Ok) {
                 history.push('/');
             }
-        };
+        }, [loginStatus, history]);
 
         return (
             <Mask active={loginStatus === LoadStatus.Loading}>
-                <Form onSubmit={handleSubmit} className="m-t-8">
+                <Form onSubmit={login} className="m-t-8">
                     <Headline el="div" className="m-b-4" size="large">
                         Մուտք գործել
                     </Headline>
