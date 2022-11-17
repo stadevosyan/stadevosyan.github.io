@@ -1,35 +1,34 @@
-import { User } from '../api/auth.api';
-
 import cloneDeep from 'lodash/cloneDeep';
 
 import { getRandomId } from './get-random-id';
+import { UserEntity, UserEntityRole } from '../api/e-library.client';
 
 export const John = {
     id: 1,
-    fullName: 'john',
+    name: 'john',
     email: 'sdfsa@jkhk.com',
     password: 'test',
-    role: 'Admin',
-} as User;
+    role: UserEntityRole.Admin,
+} as UserEntity;
 
 export const Mike = {
     id: 2,
-    fullName: 'mike',
+    name: 'mike',
     email: 'sdfsa@jkhk.com',
     password: 'test',
-    role: 'Admin',
-} as User;
+    role: UserEntityRole.Admin,
+} as UserEntity;
 
 export const Sam = {
     id: 3,
-    fullName: 'sam',
+    name: 'sam',
     email: 'sdfsa@jkhk.com',
     password: 'test',
-    role: 'Student',
-} as User;
+    role: UserEntityRole.User,
+} as UserEntity;
 
 class UserManagementDB {
-    private readonly users: User[];
+    private readonly users: UserEntity[];
 
     constructor() {
         this.users = [John, Mike, Sam];
@@ -43,18 +42,18 @@ class UserManagementDB {
         return cloneDeep(this.users.find(user => user.email === email));
     }
 
-    create(data: User) {
-        const user: User = {
+    create(data: UserEntity) {
+        const user = {
             ...data,
             id: getRandomId(),
-        };
+        } as UserEntity;
 
         this.users.push(user);
 
         return cloneDeep(user);
     }
 
-    update(id: number, changes: Partial<User>) {
+    update(id: number, changes: Partial<UserEntity>) {
         const user = this.getById(id);
 
         if (user) {

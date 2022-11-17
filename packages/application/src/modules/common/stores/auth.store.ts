@@ -1,37 +1,41 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
 
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
-import { AuthApi, LoginRequest, User } from '../api/auth.api';
 import { Storage } from '../utils/storage';
+import { ELibraryApi, LoginUserDto, UserEntity } from '../api/e-library.client';
 
 export const AUTHENTICATED_USER_KEY = 'AuthenticatedUser';
 
 @injectable()
 export class AuthStore {
-    @observable user?: User;
+    @observable user?: UserEntity;
 
     @computed get isAuthenticated() {
         return !!this.user;
     }
 
-    constructor(@inject(AuthApi) private readonly authApi: AuthApi) {
+    constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
         makeObservable(this);
 
         this.setAlreadyAuthenticatedUser();
     }
 
-    async login(request: LoginRequest) {
-        try {
-            const user = (await this.authApi.login(request)).data;
+    async login(user: LoginUserDto) {
+        // TODO: when backend implements return user data, will need to overwrite it
+        const response = await this.api.authController_signInUser(user);
+        console.log({ response });
 
-            runInAction(() => {
-                this.user = user;
-            });
-        } catch {
-            runInAction(() => {
-                this.user = undefined;
-            });
-        }
+        // TODO: might use this usersController_getUserById
+
+        const userEntity = {
+            ...user,
+        } as UserEntity;
+
+        Storage.setItem(AUTHENTICATED_USER_KEY, userEntity);
+
+        runInAction(() => {
+            this.user = userEntity;
+        });
     }
 
     @action logout() {

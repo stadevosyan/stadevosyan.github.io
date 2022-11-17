@@ -3,10 +3,10 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 
 import { BodyText, Page, Stack } from '@servicetitan/design-system';
 
-import * as Styles from './login.module.less';
 import { LogoSection } from './logo-section';
 import { LoginForm } from './login-form';
 import { AuthPaths } from '../../../common/utils/paths';
+import * as Styles from './login.module.less';
 
 export const Login: FC<RouteComponentProps> = () => {
     return (

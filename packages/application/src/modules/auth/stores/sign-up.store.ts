@@ -2,20 +2,26 @@ import { inject, injectable } from '@servicetitan/react-ioc';
 
 import { FormState } from 'formstate';
 import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
-import { AuthApi, UserRole } from '../../common/api/auth.api';
+import { CreateUserDto, ELibraryApi } from '../../common/api/e-library.client';
+import { action, makeObservable, observable } from 'mobx';
+import { LoadStatus } from '../../common/enums/load-status';
 
 @injectable()
-export class RegisterStore {
+export class SignUpStore {
+    @observable registerStatus = LoadStatus.None;
+
     form: FormState<{
-        fullName: InputFieldState<string>;
+        name: InputFieldState<string>;
         password: InputFieldState<string>;
         email: InputFieldState<string>;
-        phone: InputFieldState<string>;
+        phoneNumber: InputFieldState<string>;
     }>;
 
-    constructor(@inject(AuthApi) private readonly authApi: AuthApi) {
+    // ELibraryApi
+    constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
+        makeObservable(this);
         this.form = new FormState({
-            fullName: new InputFieldState('')
+            name: new InputFieldState('')
                 .validators((value: string) => FormValidators.required(value) && 'Դաշտը պարտադիր է')
                 .disableAutoValidation(),
 
@@ -23,7 +29,7 @@ export class RegisterStore {
                 (value: string) =>
                     !FormValidators.emailFormatIsValid(value) && 'Նշեք վավեր էլեկտրոնային հասցե'
             ),
-            phone: new InputFieldState('').validators(
+            phoneNumber: new InputFieldState('').validators(
                 this.phoneValidator('Նշեք վավեր հեռախոսահամար')
             ),
             password: new InputFieldState('')
@@ -45,21 +51,28 @@ export class RegisterStore {
             )(value.trim()) && error;
 
     async register() {
+        this.setRegisterStatus(LoadStatus.Loading);
         const res = await this.form.validate();
         if (res.hasError) {
+            this.setRegisterStatus(LoadStatus.Ok);
             return false;
         }
 
-        const { fullName, phone, password, email } = formStateToJS(this.form);
-        const user = await this.authApi.register({
-            fullName,
-            password,
-            email,
-            phone,
-            id: 0,
-            role: UserRole.Student,
-        });
+        const { name, phoneNumber, password, email } = formStateToJS(this.form);
 
-        return !!user;
+        try {
+            const user = await this.api.authController_signUpUser({
+                name,
+                password,
+                email,
+                phoneNumber,
+            } as CreateUserDto);
+            this.setRegisterStatus(LoadStatus.Ok);
+            return !!user;
+        } catch {
+            this.setRegisterStatus(LoadStatus.Error);
+        }
     }
+
+    @action private setRegisterStatus = (status: LoadStatus) => (this.registerStatus = status);
 }

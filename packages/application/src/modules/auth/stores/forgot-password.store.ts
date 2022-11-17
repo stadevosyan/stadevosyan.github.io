@@ -1,7 +1,7 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
 import { FormState } from 'formstate';
 import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
-import { AuthApi } from '../../common/api/auth.api';
+import { ELibraryApi } from '../../common/api/e-library.client';
 
 @injectable()
 export class ForgotPasswordStore {
@@ -9,7 +9,7 @@ export class ForgotPasswordStore {
         email: InputFieldState<string>;
     }>;
 
-    constructor(@inject(AuthApi) private readonly authApi: AuthApi) {
+    constructor(@inject(ELibraryApi) private readonly authApi: ELibraryApi) {
         this.form = new FormState({
             email: new InputFieldState('').validators(
                 (value: string) =>
@@ -27,8 +27,8 @@ export class ForgotPasswordStore {
         }
 
         const { email } = formStateToJS(this.form);
-        const response = await this.authApi.passwordResetRequest(email);
+        // const response = await this.authApi.passwordResetRequest(email);
 
-        return !!response;
+        return true;
     };
 }

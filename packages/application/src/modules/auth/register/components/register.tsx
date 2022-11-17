@@ -10,15 +10,15 @@ import { BackTo } from '../../components/back-to/back-to';
 import { AuthPaths } from '../../../common/utils/paths';
 import { observer } from 'mobx-react';
 import * as Styles from './register.module.less';
-import { RegisterStore } from '../../stores/register.store';
+import { SignUpStore } from '../../stores/sign-up.store';
 
-export const Register: FC<RouteComponentProps> = provide({ singletons: [RegisterStore] })(
+export const Register: FC<RouteComponentProps> = provide({ singletons: [SignUpStore] })(
     observer(() => {
-        const [registerStore] = useDependencies(RegisterStore);
+        const [registerStore] = useDependencies(SignUpStore);
 
         const {
             form: {
-                $: { fullName, email, password, phone },
+                $: { name, email, password, phoneNumber },
             },
         } = registerStore;
 
@@ -37,10 +37,10 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
                     {/* image upload here*/}
 
                     <Form.Input
-                        label={<Label label="Անուն Ազգանուն" hasError={fullName.hasError} />}
-                        value={fullName.value}
-                        onChange={fullName.onChangeHandler}
-                        error={fullName.error}
+                        label={<Label label="Անուն Ազգանուն" hasError={name.hasError} />}
+                        value={name.value}
+                        onChange={name.onChangeHandler}
+                        error={name.error}
                     />
 
                     <Form.Input
@@ -51,10 +51,10 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
                     />
 
                     <Form.Input
-                        label={<Label label="Հեռախոսահամար" hasError={phone.hasError} />}
-                        value={phone.value}
-                        onChange={phone.onChangeHandler}
-                        error={phone.error}
+                        label={<Label label="Հեռախոսահամար" hasError={phoneNumber.hasError} />}
+                        value={phoneNumber.value}
+                        onChange={phoneNumber.onChangeHandler}
+                        error={phoneNumber.error}
                     />
 
                     <Form.Input
@@ -71,7 +71,7 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [Register
 );
 
 const Footer = () => {
-    const [registerStore] = useDependencies(RegisterStore);
+    const [registerStore] = useDependencies(SignUpStore);
 
     const history = useHistory();
 
