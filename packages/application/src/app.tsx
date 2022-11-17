@@ -15,6 +15,8 @@ import { Account } from './modules/account/components/account';
 import { Contacts } from './modules/contacts/components/contacts';
 
 import * as Styles from './app.module.css';
+import { AuthPaths } from './modules/common/utils/paths';
+import { Logout } from './modules/auth/logout/components/logout';
 
 const isProd = process.env.NODE_ENV === 'production';
 const url = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
@@ -46,6 +48,7 @@ export const App = provide({
                                     <Route path="/book/:id" exact component={BookDetails} />
                                     <Route path="/account" exact component={Account} />
                                     <Route path="/contacts" exact component={Contacts} />
+                                    <Route path={AuthPaths.logout} component={Logout} />
 
                                     <Redirect from="/*" to="/users" />
                                 </Switch>

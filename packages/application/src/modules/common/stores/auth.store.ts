@@ -41,20 +41,20 @@ export class AuthStore {
         });
     };
 
-    @action logout() {
+    @action logout = () => {
         Storage.removeItem(AUTHENTICATED_USER_KEY);
         Storage.removeItem(AUTHENTICATED_USER_TOKEN);
         this.setupOrResetToken();
         this.user = undefined;
-    }
+    };
 
-    @action setAlreadyAuthenticatedUser() {
+    @action setAlreadyAuthenticatedUser = () => {
         const authToken = Storage.getItem(AUTHENTICATED_USER_TOKEN);
         if (authToken) {
             this.setupOrResetToken(authToken);
             this.user = Storage.getItem(AUTHENTICATED_USER_KEY);
         }
-    }
+    };
 
     setupOrResetToken = (token?: string) => {
         axios.interceptors.request.use((params: AxiosRequestConfig) => {
