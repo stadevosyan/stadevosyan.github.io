@@ -34,6 +34,7 @@ export class AuthStore {
 
         Storage.setItem(AUTHENTICATED_USER_KEY, userEntity);
         Storage.setItem(AUTHENTICATED_USER_TOKEN, token);
+        this.setupOrResetToken(token);
 
         runInAction(() => {
             this.user = userEntity;
