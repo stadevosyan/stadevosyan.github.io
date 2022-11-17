@@ -111,6 +111,71 @@ export class ELibraryApi {
         return this.opts.axios.request<void>(options_);
     }
 
+    usersController_getUserById(id: number, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+        let url_ = "/users/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<UserEntity>(options_);
+    }
+
+    usersController_editCategory(id: number, body: EditUserDto, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+        let url_ = "/users/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = body;
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            data: content_,
+            url: url_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<UserEntity>(options_);
+    }
+
+    usersController_deleteCategory(id: number, cancelToken?: CancelToken): AxiosPromise<void> {
+        let url_ = "/users/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.opts.axios.request<void>(options_);
+    }
+
     booksController_addBook(body: CreateBookDto, cancelToken?: CancelToken): AxiosPromise<void> {
         let url_ = "/books";
         url_ = url_.replace(/[?&]$/, "");
@@ -346,6 +411,134 @@ export class LoginUserDto implements ILoginUserDto {
 export interface ILoginUserDto {
     email: string;
     password: string;
+
+    [key: string]: any;
+}
+
+export class UserEntity implements IUserEntity {
+    email!: string;
+    password!: string;
+    name!: string;
+    role!: UserEntityRole;
+    phoneNumber!: string;
+    id!: number;
+    created_at!: Date;
+    updated_at!: Date;
+
+    [key: string]: any;
+
+    constructor(data?: IUserEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.email = _data["email"];
+            this.password = _data["password"];
+            this.name = _data["name"];
+            this.role = _data["role"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.id = _data["id"];
+            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
+            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): UserEntity {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserEntity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["email"] = this.email;
+        data["password"] = this.password;
+        data["name"] = this.name;
+        data["role"] = this.role;
+        data["phoneNumber"] = this.phoneNumber;
+        data["id"] = this.id;
+        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
+        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IUserEntity {
+    email: string;
+    password: string;
+    name: string;
+    role: UserEntityRole;
+    phoneNumber: string;
+    id: number;
+    created_at: Date;
+    updated_at: Date;
+
+    [key: string]: any;
+}
+
+export class EditUserDto implements IEditUserDto {
+    name!: string;
+    phoneNumber!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IEditUserDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.name = _data["name"];
+            this.phoneNumber = _data["phoneNumber"];
+        }
+    }
+
+    static fromJS(data: any): EditUserDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EditUserDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["name"] = this.name;
+        data["phoneNumber"] = this.phoneNumber;
+        return data;
+    }
+}
+
+export interface IEditUserDto {
+    name: string;
+    phoneNumber: string;
 
     [key: string]: any;
 }
@@ -662,4 +855,9 @@ export interface IEditCategoryDto {
     name: string;
 
     [key: string]: any;
+}
+
+export enum UserEntityRole {
+    User = "User",
+    Admin = "Admin",
 }
