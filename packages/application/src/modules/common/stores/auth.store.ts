@@ -24,21 +24,16 @@ export class AuthStore {
     }
 
     login = async (user: LoginUserDto) => {
-        const { data } = await this.api.authController_signInUser(user);
-        const token = data.access_token;
+        const { data: tokenData } = await this.api.authController_signInUser(user);
+        const token = tokenData.access_token;
 
         // TODO: might use this usersController_getUserById
-        const userEntity = {
-            ...user,
-        } as UserEntity;
-
-        Storage.setItem(AUTHENTICATED_USER_KEY, userEntity);
         Storage.setItem(AUTHENTICATED_USER_TOKEN, token);
         this.setupOrResetToken(token);
 
-        runInAction(() => {
-            this.user = userEntity;
-        });
+        const { data: userData } = await this.api.usersController_getMyProfile();
+        runInAction(() => (this.user = userData));
+        Storage.setItem(AUTHENTICATED_USER_KEY, userData);
     };
 
     @action logout = () => {

@@ -62,6 +62,7 @@ export class SignInStore {
 
         try {
             await this.authStore.login(user);
+
             this.setLoginStatus(LoadStatus.Ok);
         } catch (e) {
             this.setLoginStatus(LoadStatus.Error);

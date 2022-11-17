@@ -12,8 +12,12 @@ import { FC, useCallback } from 'react';
 import { Link, matchPath, useHistory } from 'react-router-dom';
 
 import * as Styles from './main-wrapper.module.less';
+import { useDependencies } from '@servicetitan/react-ioc';
+import { AuthStore } from '../../stores/auth.store';
+import { observer } from 'mobx-react';
 
-export const MainWrapper: FC = ({ children }) => {
+export const MainWrapper: FC = observer(({ children }) => {
+    const [{ user }] = useDependencies(AuthStore);
     const history = useHistory();
 
     const isActive = useCallback(
@@ -36,7 +40,7 @@ export const MainWrapper: FC = ({ children }) => {
                         <Stack justifyContent="center" alignItems="center">
                             <Avatar name="ԹՀ" autoColor />
                             <BodyText className="p-l-1 t-truncate" size="medium">
-                                Թամարա Հարությունյան
+                                {user?.name}
                             </BodyText>
                         </Stack>
                     </Stack>
@@ -78,4 +82,4 @@ export const MainWrapper: FC = ({ children }) => {
             <Layout>{children}</Layout>
         </Page>
     );
-};
+});

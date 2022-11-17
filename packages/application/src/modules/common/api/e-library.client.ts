@@ -110,6 +110,24 @@ export class ELibraryApi {
         return this.opts.axios.request<GetUsersResponseDto>(options_);
     }
 
+    usersController_getMyProfile(cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+        let url_ = "/users/profile";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<UserEntity>(options_);
+    }
+
     usersController_getUserById(id: number, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
         let url_ = "/users/{id}";
         if (id === undefined || id === null)
