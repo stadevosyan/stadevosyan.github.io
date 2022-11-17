@@ -9,7 +9,7 @@ export class ForgotPasswordStore {
         email: InputFieldState<string>;
     }>;
 
-    constructor(@inject(ELibraryApi) private readonly authApi: ELibraryApi) {
+    constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
         this.form = new FormState({
             email: new InputFieldState('').validators(
                 (value: string) =>
@@ -29,6 +29,6 @@ export class ForgotPasswordStore {
         const { email } = formStateToJS(this.form);
         // const response = await this.authApi.passwordResetRequest(email);
 
-        return true;
+        return !!email;
     };
 }

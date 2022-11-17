@@ -29,7 +29,7 @@ export class SignInStore {
         const {
             $: { email, password },
         } = this.form;
-        return email.dirty || password.dirty;
+        return !!email.dirty || password.dirty;
     }
 
     constructor(

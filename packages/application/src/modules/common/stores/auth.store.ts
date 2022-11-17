@@ -22,9 +22,8 @@ export class AuthStore {
 
     async login(user: LoginUserDto) {
         // TODO: when backend implements return user data, will need to overwrite it
-        const response = await this.api.authController_signInUser(user);
-        console.log({ response });
-
+        const abc = await this.api.authController_signInUser(user);
+        console.log({abc})
         // TODO: might use this usersController_getUserById
 
         const userEntity = {
