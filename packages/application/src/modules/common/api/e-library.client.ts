@@ -128,6 +128,27 @@ export class ELibraryApi {
         return this.opts.axios.request<UserEntity>(options_);
     }
 
+    usersController_editMyProfile(body: EditUserDto, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+        let url_ = "/users/profile";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = body;
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            data: content_,
+            url: url_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<UserEntity>(options_);
+    }
+
     usersController_getUserById(id: number, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
         let url_ = "/users/{id}";
         if (id === undefined || id === null)
@@ -211,6 +232,52 @@ export class ELibraryApi {
         };
 
         return this.opts.axios.request<void>(options_);
+    }
+
+    booksController_getBooks(title: string | undefined, cancelToken?: CancelToken): AxiosPromise<GetBooksResponseDto> {
+        let url_ = "/books?";
+        if (title === null)
+            throw new Error("The parameter 'title' cannot be null.");
+        else if (title !== undefined)
+            url_ += "title=" + encodeURIComponent("" + title) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<GetBooksResponseDto>(options_);
+    }
+
+    booksController_editCategory(id: number, body: EditBookDto, cancelToken?: CancelToken): AxiosPromise<BookEntity> {
+        let url_ = "/books/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = body;
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            data: content_,
+            url: url_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<BookEntity>(options_);
     }
 
     categoryController_addCategory(body: CreateCategoryDto, cancelToken?: CancelToken): AxiosPromise<void> {
@@ -318,6 +385,30 @@ export class ELibraryApi {
 
         return this.opts.axios.request<void>(options_);
     }
+
+    /**
+     * @body file to upload
+     */
+    uploadController_uploadFile(body: Blob, cancelToken?: CancelToken): AxiosPromise<FileUploadResponseDto> {
+        let url_ = "/upload";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = body;
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            data: content_,
+            url: url_,
+            method: "POST",
+            headers: {
+                "Content-Type": "multipart/form-data",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<FileUploadResponseDto>(options_);
+    }
 }
 
 export class CreateUserDto implements ICreateUserDto {
@@ -325,6 +416,7 @@ export class CreateUserDto implements ICreateUserDto {
     password!: string;
     name!: string;
     phoneNumber!: string;
+    profilePictureUrl!: string;
 
     [key: string]: any;
 
@@ -347,6 +439,7 @@ export class CreateUserDto implements ICreateUserDto {
             this.password = _data["password"];
             this.name = _data["name"];
             this.phoneNumber = _data["phoneNumber"];
+            this.profilePictureUrl = _data["profilePictureUrl"];
         }
     }
 
@@ -367,6 +460,7 @@ export class CreateUserDto implements ICreateUserDto {
         data["password"] = this.password;
         data["name"] = this.name;
         data["phoneNumber"] = this.phoneNumber;
+        data["profilePictureUrl"] = this.profilePictureUrl;
         return data;
     }
 }
@@ -376,6 +470,7 @@ export interface ICreateUserDto {
     password: string;
     name: string;
     phoneNumber: string;
+    profilePictureUrl: string;
 
     [key: string]: any;
 }
@@ -490,6 +585,7 @@ export class UserEntity implements IUserEntity {
     name!: string;
     role!: UserEntityRole;
     phoneNumber!: string;
+    profilePictureUrl!: string;
     id!: number;
     created_at!: Date;
     updated_at!: Date;
@@ -516,6 +612,7 @@ export class UserEntity implements IUserEntity {
             this.name = _data["name"];
             this.role = _data["role"];
             this.phoneNumber = _data["phoneNumber"];
+            this.profilePictureUrl = _data["profilePictureUrl"];
             this.id = _data["id"];
             this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
             this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
@@ -540,6 +637,7 @@ export class UserEntity implements IUserEntity {
         data["name"] = this.name;
         data["role"] = this.role;
         data["phoneNumber"] = this.phoneNumber;
+        data["profilePictureUrl"] = this.profilePictureUrl;
         data["id"] = this.id;
         data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
         data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
@@ -553,6 +651,7 @@ export interface IUserEntity {
     name: string;
     role: UserEntityRole;
     phoneNumber: string;
+    profilePictureUrl: string;
     id: number;
     created_at: Date;
     updated_at: Date;
@@ -625,6 +724,7 @@ export interface IGetUsersResponseDto {
 
 export class EditUserDto implements IEditUserDto {
     name!: string;
+    profilePictureUrl!: string;
     phoneNumber!: string;
 
     [key: string]: any;
@@ -645,6 +745,7 @@ export class EditUserDto implements IEditUserDto {
                     this[property] = _data[property];
             }
             this.name = _data["name"];
+            this.profilePictureUrl = _data["profilePictureUrl"];
             this.phoneNumber = _data["phoneNumber"];
         }
     }
@@ -663,6 +764,7 @@ export class EditUserDto implements IEditUserDto {
                 data[property] = this[property];
         }
         data["name"] = this.name;
+        data["profilePictureUrl"] = this.profilePictureUrl;
         data["phoneNumber"] = this.phoneNumber;
         return data;
     }
@@ -670,6 +772,7 @@ export class EditUserDto implements IEditUserDto {
 
 export interface IEditUserDto {
     name: string;
+    profilePictureUrl: string;
     phoneNumber: string;
 
     [key: string]: any;
@@ -679,7 +782,8 @@ export class CreateBookDto implements ICreateBookDto {
     title!: string;
     description!: string;
     author!: string;
-    categoryId!: string;
+    categoryIds!: number[];
+    pictureUrl!: string;
 
     [key: string]: any;
 
@@ -689,6 +793,9 @@ export class CreateBookDto implements ICreateBookDto {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
+        }
+        if (!data) {
+            this.categoryIds = [];
         }
     }
 
@@ -701,7 +808,12 @@ export class CreateBookDto implements ICreateBookDto {
             this.title = _data["title"];
             this.description = _data["description"];
             this.author = _data["author"];
-            this.categoryId = _data["categoryId"];
+            if (Array.isArray(_data["categoryIds"])) {
+                this.categoryIds = [] as any;
+                for (let item of _data["categoryIds"])
+                    this.categoryIds!.push(item);
+            }
+            this.pictureUrl = _data["pictureUrl"];
         }
     }
 
@@ -721,7 +833,12 @@ export class CreateBookDto implements ICreateBookDto {
         data["title"] = this.title;
         data["description"] = this.description;
         data["author"] = this.author;
-        data["categoryId"] = this.categoryId;
+        if (Array.isArray(this.categoryIds)) {
+            data["categoryIds"] = [];
+            for (let item of this.categoryIds)
+                data["categoryIds"].push(item);
+        }
+        data["pictureUrl"] = this.pictureUrl;
         return data;
     }
 }
@@ -730,7 +847,301 @@ export interface ICreateBookDto {
     title: string;
     description: string;
     author: string;
-    categoryId: string;
+    categoryIds: number[];
+    pictureUrl: string;
+
+    [key: string]: any;
+}
+
+export class EditBookDto implements IEditBookDto {
+    title!: string;
+    description!: string;
+    author!: string;
+    categoryIds!: number[];
+    pictureUrl!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IEditBookDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.categoryIds = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.author = _data["author"];
+            if (Array.isArray(_data["categoryIds"])) {
+                this.categoryIds = [] as any;
+                for (let item of _data["categoryIds"])
+                    this.categoryIds!.push(item);
+            }
+            this.pictureUrl = _data["pictureUrl"];
+        }
+    }
+
+    static fromJS(data: any): EditBookDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EditBookDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["author"] = this.author;
+        if (Array.isArray(this.categoryIds)) {
+            data["categoryIds"] = [];
+            for (let item of this.categoryIds)
+                data["categoryIds"].push(item);
+        }
+        data["pictureUrl"] = this.pictureUrl;
+        return data;
+    }
+}
+
+export interface IEditBookDto {
+    title: string;
+    description: string;
+    author: string;
+    categoryIds: number[];
+    pictureUrl: string;
+
+    [key: string]: any;
+}
+
+export class CategoryEntity implements ICategoryEntity {
+    name!: string;
+    id!: number;
+    created_at!: Date;
+    updated_at!: Date;
+
+    [key: string]: any;
+
+    constructor(data?: ICategoryEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.name = _data["name"];
+            this.id = _data["id"];
+            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
+            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): CategoryEntity {
+        data = typeof data === 'object' ? data : {};
+        let result = new CategoryEntity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["name"] = this.name;
+        data["id"] = this.id;
+        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
+        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ICategoryEntity {
+    name: string;
+    id: number;
+    created_at: Date;
+    updated_at: Date;
+
+    [key: string]: any;
+}
+
+export class BookEntity implements IBookEntity {
+    title!: string;
+    description!: string;
+    author!: string;
+    count!: number;
+    pictureUrl!: string;
+    holdCount!: number;
+    categories!: CategoryEntity[];
+    id!: number;
+    created_at!: Date;
+    updated_at!: Date;
+
+    [key: string]: any;
+
+    constructor(data?: IBookEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.categories = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.author = _data["author"];
+            this.count = _data["count"];
+            this.pictureUrl = _data["pictureUrl"];
+            this.holdCount = _data["holdCount"];
+            if (Array.isArray(_data["categories"])) {
+                this.categories = [] as any;
+                for (let item of _data["categories"])
+                    this.categories!.push(CategoryEntity.fromJS(item));
+            }
+            this.id = _data["id"];
+            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
+            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): BookEntity {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookEntity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["author"] = this.author;
+        data["count"] = this.count;
+        data["pictureUrl"] = this.pictureUrl;
+        data["holdCount"] = this.holdCount;
+        if (Array.isArray(this.categories)) {
+            data["categories"] = [];
+            for (let item of this.categories)
+                data["categories"].push(item.toJSON());
+        }
+        data["id"] = this.id;
+        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
+        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IBookEntity {
+    title: string;
+    description: string;
+    author: string;
+    count: number;
+    pictureUrl: string;
+    holdCount: number;
+    categories: CategoryEntity[];
+    id: number;
+    created_at: Date;
+    updated_at: Date;
+
+    [key: string]: any;
+}
+
+export class GetBooksResponseDto implements IGetBooksResponseDto {
+    data!: BookEntity[];
+    count!: number;
+
+    [key: string]: any;
+
+    constructor(data?: IGetBooksResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.data = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(BookEntity.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): GetBooksResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetBooksResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IGetBooksResponseDto {
+    data: BookEntity[];
+    count: number;
 
     [key: string]: any;
 }
@@ -783,164 +1194,6 @@ export interface ICreateCategoryDto {
     [key: string]: any;
 }
 
-export class CategoryEntity implements ICategoryEntity {
-    name!: string;
-    books!: BookEntity[];
-    id!: number;
-    created_at!: Date;
-    updated_at!: Date;
-
-    [key: string]: any;
-
-    constructor(data?: ICategoryEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.books = [];
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.name = _data["name"];
-            if (Array.isArray(_data["books"])) {
-                this.books = [] as any;
-                for (let item of _data["books"])
-                    this.books!.push(BookEntity.fromJS(item));
-            }
-            this.id = _data["id"];
-            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
-            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): CategoryEntity {
-        data = typeof data === 'object' ? data : {};
-        let result = new CategoryEntity();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["name"] = this.name;
-        if (Array.isArray(this.books)) {
-            data["books"] = [];
-            for (let item of this.books)
-                data["books"].push(item.toJSON());
-        }
-        data["id"] = this.id;
-        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
-        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ICategoryEntity {
-    name: string;
-    books: BookEntity[];
-    id: number;
-    created_at: Date;
-    updated_at: Date;
-
-    [key: string]: any;
-}
-
-export class BookEntity implements IBookEntity {
-    title!: string;
-    description!: string;
-    author!: string;
-    count!: number;
-    holdCount!: number;
-    category!: CategoryEntity;
-    id!: number;
-    created_at!: Date;
-    updated_at!: Date;
-
-    [key: string]: any;
-
-    constructor(data?: IBookEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.category = new CategoryEntity();
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.author = _data["author"];
-            this.count = _data["count"];
-            this.holdCount = _data["holdCount"];
-            this.category = _data["category"] ? CategoryEntity.fromJS(_data["category"]) : new CategoryEntity();
-            this.id = _data["id"];
-            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
-            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): BookEntity {
-        data = typeof data === 'object' ? data : {};
-        let result = new BookEntity();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["author"] = this.author;
-        data["count"] = this.count;
-        data["holdCount"] = this.holdCount;
-        data["category"] = this.category ? this.category.toJSON() : <any>undefined;
-        data["id"] = this.id;
-        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
-        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IBookEntity {
-    title: string;
-    description: string;
-    author: string;
-    count: number;
-    holdCount: number;
-    category: CategoryEntity;
-    id: number;
-    created_at: Date;
-    updated_at: Date;
-
-    [key: string]: any;
-}
-
 export class EditCategoryDto implements IEditCategoryDto {
     name!: string;
 
@@ -985,6 +1238,106 @@ export class EditCategoryDto implements IEditCategoryDto {
 
 export interface IEditCategoryDto {
     name: string;
+
+    [key: string]: any;
+}
+
+export class FileUploadDto implements IFileUploadDto {
+    file!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IFileUploadDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.file = _data["file"];
+        }
+    }
+
+    static fromJS(data: any): FileUploadDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FileUploadDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["file"] = this.file;
+        return data;
+    }
+}
+
+export interface IFileUploadDto {
+    file: string;
+
+    [key: string]: any;
+}
+
+export class FileUploadResponseDto implements IFileUploadResponseDto {
+    filename!: string;
+    url!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IFileUploadResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.filename = _data["filename"];
+            this.url = _data["url"];
+        }
+    }
+
+    static fromJS(data: any): FileUploadResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new FileUploadResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["filename"] = this.filename;
+        data["url"] = this.url;
+        return data;
+    }
+}
+
+export interface IFileUploadResponseDto {
+    filename: string;
+    url: string;
 
     [key: string]: any;
 }
