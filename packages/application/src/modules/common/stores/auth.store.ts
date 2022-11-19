@@ -16,6 +16,18 @@ export class AuthStore {
         return !!this.user;
     }
 
+    @computed get isAdmin() {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return this.user?.role === 0;
+    }
+
+    @computed get isUser() {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        return this.user?.role === 1;
+    }
+
     constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
         makeObservable(this);
 
@@ -47,7 +59,7 @@ export class AuthStore {
         const authToken = Storage.getItem(AUTHENTICATED_USER_TOKEN);
         if (authToken) {
             this.setupOrResetToken(authToken);
-            this.user = Storage.getItem(AUTHENTICATED_USER_KEY);
+            this.user = JSON.parse(Storage.getItem(AUTHENTICATED_USER_KEY));
         }
     };
 

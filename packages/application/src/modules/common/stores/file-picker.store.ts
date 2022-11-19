@@ -1,6 +1,8 @@
-import { injectable } from '@servicetitan/react-ioc';
+import { inject, injectable } from '@servicetitan/react-ioc';
 import { makeObservable, observable, runInAction, action, computed } from 'mobx';
 import download from 'downloadjs';
+
+import { ELibraryApi } from '../api/e-library.client';
 
 export interface FileParameter {
     data: any;
@@ -30,7 +32,7 @@ export class FilePickerStore {
             : this.savedImageUrl;
     }
 
-    constructor() {
+    constructor(@inject(ELibraryApi) private api: ELibraryApi) {
         makeObservable(this);
     }
 
