@@ -59,7 +59,7 @@ export class AuthStore {
         const authToken = Storage.getItem(AUTHENTICATED_USER_TOKEN);
         if (authToken) {
             this.setupOrResetToken(authToken);
-            this.user = JSON.parse(Storage.getItem(AUTHENTICATED_USER_KEY));
+            this.user = Storage.getItem(AUTHENTICATED_USER_KEY);
         }
     };
 
