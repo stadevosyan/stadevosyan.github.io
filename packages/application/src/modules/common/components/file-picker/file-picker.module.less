@@ -3,9 +3,8 @@
 .logo-card {
     position: relative;
     box-sizing: border-box;
-    width: 160px;
-    height: 200px;
-    //padding: @spacing-1;
+    width: 185px;
+    height: 232px;
 
     .logo-action {
         position: absolute;
@@ -21,5 +20,16 @@
     img {
         width: 100%;
         height: auto;
+    }
+
+    :global(.CardSection) {
+        padding: 0 !important;
+        border: none;
+        height: 100%;
+    }
+
+    .logo-container {
+        height: 100%;
+        padding: 0 @spacing-1 !important;
     }
 }

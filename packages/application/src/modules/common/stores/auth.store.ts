@@ -11,6 +11,7 @@ export const AUTHENTICATED_USER_TOKEN = 'AuthToken';
 @injectable()
 export class AuthStore {
     @observable user?: UserEntity;
+    storedInterceptor?: number;
 
     @computed get isAuthenticated() {
         return !!this.user;
@@ -27,42 +28,49 @@ export class AuthStore {
         const { data: tokenData } = await this.api.authController_signInUser(user);
         const token = tokenData.access_token;
 
-        // TODO: might use this usersController_getUserById
-        Storage.setItem(AUTHENTICATED_USER_TOKEN, token);
-        this.setupOrResetToken(token);
-
-        const { data: userData } = await this.api.usersController_getMyProfile();
-        runInAction(() => (this.user = userData));
-        Storage.setItem(AUTHENTICATED_USER_KEY, userData);
+        try {
+            this.setupToken(token);
+            const { data: userData } = await this.api.usersController_getMyProfile();
+            runInAction(() => (this.user = userData));
+            Storage.setItem(AUTHENTICATED_USER_TOKEN, token);
+            Storage.setItem(AUTHENTICATED_USER_KEY, userData);
+        } catch (e) {
+            this.resetToken();
+            throw e;
+        }
     };
 
     @action logout = () => {
         Storage.removeItem(AUTHENTICATED_USER_KEY);
         Storage.removeItem(AUTHENTICATED_USER_TOKEN);
-        this.setupOrResetToken();
+        this.resetToken();
         this.user = undefined;
     };
 
     @action setAlreadyAuthenticatedUser = () => {
         const authToken = Storage.getItem(AUTHENTICATED_USER_TOKEN);
-        if (authToken) {
-            this.setupOrResetToken(authToken);
-            this.user = Storage.getItem(AUTHENTICATED_USER_KEY);
+        const user = Storage.getItem(AUTHENTICATED_USER_KEY);
+        if (authToken && user) {
+            this.setupToken(authToken);
+            this.user = user;
         }
     };
 
-    setupOrResetToken = (token?: string) => {
-        axios.interceptors.request.use((params: AxiosRequestConfig) => {
+    setupToken = (token: string) => {
+        this.storedInterceptor = axios.interceptors.request.use((params: AxiosRequestConfig) => {
             if (params.headers) {
-                if (token) {
-                    params.headers.Authorization = `Bearer ${token}`;
-                } else {
-                    params.headers.Authorization = '';
-                }
+                params.headers.Authorization = `Bearer ${token}`;
             }
 
             return params;
         });
+    };
+
+    resetToken = () => {
+        if (this.storedInterceptor) {
+            axios.interceptors.request.eject(this.storedInterceptor);
+            this.storedInterceptor = undefined;
+        }
     };
 
     handle401 = () => {

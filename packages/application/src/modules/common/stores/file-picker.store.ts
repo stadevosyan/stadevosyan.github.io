@@ -1,6 +1,9 @@
-import { injectable } from '@servicetitan/react-ioc';
-import { makeObservable, observable, runInAction, action, computed } from 'mobx';
+import { inject, injectable } from '@servicetitan/react-ioc';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import download from 'downloadjs';
+import { ELibraryApi } from '../api/e-library.client';
+import { LoadStatus } from '../enums/load-status';
+import { baseUrl } from '../../../app';
 
 export interface FileParameter {
     data: any;
@@ -14,62 +17,50 @@ interface Size {
 
 @injectable()
 export class FilePickerStore {
-    @observable savedImageUrl?: string;
+    // added to filepicker
     @observable imageToUpload?: FileParameter;
-    @observable loaded = false;
-    @observable recommendLargerImage = false;
+    // valid image url received from BE
+    @observable imageSentToBE?: string;
+    // received from filepicker by prop
+    @observable savedImageUrl?: string;
+
+    @observable imageDeleted = false;
     @observable error?: string;
-    @observable private imageDeleted = false;
-    private integrationId?: number;
+    @observable fileUploadStatus = LoadStatus.None;
 
     @computed get imageUrl() {
         return this.imageToUpload
             ? URL.createObjectURL(this.imageToUpload.data)
-            : this.imageDeleted
-            ? undefined
-            : this.savedImageUrl;
+            : this.imageSentToBE ?? this.imageDeleted
+            ? this.savedImageUrl
+            : undefined;
     }
 
-    constructor() {
+    constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
         makeObservable(this);
     }
 
-    @action init = (integrationId?: number, logoUrl?: string) => {
-        this.integrationId = integrationId;
-        this.savedImageUrl = logoUrl;
-    };
-
-    @action reset = (integrationId?: number, logoUrl?: string) => {
-        this.init(integrationId, logoUrl);
-        this.imageToUpload = undefined;
-        this.loaded = false;
-        this.recommendLargerImage = false;
-        this.error = undefined;
-        this.imageDeleted = false;
-    };
-
-    @action setImageUrl = async (imageUrl: string) => {
-        this.savedImageUrl = imageUrl;
-        this.imageDeleted = false;
-        await this.verifyImageSize();
-    };
+    @action setSavedImageUrl = (imageUrl: string) => (this.savedImageUrl = imageUrl);
 
     @action deleteImage = () => {
-        this.imageDeleted = true;
+        this.imageSentToBE = undefined;
         this.imageToUpload = undefined;
-        this.recommendLargerImage = false;
+        this.error = undefined;
+        this.imageDeleted = true;
     };
 
     @action cancel = () => {
+        this.imageSentToBE = undefined;
         this.imageToUpload = undefined;
         this.imageDeleted = false;
+        this.error = undefined;
     };
 
-    @action download = () => {
+    @action downloadImage = () => {
         const result: any = Promise.resolve({});
         const extension = result.headers['content-type'] === 'image/png' ? 'png' : 'jpeg';
         if (result.data) {
-            download(result.data, `logo.${extension}`, `image/${extension}`);
+            download(result.data, `image.${extension}`, `image/${extension}`);
         }
     };
 
@@ -81,19 +72,6 @@ export class FilePickerStore {
         await this.addNewFile(file);
     };
 
-    @action uploadFile = async () => {
-        if (this.imageToUpload) {
-            try {
-                const result: any = Promise.resolve({});
-                await this.setImageUrl(result.data);
-            } finally {
-                runInAction(() => {
-                    this.imageToUpload = undefined;
-                });
-            }
-        }
-    };
-
     @action replaceFile = async (newFile: File) => {
         const file: FileParameter = {
             data: newFile,
@@ -102,24 +80,43 @@ export class FilePickerStore {
         await this.addNewFile(file);
     };
 
-    @action private addNewFile = async (file: FileParameter) => {
+    @action setFileUploadStatus = (status: LoadStatus) => (this.fileUploadStatus = status);
+
+    private addNewFile = async (file: FileParameter) => {
         this.imageToUpload = file;
-        await this.verifyImageSize();
+        const isValid = await this.verifyImageSize();
+        if (isValid) {
+            this.setFileUploadStatus(LoadStatus.Loading);
+            const fileForm = new FormData();
+            fileForm.append('file', file.data);
+
+            try {
+                const { data } = await this.api.uploadController_uploadFile(fileForm);
+                runInAction(() => {
+                    this.imageSentToBE = `${baseUrl}${data.url}`;
+                });
+                this.setFileUploadStatus(LoadStatus.Ok);
+            } catch {
+                this.setFileUploadStatus(LoadStatus.Error);
+            }
+        }
     };
 
     @action private async verifyImageSize() {
-        this.loaded = false;
         const size = await this.getImageSize(this.imageUrl!);
         runInAction(() => {
             if (size) {
                 const MIN_SIZE = 180;
-                this.recommendLargerImage = size.height < MIN_SIZE || size.width < MIN_SIZE;
-                this.error = undefined;
+                if (size.height < MIN_SIZE || size.width < MIN_SIZE) {
+                    this.error = 'Please use an image that is at least 180x180px in size.';
+                } else {
+                    this.error = undefined;
+                }
             } else {
                 this.error = 'File is not a valid image';
             }
-            this.loaded = true;
         });
+        return !this.error;
     }
 
     private getImageSize = (url: string) => {

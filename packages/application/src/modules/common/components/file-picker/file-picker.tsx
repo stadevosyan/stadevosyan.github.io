@@ -9,7 +9,7 @@ import {
     Stack,
 } from '@servicetitan/design-system';
 import { useDependencies } from '@servicetitan/react-ioc';
-import { ChangeEvent, FC, useRef } from 'react';
+import { ChangeEvent, FC, useEffect, useRef } from 'react';
 
 import { FilePickerStore } from '../../stores/file-picker.store';
 
@@ -21,18 +21,26 @@ interface ButtonProps {
 }
 
 interface FilePickerProps {
+    imageUrlParam?: string;
     buttonProps: ButtonProps;
     className?: string;
-    replaceable?: boolean;
-    deletable?: boolean;
     downloadable?: boolean;
-    fieldError?: string;
-    banner?: boolean;
 }
 
 export const FilePicker: FC<FilePickerProps> = observer(
-    ({ buttonProps, fieldError, banner, replaceable, deletable, downloadable, className = '' }) => {
-        const [fileStore] = useDependencies(FilePickerStore);
+    ({ buttonProps, className = '', imageUrlParam, downloadable }) => {
+        const [
+            {
+                replaceFile,
+                setSavedImageUrl,
+                error,
+                imageUrl,
+                selectFile,
+                downloadImage,
+                deleteImage,
+                imageToUpload,
+            },
+        ] = useDependencies(FilePickerStore);
         const fileRef = useRef<HTMLInputElement>(null);
         const { buttonLabel, typesNote } = buttonProps;
         const handleClick = () => fileRef.current?.click();
@@ -41,30 +49,37 @@ export const FilePicker: FC<FilePickerProps> = observer(
             if (!newFile) {
                 return;
             }
-            await fileStore.replaceFile(newFile);
+            await replaceFile(newFile);
         };
 
-        const error = fieldError ?? fileStore.error;
+        useEffect(() => {
+            if (imageUrlParam) {
+                setSavedImageUrl(imageUrlParam);
+            }
+        }, [imageUrlParam, setSavedImageUrl]);
 
         return (
             <Stack className={className}>
                 {/* <Label required>Logo</Label>*/}
                 {!!error && <Banner status="critical" title={error} icon className="m-y-2" />}
-                {!fileStore.imageUrl ? (
+                {!imageUrl ? (
                     <Picker
                         buttonLabel={buttonLabel}
                         buttonProps={{ iconName: 'add_a_photo' }}
-                        onSelected={fileStore.selectFile}
+                        onSelected={selectFile}
                         accept="image/png, image/jpeg, .svg"
                         typesNote={typesNote}
                     />
                 ) : (
                     <Card raised padding="thin" className={Styles.logoCard}>
-                        {/* <Card.Section>*/}
-                        <img src={fileStore.imageUrl} alt="cover" />
-                        <div className={Styles.logoAction}>
-                            <ButtonGroup>
-                                {replaceable && (
+                        <Stack
+                            direction="column"
+                            justifyContent="center"
+                            className={Styles.logoContainer}
+                        >
+                            <img src={imageUrl} alt="cover" />
+                            <div className={Styles.logoAction}>
+                                <ButtonGroup>
                                     <Tooltip el="div" text="Փոխել">
                                         <Button
                                             outline
@@ -80,58 +95,29 @@ export const FilePicker: FC<FilePickerProps> = observer(
                                             onChange={handleReplace}
                                         />
                                     </Tooltip>
-                                )}
-                                {downloadable && (
-                                    <Tooltip el="div" text="Ներբերել">
-                                        <Button
-                                            outline
-                                            iconName="file_download"
-                                            onClick={fileStore.download}
-                                            disabled={fileStore.imageToUpload !== undefined}
-                                            className="shadow-1-i bg-white-i"
-                                        />
-                                    </Tooltip>
-                                )}
-                                {deletable && (
+                                    {downloadable && (
+                                        <Tooltip el="div" text="Ներբերել">
+                                            <Button
+                                                outline
+                                                iconName="file_download"
+                                                onClick={downloadImage}
+                                                disabled={imageToUpload !== undefined}
+                                                className="shadow-1-i bg-white-i"
+                                            />
+                                        </Tooltip>
+                                    )}
                                     <Tooltip el="div" text="հեռացնել">
                                         <Button
                                             outline
                                             iconName="delete"
-                                            onClick={fileStore.deleteImage}
+                                            onClick={deleteImage}
                                             className="shadow-1-i bg-white-i"
                                         />
                                     </Tooltip>
-                                )}
-                            </ButtonGroup>
-                        </div>
-                        {/* </Card.Section>*/}
+                                </ButtonGroup>
+                            </div>
+                        </Stack>
                     </Card>
-                )}
-                {fileStore.recommendLargerImage && banner && (
-                    <Banner
-                        status="warning"
-                        icon
-                        title="We strongly recommend using a logo that is at least 180x180px in size. Using a lower-resolution image may result in logo pixelation in your templates."
-                        className="m-t-2"
-                    />
-                )}
-                {(!fileStore.imageUrl || fileStore.recommendLargerImage) && banner && (
-                    <Banner icon title="Tips on Uploading Your Logo:" className="m-t-2">
-                        <ul>
-                            <li>
-                                PNGs with a transparent background work best, but aren't required.
-                            </li>
-                            <li>
-                                Don't know where your logo is? Your social media profile would be a
-                                good place to look.
-                            </li>
-                            <li>Use a logo that is at least 180x180px in size.</li>
-                            <li>
-                                Avoid using a screenshot of your logo, right click and “save as” if
-                                you're pulling it from somewhere else.
-                            </li>
-                        </ul>
-                    </Banner>
                 )}
             </Stack>
         );
