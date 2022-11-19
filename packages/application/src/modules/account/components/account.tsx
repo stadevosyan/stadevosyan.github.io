@@ -7,12 +7,6 @@ import { Label } from '@servicetitan/form';
 import { AccountStore } from '../stores/account.store';
 import * as Styles from './account.module.less';
 
-/*
- * Footer
- * Modal
- * Image upload
- */
-
 export const Account = provide({
     singletons: [FilePickerStore, AccountStore],
 })(
