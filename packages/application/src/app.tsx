@@ -21,6 +21,8 @@ import { Logout } from './modules/auth/logout/components/logout';
 const isProd = process.env.NODE_ENV === 'production';
 export const baseUrl = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
 
+// SamSam1234
+
 export const App = provide({
     singletons: [
         ELibraryApi,

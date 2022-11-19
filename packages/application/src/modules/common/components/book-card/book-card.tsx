@@ -1,12 +1,13 @@
-import { BodyText, Card, Headline, Stack, Tag } from '@servicetitan/design-system';
 import { FC } from 'react';
+import { BodyText, Card, Headline, Stack, Tag } from '@servicetitan/design-system';
+import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
 
 enum Status {
     Avilable,
     Unavilable,
 }
 
-interface BookCardProps {
+export interface BookCardProps {
     id?: number;
     name?: string;
     author?: string;
@@ -31,14 +32,18 @@ export const BookCard: FC<BookCardProps> = props => {
                 }}
             >
                 <Stack justifyContent="center" style={{ height: 224 }}>
-                    <img
-                        src="https://edit.org/photos/img/blog/d3s-design-book-covers.jpg-840.jpg"
-                        style={{
-                            height: 'auto',
-                            display: 'block',
-                            maxWidth: '100%',
-                        }}
-                    />
+                    {Math.random() > 0.3 ? (
+                        <img
+                            src="https://edit.org/photos/img/blog/d3s-design-book-covers.jpg-840.jpg"
+                            style={{
+                                height: 'auto',
+                                display: 'block',
+                                maxWidth: '100%',
+                            }}
+                        />
+                    ) : (
+                        <ImagePlaceholder width={197} height={225} />
+                    )}
                 </Stack>
             </Card.Section>
 
