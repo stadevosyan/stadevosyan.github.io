@@ -3,5 +3,14 @@
 .main-root {
     :global(.Page__page) {
         padding: @spacing-0 !important;
+        :global(.Page__content) {
+            height: 100%;
+            :global(.Layout) {
+                height: 100%;
+                :global(.Layout__section) {
+                    height: 100%;
+                }
+            }
+        }
     }
 }

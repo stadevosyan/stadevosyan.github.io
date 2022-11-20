@@ -6,8 +6,8 @@ export const BookSummary = () => {
         <Stack className="p-y-3" direction="column">
             <Form.Group className="align-items-stretch">
                 <FilePicker
-                    replaceable
                     className="p-l-2"
+                    downloadable
                     buttonProps={{
                         buttonLabel: 'Կցել գրքի լուսանկարը',
                         typesNote: 'Թույլատրված ֆայլերի տեսակները: jpeg, png, jpg, svg',

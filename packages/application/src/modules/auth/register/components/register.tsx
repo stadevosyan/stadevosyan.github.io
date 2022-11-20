@@ -11,10 +11,14 @@ import { AuthPaths } from '../../../common/utils/paths';
 import { observer } from 'mobx-react';
 import * as Styles from './register.module.less';
 import { SignUpStore } from '../../stores/sign-up.store';
+import { FilePickerStore } from '../../../common/stores/file-picker.store';
+import { FilePicker } from '../../../common/components/file-picker/file-picker';
 
-export const Register: FC<RouteComponentProps> = provide({ singletons: [SignUpStore] })(
+export const Register: FC<RouteComponentProps> = provide({
+    singletons: [SignUpStore, FilePickerStore],
+})(
     observer(() => {
-        const [registerStore] = useDependencies(SignUpStore);
+        const [registerStore, filePickerStore] = useDependencies(SignUpStore, FilePickerStore);
 
         const {
             form: {
@@ -31,11 +35,11 @@ export const Register: FC<RouteComponentProps> = provide({ singletons: [SignUpSt
                     Ստեղծել նոր հաշիվ
                 </Headline>
 
+                <FilePicker buttonProps={{ buttonLabel: 'Կցել Լուսանկար', typesNote: '' }} />
+
                 <Divider spacing="5" />
 
                 <Form className={Styles.form}>
-                    {/* image upload here*/}
-
                     <Form.Input
                         label={<Label label="Անուն Ազգանուն" hasError={name.hasError} />}
                         value={name.value}

@@ -19,7 +19,7 @@ import { AuthPaths } from './modules/common/utils/paths';
 import { Logout } from './modules/auth/logout/components/logout';
 
 const isProd = process.env.NODE_ENV === 'production';
-const url = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
+export const baseUrl = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
 
 // SamSam1234
 
@@ -30,7 +30,7 @@ export const App = provide({
         BooksStore,
         {
             provide: BASE_URL_TOKEN_ELibraryApi,
-            useValue: url,
+            useValue: baseUrl,
         },
     ],
 })(
