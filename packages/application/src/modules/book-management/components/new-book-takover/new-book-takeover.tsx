@@ -10,7 +10,7 @@ import {
 } from '@servicetitan/design-system';
 import { observer } from 'mobx-react';
 import { useDependencies } from '@servicetitan/react-ioc';
-import { NewBookStore } from '../stores/new-book.store';
+import { NewBookStore } from '../../stores/new-book.store';
 
 export const NewBookTakeover = observer(() => {
     const [newBookStore] = useDependencies(NewBookStore);

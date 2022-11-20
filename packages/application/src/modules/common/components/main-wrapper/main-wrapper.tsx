@@ -17,7 +17,7 @@ import { AuthStore } from '../../stores/auth.store';
 import { observer } from 'mobx-react';
 
 export const MainWrapper: FC = observer(({ children }) => {
-    const [{ user }] = useDependencies(AuthStore);
+    const [{ user, isAdmin }] = useDependencies(AuthStore);
     const history = useHistory();
 
     const isActive = useCallback(
@@ -57,13 +57,15 @@ export const MainWrapper: FC = observer(({ children }) => {
                                     Բոլոր գրքերը
                                 </SideNav.Item>
                             </Link>
-                            <Link to="/contacts">
-                                {' '}
-                                <SideNav.Item active={isActive('/contacts')}>
-                                    <Icon name="library_books" className="m-r-1" />
-                                    Կոնտակտներ{' '}
-                                </SideNav.Item>
-                            </Link>
+                            {isAdmin && (
+                                <Link to="/contacts">
+                                    {' '}
+                                    <SideNav.Item active={isActive('/contacts')}>
+                                        <Icon name="library_books" className="m-r-1" />
+                                        Կոնտակտներ{' '}
+                                    </SideNav.Item>
+                                </Link>
+                            )}
                         </SideNav>
                     </Sidebar.Section>
                     <Sidebar.Section>
