@@ -2,8 +2,8 @@ import { inject, injectable } from '@servicetitan/react-ioc';
 
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { Storage } from '../utils/storage';
-import { ELibraryApi, LoginUserDto, UserEntity } from '../api/e-library.client';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { EditUserDto, ELibraryApi, LoginUserDto, UserEntity } from '../api/e-library.client';
+import axios, { AxiosRequestConfig } from 'axios';
 
 export const AUTHENTICATED_USER_KEY = 'AuthenticatedUser';
 export const AUTHENTICATED_USER_TOKEN = 'AuthToken';
@@ -36,18 +36,29 @@ export class AuthStore {
         this.handle401();
     }
 
-    login = async (user: LoginUserDto) => {
-        const { data: tokenData } = await this.api.authController_signInUser(user);
-        const token = tokenData.access_token;
+    updateUserData = async (updatedUserData: EditUserDto) => {
+        const { data } = await this.api.usersController_editMyProfile(updatedUserData);
+        if (data) {
+            runInAction(() => (this.user = data));
+            Storage.setItem(AUTHENTICATED_USER_KEY, data);
+        }
+    };
 
+    login = async (user: LoginUserDto) => {
+        let token;
         try {
+            const { data: tokenData } = await this.api.authController_signInUser(user);
+            token = tokenData.access_token;
+
             this.setupToken(token);
             const { data: userData } = await this.api.usersController_getMyProfile();
             runInAction(() => (this.user = userData));
             Storage.setItem(AUTHENTICATED_USER_TOKEN, token);
             Storage.setItem(AUTHENTICATED_USER_KEY, userData);
         } catch (e) {
-            this.resetToken();
+            if (token) {
+                this.resetToken();
+            }
             throw e;
         }
     };
@@ -86,13 +97,16 @@ export class AuthStore {
     };
 
     handle401 = () => {
-        axios.interceptors.response.use((params: AxiosResponse) => {
-            if (params.status === 401) {
-                if (this.isAuthenticated) {
-                    this.logout();
+        axios.interceptors.response.use(
+            response => response,
+            response => {
+                if (response?.response?.data?.statusCode === 401) {
+                    if (this.isAuthenticated) {
+                        this.logout();
+                    }
                 }
+                return response;
             }
-            return params;
-        });
+        );
     };
 }

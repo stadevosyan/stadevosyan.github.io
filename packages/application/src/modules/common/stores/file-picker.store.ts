@@ -28,19 +28,34 @@ export class FilePickerStore {
     @observable error?: string;
     @observable fileUploadStatus = LoadStatus.None;
 
+    @computed get isDirty() {
+        return !!this.imageSentToBE || !!this.imageToUpload || this.imageDeleted || this.error;
+    }
+
     @computed get imageUrl() {
         return this.imageToUpload
             ? URL.createObjectURL(this.imageToUpload.data)
-            : this.imageSentToBE ?? this.imageDeleted
+            : this.imageSentToBE ?? !this.imageDeleted
             ? this.savedImageUrl
             : undefined;
+    }
+
+    @computed get imageUrlToSave() {
+        if (this.imageSentToBE) {
+            return this.imageSentToBE;
+        }
+
+        return !this.imageDeleted ? this.savedImageUrl : undefined;
     }
 
     constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
         makeObservable(this);
     }
 
-    @action setSavedImageUrl = (imageUrl: string) => (this.savedImageUrl = imageUrl);
+    @action setSavedImageUrl = (imageUrl: string) => {
+        this.savedImageUrl = imageUrl;
+        this.reset();
+    };
 
     @action deleteImage = () => {
         this.imageSentToBE = undefined;
@@ -49,11 +64,12 @@ export class FilePickerStore {
         this.imageDeleted = true;
     };
 
-    @action cancel = () => {
+    @action reset = () => {
         this.imageSentToBE = undefined;
         this.imageToUpload = undefined;
         this.imageDeleted = false;
         this.error = undefined;
+        this.setFileUploadStatus(LoadStatus.None);
     };
 
     @action downloadImage = () => {
@@ -86,6 +102,7 @@ export class FilePickerStore {
         this.imageToUpload = file;
         const isValid = await this.verifyImageSize();
         if (isValid) {
+            runInAction(() => (this.imageDeleted = false));
             this.setFileUploadStatus(LoadStatus.Loading);
             const fileForm = new FormData();
             fileForm.append('file', file.data);

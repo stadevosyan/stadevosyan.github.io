@@ -5,10 +5,13 @@ import { AuthStore } from '../../common/stores/auth.store';
 import { FormState } from 'formstate';
 import {
     commitFormState,
+    formStateToJS,
     FormValidators,
     InputFieldState,
     setFormStateValues,
 } from '@servicetitan/form';
+import { FilePickerStore } from '../../common/stores/file-picker.store';
+import { EditUserDto } from '../../common/api/e-library.client';
 
 @injectable()
 export class AccountStore {
@@ -17,7 +20,10 @@ export class AccountStore {
 
     @computed get isDirty() {
         return (
-            !!this.form.$.name.dirty || !!this.form.$.email.dirty || !!this.form.$.phoneNumber.dirty
+            !!this.form.$.name.dirty ||
+            !!this.form.$.email.dirty ||
+            !!this.form.$.phoneNumber.dirty ||
+            this.imageStore.isDirty
         );
     }
 
@@ -29,9 +35,13 @@ export class AccountStore {
         name: InputFieldState<string>;
         email: InputFieldState<string>;
         phoneNumber: InputFieldState<string>;
+        profilePictureUrl: InputFieldState<string>;
     }>;
 
-    constructor(@inject(AuthStore) private readonly authStore: AuthStore) {
+    constructor(
+        @inject(AuthStore) private readonly authStore: AuthStore,
+        @inject(FilePickerStore) private readonly imageStore: FilePickerStore
+    ) {
         makeObservable(this);
 
         this.form = new FormState({
@@ -45,19 +55,46 @@ export class AccountStore {
             phoneNumber: new InputFieldState(this.user?.phoneNumber ?? '').validators(
                 this.phoneValidator('Նշեք վավեր հեռախոսահամար')
             ),
+            profilePictureUrl: new InputFieldState<string>(this.user?.profilePictureUrl ?? ''),
         });
     }
+
+    handleAccountUpdate = async () => {
+        if (!this.isDirty) {
+            return false;
+        }
+
+        this.setAccountUpdateStatus(LoadStatus.Loading);
+        const res = await this.form.validate();
+        if (res.hasError) {
+            this.setAccountUpdateStatus(LoadStatus.Ok);
+            return false;
+        }
+
+        const { name, phoneNumber } = formStateToJS(this.form);
+        const profilePictureUrl = this.imageStore.imageUrlToSave ?? '';
+        try {
+            await this.authStore.updateUserData({
+                name,
+                phoneNumber,
+                profilePictureUrl,
+            } as EditUserDto);
+        } catch {
+            this.setAccountUpdateStatus(LoadStatus.Error);
+        }
+        this.resetForm();
+    };
 
     resetForm = () => {
         setFormStateValues(this.form, {
             email: this.user?.email,
             phoneNumber: this.user?.phoneNumber,
             name: this.user?.name,
+            profilePictureUrl: this.user?.profilePictureUrl,
         });
         commitFormState(this.form);
+        this.imageStore.reset();
     };
-
-    handleAccountUpdate = () => {};
 
     phoneValidator =
         (error = 'Անվավեր հեռաղոսահամար') =>

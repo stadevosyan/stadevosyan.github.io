@@ -53,13 +53,13 @@ export const FilePicker: FC<FilePickerProps> = observer(
         };
 
         useEffect(() => {
-            if (imageUrlParam) {
+            if (imageUrlParam !== undefined) {
                 setSavedImageUrl(imageUrlParam);
             }
         }, [imageUrlParam, setSavedImageUrl]);
 
         return (
-            <Stack className={className}>
+            <Stack className={className} direction="column" spacing={1}>
                 {/* <Label required>Logo</Label>*/}
                 {!!error && <Banner status="critical" title={error} icon className="m-y-2" />}
                 {!imageUrl ? (

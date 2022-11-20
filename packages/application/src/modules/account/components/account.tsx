@@ -13,7 +13,7 @@ export const Account = provide({
     observer(() => {
         const [{ form }] = useDependencies(AccountStore);
         const {
-            $: { name, email, phoneNumber },
+            $: { name, email, phoneNumber, profilePictureUrl },
         } = form;
 
         return (
@@ -24,11 +24,11 @@ export const Account = provide({
                             buttonLabel: 'Կցել լուսանկար',
                             typesNote: '',
                         }}
+                        downloadable
+                        imageUrlParam={profilePictureUrl.value}
                     />
                     <Divider spacing="5" />
                     <Form className={Styles.form}>
-                        {/* image upload here*/}
-
                         <Form.Input
                             label={<Label label="Անուն Ազգանուն" hasError={name.hasError} />}
                             value={name.value}
@@ -56,7 +56,7 @@ export const Account = provide({
     })
 );
 
-const Footer = () => {
+const Footer = observer(() => {
     const [{ resetForm, isDirty, handleAccountUpdate }] = useDependencies(AccountStore);
 
     return (
@@ -71,4 +71,4 @@ const Footer = () => {
             </ButtonGroup>
         </div>
     );
-};
+});
