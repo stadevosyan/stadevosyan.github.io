@@ -40,9 +40,11 @@
         "react-router-dom": "^5.3.4",
         "reset-css": "^5.0.1",
         "resumablejs": "^1.1.0",
-        "downloadjs": "1.4.7"
+        "downloadjs": "1.4.7",
+        "debounce": "1.2.1"
     },
     "devDependencies": {
+        "@types/debounce": "1.2.1",
         "@types/lodash": "^4.14.188",
         "@types/react": "^17.0.52",
         "@types/react-dom": "^17.0.18",

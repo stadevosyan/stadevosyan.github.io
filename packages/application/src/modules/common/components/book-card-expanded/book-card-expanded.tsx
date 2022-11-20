@@ -4,7 +4,7 @@ import { Avatar, BodyText, Card, Divider, Headline, Stack, Tag } from '@servicet
 import { BookCardProps } from '../book-card/book-card';
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
 
-interface BookCardExpandedProps {
+interface BookCardExpandedProps extends BookCardProps {
     name?: string;
     onClick: (selfProps: BookCardProps) => void;
 }
@@ -20,10 +20,10 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
             <Stack alignItems="center" justifyContent="space-between" spacing="4">
                 <Stack justifyContent="space-between" className="w-33 h-100">
                     <Stack justifyContent="flex-start" style={{ height: 120 }}>
-                        {Math.random() > 0.3 ? (
+                        {!props.imgUrl ? (
                             <img
                                 className="m-r-3"
-                                src="https://edit.org/photos/img/blog/d3s-design-book-covers.jpg-840.jpg"
+                                src={props.imgUrl}
                                 style={{
                                     height: 'auto',
                                     display: 'block',
@@ -35,10 +35,10 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                         )}
                         <Stack className="m-r-3" direction="column" justifyContent="center">
                             <Headline size="small" className="m-0">
-                                Գրքի անւոն
+                                {props.name}
                             </Headline>
                             <BodyText size="small" className="m-0 p-t-1 p-b-1">
-                                Հեղինակի անուն
+                                {props.author}
                             </BodyText>
                             <Tag color="success" subtle>
                                 Հասանելի է

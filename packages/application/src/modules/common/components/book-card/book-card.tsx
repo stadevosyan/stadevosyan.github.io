@@ -11,7 +11,7 @@ export interface BookCardProps {
     id?: number;
     name?: string;
     author?: string;
-    url?: string;
+    imgUrl?: string;
     status?: Status;
     onClick: (selfProps: BookCardProps) => void;
 }

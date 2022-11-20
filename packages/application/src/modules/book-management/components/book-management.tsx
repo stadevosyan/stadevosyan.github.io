@@ -10,10 +10,12 @@ import { BooksStore } from '../stores/books.store';
 import { BookCardExpanded } from '../../common/components/book-card-expanded/book-card-expanded';
 import { FilterDrawer } from './filter-drawer/filter-drawer';
 import { AuthStore } from '../../common/stores/auth.store';
+import { FilePickerStore } from '../../common/stores/file-picker.store';
 
 import * as Styles from './book-managment.module.less';
+import { SyntheticEvent } from 'react';
 
-export const BookManagement = provide({ singletons: [NewBookStore] })(
+export const BookManagement = provide({ singletons: [NewBookStore, FilePickerStore] })(
     observer(() => {
         const [newBookStore, bookStore, authStore] = useDependencies(
             NewBookStore,
@@ -27,18 +29,28 @@ export const BookManagement = provide({ singletons: [NewBookStore] })(
             history.push(`/book/${3}`);
         };
 
+        const handleCustomSearch = (
+            event: SyntheticEvent<HTMLInputElement>,
+            data: { value: string }
+        ) => {
+            bookStore.searchForm.$.search.onChangeHandler(event, data);
+            bookStore.searchDebounced();
+        };
+
         return (
             <Stack direction="column" className="p-3">
                 <Stack direction="column" className="filters p-b-3">
                     <Stack>
                         <Headline className="m-b-2 t-truncate" size="large">
-                            Բոլոր գրքերը (120)
+                            {`Բոլոր գրքերը (${bookStore.count})`}
                         </Headline>
                     </Stack>
                     <Stack justifyContent="space-between" alignItems="center">
                         <Stack alignItems="center">
                             <Form.Input
                                 style={{ width: '354px' }}
+                                value={bookStore.searchForm.$.search.value}
+                                onChange={handleCustomSearch}
                                 className="m-b-0 p-r-2"
                                 placeholder="Որոնել գրքեր"
                             />
@@ -59,16 +71,27 @@ export const BookManagement = provide({ singletons: [NewBookStore] })(
                 </Stack>
                 {authStore.isAdmin && (
                     <Stack className={Styles.bookList} direction="column" spacing={2}>
-                        {[...Array.from(Array(2).keys())].map(e => (
-                            <BookCardExpanded onClick={handleSelectBook} key={e} />
+                        {bookStore.books.map(book => (
+                            <BookCardExpanded
+                                name={book.title}
+                                author={book.author}
+                                imgUrl={book.pictureUrl}
+                                onClick={handleSelectBook}
+                                key={book.id}
+                            />
                         ))}
                     </Stack>
                 )}
                 {authStore.isUser && (
                     <Stack wrap="wrap" className={Styles.bookList} spacing={2}>
-                        {[...Array.from(Array(5).keys())].map(e => (
-                            <Stack.Item key={e}>
-                                <BookCard onClick={handleSelectBook} />
+                        {bookStore.books.map(book => (
+                            <Stack.Item key={book.id}>
+                                <BookCard
+                                    name={book.title}
+                                    author={book.author}
+                                    imgUrl={book.pictureUrl}
+                                    onClick={handleSelectBook}
+                                />
                             </Stack.Item>
                         ))}
                     </Stack>

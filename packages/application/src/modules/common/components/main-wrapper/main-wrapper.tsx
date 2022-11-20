@@ -72,7 +72,7 @@ export const MainWrapper: FC = observer(({ children }) => {
                         <SideNav>
                             <Link to="/account">
                                 <SideNav.Item active={isActive('/account')}>
-                                    <Icon name="person_outline" className="m-r-1" />
+                                    <Icon name="face" className="m-r-1" />
                                     Իմ հաշիվը
                                 </SideNav.Item>
                             </Link>

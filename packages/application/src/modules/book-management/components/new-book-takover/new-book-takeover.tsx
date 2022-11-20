@@ -10,10 +10,35 @@ import {
 } from '@servicetitan/design-system';
 import { observer } from 'mobx-react';
 import { useDependencies } from '@servicetitan/react-ioc';
+
+import { FilePicker } from '../../../common/components/file-picker/file-picker';
 import { NewBookStore } from '../../stores/new-book.store';
+import { ReactElement } from 'react';
 
 export const NewBookTakeover = observer(() => {
     const [newBookStore] = useDependencies(NewBookStore);
+    const {
+        newBookForm: { $ },
+        categories,
+    } = newBookStore;
+
+    const generateCheckboxes = () => {
+        const checkboxes: ReactElement[] = [];
+
+        $.categoryIds.$.forEach((category, id) => {
+            checkboxes.push(
+                <Form.Togglebox
+                    className="m-b-2 d-"
+                    checked={category.value}
+                    value={!category.value}
+                    onClick={category.onChange}
+                    label={categories.get(id)}
+                />
+            );
+        });
+
+        return checkboxes;
+    };
 
     return (
         <Takeover
@@ -25,8 +50,10 @@ export const NewBookTakeover = observer(() => {
             backLabel="Վերադառնալ գլխավոր էջ"
             footer={
                 <ButtonGroup>
-                    <Button>Չեղարկել</Button>
-                    <Button primary>Ավելացնել</Button>
+                    <Button onClick={newBookStore.cancel}>Չեղարկել</Button>
+                    <Button onClick={newBookStore.createBook} primary>
+                        Ավելացնել
+                    </Button>
                 </ButtonGroup>
             }
             onBack={newBookStore.handleClose}
@@ -35,57 +62,37 @@ export const NewBookTakeover = observer(() => {
             <Layout type="island">
                 <Stack direction="column">
                     <Stack.Item>
-                        <Button iconName="add_a_photo">Կցել գրքի լուսանկարը</Button>
+                        <FilePicker
+                            downloadable
+                            buttonProps={{ buttonLabel: 'Կցել Լուսանկար', typesNote: '' }}
+                        />
                     </Stack.Item>
                     <Divider className="m-y-3" />
                     <Form>
                         <Form.Group widths="equal" className="">
                             <Form.Input
                                 label="Գրքի անուն"
-                                /*
-                                 * value={login.value}
-                                 * onChange={login.onChangeHandler}
-                                 * error={login.hasError}
-                                 */
+                                value={$.title.value}
+                                onChange={$.title.onChangeHandler}
+                                error={$.title.hasError}
                             />
                             <Form.Input
                                 label="Հեղինակի անուն"
-                                /*
-                                 * value={login.value}
-                                 * onChange={login.onChangeHandler}
-                                 * error={login.hasError}
-                                 */
+                                value={$.author.value}
+                                onChange={$.author.onChangeHandler}
+                                error={$.author.hasError}
                             />
                         </Form.Group>
                         <Form.TextArea
                             label="Նկարագրություն (ոչ պարտադիր)"
-                            // placeholder="Aren't you a little short for a stormtrooper?"
+                            value={$.description.value}
+                            onChange={$.description.onChangeHandler}
+                            error={$.description.error}
                         />
-                        <BodyText className="m-b-2 t-truncate" size="small" bold>
-                            Հասանելիություն
+                        <BodyText el="div" size="small" bold className="m-b-1 d-b">
+                            Select your boxes
                         </BodyText>
-                        <Form.Group className="align-items-stretch m-r-1">
-                            <Form.Togglebox
-                                control="radio"
-                                value={1}
-                                /*
-                                 * checked={value === 1}
-                                 * onClick={value => setValue(value)}
-                                 */
-                                title="Հասանելի"
-                                label=""
-                            />
-                            <Form.Togglebox
-                                control="radio"
-                                value={1}
-                                /*
-                                 * checked={value === 1}
-                                 * onClick={value => setValue(value)}
-                                 */
-                                title="Վարձակալված"
-                                label=""
-                            />
-                        </Form.Group>
+                        <Form.Group>{generateCheckboxes()}</Form.Group>
                     </Form>
                 </Stack>
             </Layout>
