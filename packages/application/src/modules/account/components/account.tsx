@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { Button, ButtonGroup, Divider, Form, Page, Stack } from '@servicetitan/design-system';
+import { Button, ButtonGroup, Divider, Form, Icon, Page, Stack } from '@servicetitan/design-system';
 import { FilePicker } from '../../common/components/file-picker/file-picker';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
@@ -11,10 +11,14 @@ export const Account = provide({
     singletons: [FilePickerStore, AccountStore],
 })(
     observer(() => {
-        const [{ form }] = useDependencies(AccountStore);
+        const [{ form, setModalOpen }] = useDependencies(AccountStore);
         const {
             $: { name, email, phoneNumber, profilePictureUrl },
         } = form;
+
+        const handleModalOpen = () => {
+            setModalOpen(true);
+        };
 
         return (
             <Page footer={<Footer />}>
@@ -41,6 +45,7 @@ export const Account = provide({
                             value={email.value}
                             onChange={email.onChangeHandler}
                             error={email.error}
+                            disabled
                         />
 
                         <Form.Input
@@ -50,6 +55,10 @@ export const Account = provide({
                             error={phoneNumber.error}
                         />
                     </Form>
+                    <Button className="m-t-4" outline width="250px" onClick={handleModalOpen}>
+                        <Icon name="bolt" className="m-r-half" />
+                        Փոխել գաղտնաբառը
+                    </Button>
                 </Stack>
             </Page>
         );
