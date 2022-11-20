@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
 
 import { BookCard } from '../../common/components/book-card/book-card';
-import { NewBookTakeover } from './new-book-takeover';
+import { NewBookTakeover } from './new-book-takover/new-book-takeover';
 import { NewBookStore } from '../stores/new-book.store';
 import { BooksStore } from '../stores/books.store';
 import { BookCardExpanded } from '../../common/components/book-card-expanded/book-card-expanded';

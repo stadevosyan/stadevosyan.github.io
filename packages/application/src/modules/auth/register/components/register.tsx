@@ -18,7 +18,7 @@ export const Register: FC<RouteComponentProps> = provide({
     singletons: [SignUpStore, FilePickerStore],
 })(
     observer(() => {
-        const [registerStore] = useDependencies(SignUpStore, FilePickerStore);
+        const [registerStore] = useDependencies(SignUpStore);
 
         const {
             form: {

@@ -11,6 +11,14 @@ export class BooksStore {
         makeObservable(this);
     }
 
+    cancelFilter = () => {
+        this.closeFilter();
+    };
+
+    applyFilter = () => {
+        this.closeFilter();
+    };
+
     @action openFilter = () => {
         this.isFilterOpen = true;
     };

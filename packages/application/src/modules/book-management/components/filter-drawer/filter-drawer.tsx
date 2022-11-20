@@ -14,8 +14,10 @@ export const FilterDrawer: FC = observer(() => {
             onClose={bookStore.closeFilter}
             footer={
                 <ButtonGroup>
-                    <Button>Չեղարկել</Button>
-                    <Button primary>Կիրառել</Button>
+                    <Button onClick={bookStore.cancelFilter}>Չեղարկել</Button>
+                    <Button onClick={bookStore.applyFilter} primary>
+                        Կիրառել
+                    </Button>
                 </ButtonGroup>
             }
         >
