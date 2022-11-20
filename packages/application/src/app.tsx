@@ -17,7 +17,7 @@ import { Contacts } from './modules/contacts/components/contacts';
 import * as Styles from './app.module.css';
 import { AuthPaths } from './modules/common/utils/paths';
 import { Logout } from './modules/auth/logout/components/logout';
-import { OwnBooks } from './modules/own-books/own-books';
+import { OwnBooks } from './modules/own-books/components/own-books';
 
 const isProd = process.env.NODE_ENV === 'production';
 export const baseUrl = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';

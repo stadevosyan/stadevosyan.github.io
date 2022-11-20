@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import { Button, Form, Headline, Stack, Table, TableColumn } from '@servicetitan/design-system';
+import { Button, Form, Stack, Table, TableColumn } from '@servicetitan/design-system';
 import { useState } from 'react';
 
 export const Contacts = observer(() => {

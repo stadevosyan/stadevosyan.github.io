@@ -61,7 +61,11 @@ export const ChangePasswordModal = provide({
                             }
                             value={newPassword.value}
                             onChange={newPassword.onChangeHandler}
-                            error={newPasswordForm.formError || newPassword.error}
+                            error={
+                                newPasswordForm.formError
+                                    ? newPasswordForm.formError
+                                    : newPassword.error
+                            }
                             type="password"
                         />
 
@@ -76,7 +80,11 @@ export const ChangePasswordModal = provide({
                             }
                             value={passwordConfirmation.value}
                             onChange={passwordConfirmation.onChangeHandler}
-                            error={newPasswordForm.formError || passwordConfirmation.error}
+                            error={
+                                newPasswordForm.formError
+                                    ? newPasswordForm.formError
+                                    : passwordConfirmation.error
+                            }
                             type="password"
                         />
                     </Form>
