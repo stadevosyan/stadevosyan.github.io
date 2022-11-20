@@ -16,7 +16,7 @@ import { EditUserDto } from '../../common/api/e-library.client';
 @injectable()
 export class AccountStore {
     @observable accountUpdateStatus = LoadStatus.None;
-    @observable changePasswordStatus = LoadStatus.None;
+    @observable modalOpen = false;
 
     @computed get isDirty() {
         return (
@@ -66,7 +66,7 @@ export class AccountStore {
 
         this.setAccountUpdateStatus(LoadStatus.Loading);
         const res = await this.form.validate();
-        if (res.hasError) {
+        if (res.hasError || this.imageStore.error) {
             this.setAccountUpdateStatus(LoadStatus.Ok);
             return false;
         }
@@ -104,8 +104,8 @@ export class AccountStore {
                 'Հեռախոսահամար'
             )(value.trim()) && error;
 
+    @action setModalOpen = (open: boolean) => (this.modalOpen = open);
+
     @action private setAccountUpdateStatus = (status: LoadStatus) =>
         (this.accountUpdateStatus = status);
-    @action private setChangePasswordStatus = (status: LoadStatus) =>
-        (this.changePasswordStatus = status);
 }

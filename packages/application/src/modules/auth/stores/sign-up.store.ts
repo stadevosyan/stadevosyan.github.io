@@ -5,6 +5,7 @@ import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/fo
 import { CreateUserDto, ELibraryApi } from '../../common/api/e-library.client';
 import { action, makeObservable, observable } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
+import { FilePickerStore } from '../../common/stores/file-picker.store';
 
 @injectable()
 export class SignUpStore {
@@ -17,7 +18,10 @@ export class SignUpStore {
         phoneNumber: InputFieldState<string>;
     }>;
 
-    constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
+    constructor(
+        @inject(ELibraryApi) private readonly api: ELibraryApi,
+        @inject(FilePickerStore) private readonly imageStore: FilePickerStore
+    ) {
         makeObservable(this);
         this.form = new FormState({
             name: new InputFieldState('')
@@ -52,12 +56,13 @@ export class SignUpStore {
     async register() {
         this.setRegisterStatus(LoadStatus.Loading);
         const res = await this.form.validate();
-        if (res.hasError) {
+        if (res.hasError || this.imageStore.error) {
             this.setRegisterStatus(LoadStatus.Ok);
             return false;
         }
 
         const { name, phoneNumber, password, email } = formStateToJS(this.form);
+        const profilePictureUrl = this.imageStore.imageUrlToSave;
 
         try {
             await this.api.authController_signUpUser({
@@ -65,6 +70,7 @@ export class SignUpStore {
                 password,
                 email,
                 phoneNumber,
+                profilePictureUrl,
             } as CreateUserDto);
 
             this.setRegisterStatus(LoadStatus.Ok);
