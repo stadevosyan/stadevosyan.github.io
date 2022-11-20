@@ -5,10 +5,18 @@ import { BooksStore } from '../../stores/books.store';
 import { BookHistory } from './book-history';
 import { BookSummary } from './book-summary';
 import { FilePickerStore } from '../../../common/stores/file-picker.store';
+import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export const BookDetails = provide({ singletons: [FilePickerStore] })(
     observer(() => {
-        const [{ setActiveTab, activeTab }] = useDependencies(BooksStore);
+        const [{ setActiveTab, activeTab, initDetails, selectedBook }] =
+            useDependencies(BooksStore);
+        const params = useParams<{ id: string }>();
+
+        useEffect(() => {
+            initDetails(+params.id);
+        }, [initDetails, params.id]);
 
         return (
             <Stack direction="column" className="filters p-b-3">
@@ -16,10 +24,10 @@ export const BookDetails = provide({ singletons: [FilePickerStore] })(
                     <Stack direction="column" className="bg-white p-3 p-b-0">
                         <Stack direction="column">
                             <Headline className="m-b-2 t-truncate" size="large">
-                                Կլարան և արևը
+                                {selectedBook?.title}
                             </Headline>
                             <BodyText className="m-b-2 t-truncate" size="medium">
-                                Կազուո Իշիգուրո
+                                {selectedBook?.author}
                             </BodyText>
                         </Stack>
                         <Stack alignItems="center">
