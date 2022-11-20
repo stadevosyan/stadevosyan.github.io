@@ -1,77 +1,105 @@
-import { Button, ButtonGroup, Form, Modal } from '@servicetitan/design-system';
-import { useDependencies } from '@servicetitan/react-ioc';
+import { Button, ButtonGroup, Form, Modal, Stack } from '@servicetitan/design-system';
+import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { AccountStore } from '../stores/account.store';
-import { ChangePasswordStore } from '../stores/change-password-store';
+import { ChangePasswordStore } from '../stores/change-password.store';
 import { observer } from 'mobx-react';
-import * as Styles from './account.module.less';
 import { Label } from '@servicetitan/form';
+import { LoadStatus } from '../../common/enums/load-status';
+import { ModalSizes } from '@servicetitan/design-system/dist/components/Modal/components';
 
-export const ChangePasswordModal = () => {
-    const [{ form, handleChangePassword, changePasswordStatus }, { setModalOpen }] =
-        useDependencies(ChangePasswordStore, AccountStore);
-    const {
-        $: { oldPassword, newPasswordForm },
-    } = form;
+export const ChangePasswordModal = provide({
+    singletons: [ChangePasswordStore],
+})(
+    observer(() => {
+        const [{ form, changePasswordStatus }, { setModalOpen }] = useDependencies(
+            ChangePasswordStore,
+            AccountStore
+        );
+        const {
+            $: { oldPassword, newPasswordForm },
+        } = form;
 
-    const {
-        $: { newPassword, passwordConfirmation },
-    } = newPasswordForm;
+        const {
+            $: { newPassword, passwordConfirmation },
+        } = newPasswordForm;
 
-    const handleClose = () => {
-        setModalOpen(false);
-    };
+        const handleClose = () => {
+            setModalOpen(false);
+        };
 
-    return (
-        <Modal open title="Փոխել գաղտնաբառը" onClose={handleClose} footer={<Footer />}>
-            <Form>
-                <Form.Input
-                    label={<Label label="Հին գաղտնաբառը" hasError={oldPassword.hasError} />}
-                    value={oldPassword.value}
-                    onChange={oldPassword.onChangeHandler}
-                    error={oldPassword.error}
-                />
+        const backendError = changePasswordStatus === LoadStatus.Error;
 
-                <Form.Input
-                    label={
-                        <Label
-                            label="Նոր գաղտնաբառը"
-                            hasError={!!(newPassword.error ?? newPasswordForm.error)}
+        return (
+            <Modal
+                open
+                title="Փոխել գաղտնաբառը"
+                onClose={handleClose}
+                footer={<Footer />}
+                size={ModalSizes.S}
+            >
+                <Stack direction="column" spacing={3}>
+                    <Form>
+                        <Form.Input
+                            label={
+                                <Label
+                                    label="Հին գաղտնաբառը"
+                                    hasError={oldPassword.hasError ?? backendError}
+                                />
+                            }
+                            value={oldPassword.value}
+                            onChange={oldPassword.onChangeHandler}
+                            error={oldPassword.error ?? backendError ? 'Սխալ գաղտնաբառ' : false}
+                            type="password"
                         />
-                    }
-                    value={newPassword.value}
-                    onChange={newPassword.onChangeHandler}
-                    error={newPassword.error ?? newPasswordForm.error}
-                    disabled
-                />
 
-                <Form.Input
-                    label={
-                        <Label
-                            label="Կրկնել նոր գաղտնաբառը"
-                            hasError={!!(passwordConfirmation.hasError ?? newPasswordForm.error)}
+                        <Form.Input
+                            label={
+                                <Label
+                                    label="Նոր գաղտնաբառը"
+                                    hasError={newPassword.hasError || newPasswordForm.hasFormError}
+                                />
+                            }
+                            value={newPassword.value}
+                            onChange={newPassword.onChangeHandler}
+                            error={newPasswordForm.formError || newPassword.error}
+                            type="password"
                         />
-                    }
-                    value={passwordConfirmation.value}
-                    onChange={passwordConfirmation.onChangeHandler}
-                    error={passwordConfirmation.hasError ?? newPasswordForm.error}
-                />
-            </Form>
-        </Modal>
-    );
-};
+
+                        <Form.Input
+                            label={
+                                <Label
+                                    label="Կրկնել նոր գաղտնաբառը"
+                                    hasError={
+                                        !!(passwordConfirmation.hasError ?? newPasswordForm.error)
+                                    }
+                                />
+                            }
+                            value={passwordConfirmation.value}
+                            onChange={passwordConfirmation.onChangeHandler}
+                            error={newPasswordForm.formError || passwordConfirmation.error}
+                            type="password"
+                        />
+                    </Form>
+                </Stack>
+            </Modal>
+        );
+    })
+);
 
 const Footer = observer(() => {
-    const [{ isDirty }, { setModalOpen, handleAccountUpdate }] = useDependencies(
-        ChangePasswordStore,
-        AccountStore
-    );
+    const [{ isDirty, changePasswordStatus, handleChangePassword }, { setModalOpen }] =
+        useDependencies(ChangePasswordStore, AccountStore);
     const handleClose = () => {
         setModalOpen(false);
     };
+
+    const loading = changePasswordStatus === LoadStatus.Loading;
     return (
         <ButtonGroup>
-            <Button onClick={handleClose}>Չեղարկել</Button>
-            <Button onClick={handleAccountUpdate} primary disabled={!isDirty}>
+            <Button loading={loading} onClick={handleClose}>
+                Չեղարկել
+            </Button>
+            <Button loading={loading} onClick={handleChangePassword} primary disabled={!isDirty}>
                 Պահպանել
             </Button>
         </ButtonGroup>

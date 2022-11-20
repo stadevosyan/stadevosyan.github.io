@@ -6,12 +6,14 @@ import { FilePickerStore } from '../../common/stores/file-picker.store';
 import { Label } from '@servicetitan/form';
 import { AccountStore } from '../stores/account.store';
 import * as Styles from './account.module.less';
+import { Fragment } from 'react';
+import { ChangePasswordModal } from './change-password-modal';
 
 export const Account = provide({
     singletons: [FilePickerStore, AccountStore],
 })(
     observer(() => {
-        const [{ form, setModalOpen }] = useDependencies(AccountStore);
+        const [{ form, setModalOpen, modalOpen }] = useDependencies(AccountStore);
         const {
             $: { name, email, phoneNumber, profilePictureUrl },
         } = form;
@@ -21,46 +23,53 @@ export const Account = provide({
         };
 
         return (
-            <Page footer={<Footer />}>
-                <Stack direction="column" className={Styles.main}>
-                    <FilePicker
-                        buttonProps={{
-                            buttonLabel: 'Կցել լուսանկար',
-                            typesNote: '',
-                        }}
-                        downloadable
-                        imageUrlParam={profilePictureUrl.value}
-                    />
-                    <Divider spacing="5" />
-                    <Form className={Styles.form}>
-                        <Form.Input
-                            label={<Label label="Անուն Ազգանուն" hasError={name.hasError} />}
-                            value={name.value}
-                            onChange={name.onChangeHandler}
-                            error={name.error}
+            <Fragment>
+                <Page footer={<Footer />}>
+                    <Stack direction="column" className={Styles.main}>
+                        <FilePicker
+                            buttonProps={{
+                                buttonLabel: 'Կցել լուսանկար',
+                                typesNote: '',
+                            }}
+                            downloadable
+                            imageUrlParam={profilePictureUrl.value}
                         />
+                        <Divider spacing="5" />
+                        <Form className={Styles.form}>
+                            <Form.Input
+                                label={<Label label="Անուն Ազգանուն" hasError={name.hasError} />}
+                                value={name.value}
+                                onChange={name.onChangeHandler}
+                                error={name.error}
+                            />
 
-                        <Form.Input
-                            label={<Label label="Էլեկտրոնային հասցե" hasError={email.hasError} />}
-                            value={email.value}
-                            onChange={email.onChangeHandler}
-                            error={email.error}
-                            disabled
-                        />
+                            <Form.Input
+                                label={
+                                    <Label label="Էլեկտրոնային հասցե" hasError={email.hasError} />
+                                }
+                                value={email.value}
+                                onChange={email.onChangeHandler}
+                                error={email.error}
+                                disabled
+                            />
 
-                        <Form.Input
-                            label={<Label label="Հեռախոսահամար" hasError={phoneNumber.hasError} />}
-                            value={phoneNumber.value}
-                            onChange={phoneNumber.onChangeHandler}
-                            error={phoneNumber.error}
-                        />
-                    </Form>
-                    <Button className="m-t-4" outline width="250px" onClick={handleModalOpen}>
-                        <Icon name="bolt" className="m-r-half" />
-                        Փոխել գաղտնաբառը
-                    </Button>
-                </Stack>
-            </Page>
+                            <Form.Input
+                                label={
+                                    <Label label="Հեռախոսահամար" hasError={phoneNumber.hasError} />
+                                }
+                                value={phoneNumber.value}
+                                onChange={phoneNumber.onChangeHandler}
+                                error={phoneNumber.error}
+                            />
+                        </Form>
+                        <Button className="m-t-4" outline width="250px" onClick={handleModalOpen}>
+                            <Icon name="bolt" className="m-r-half" />
+                            Փոխել գաղտնաբառը
+                        </Button>
+                    </Stack>
+                </Page>
+                {modalOpen && <ChangePasswordModal />}
+            </Fragment>
         );
     })
 );

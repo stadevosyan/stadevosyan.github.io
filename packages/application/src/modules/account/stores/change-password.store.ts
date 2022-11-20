@@ -1,10 +1,9 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
-import { AuthStore } from '../../common/stores/auth.store';
 import { FormState } from 'formstate';
-import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
-import { EditUserDto, ELibraryApi } from '../../common/api/e-library.client';
+import { commitFormState, FormValidators, InputFieldState } from '@servicetitan/form';
+import { ELibraryApi } from '../../common/api/e-library.client';
 import { AccountStore } from './account.store';
 
 @injectable()
@@ -12,7 +11,11 @@ export class ChangePasswordStore {
     @observable changePasswordStatus = LoadStatus.None;
 
     @computed get isDirty() {
-        return false;
+        return (
+            !!this.form.$.oldPassword.dirty ||
+            !!this.form.$.newPasswordForm.$.passwordConfirmation.dirty ||
+            this.form.$.newPasswordForm.$.newPassword.dirty
+        );
     }
 
     form: FormState<{
@@ -35,10 +38,16 @@ export class ChangePasswordStore {
             ),
             newPasswordForm: new FormState({
                 newPassword: new InputFieldState('').validators(
-                    (value: string) => FormValidators.required(value) && 'Դաշտը պարտադիր է'
+                    (value: string) => FormValidators.required(value) && 'Դաշտը պարտադիր է',
+                    (value: string) =>
+                        !FormValidators.passwordIsValidFormat(value) &&
+                        'Ձեր գաղտնաբառը պիտի բաղկացած լինի նվազագույնը 8 սիմվոլից և պարունակի գոնե 1 թվանշան, փոքրատառ և մեծատառ'
                 ),
                 passwordConfirmation: new InputFieldState('').validators(
-                    (value: string) => FormValidators.required(value) && 'Դաշտը պարտադիր է'
+                    (value: string) => FormValidators.required(value) && 'Դաշտը պարտադիր է',
+                    (value: string) =>
+                        !FormValidators.passwordIsValidFormat(value) &&
+                        'Ձեր գաղտնաբառը պիտի բաղկացած լինի նվազագույնը 8 սիմվոլից և պարունակի գոնե 1 թվանշան, փոքրատառ և մեծատառ'
                 ),
             })
                 .compose()
@@ -58,6 +67,7 @@ export class ChangePasswordStore {
 
         this.setChangePasswordStatus(LoadStatus.Loading);
         const res = await this.form.enableAutoValidationAndValidate();
+        this.form.$.newPasswordForm.enableAutoValidation();
         if (res.hasError) {
             this.setChangePasswordStatus(LoadStatus.Ok);
             return false;
@@ -70,6 +80,7 @@ export class ChangePasswordStore {
             this.accountStore.setModalOpen(false);
         } catch {
             this.setChangePasswordStatus(LoadStatus.Error);
+            commitFormState(this.form);
         }
     };
 
