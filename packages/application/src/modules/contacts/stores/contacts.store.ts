@@ -54,7 +54,6 @@ export class ContactsStore {
                     name: 'blo',
                 })),
             ];
-            console.log({ myData });
 
             this.contactsTableState.setDataSource(new InMemoryDataSource(myData || [])).catch();
             this.setContactsLoadStatus(LoadStatus.Ok);

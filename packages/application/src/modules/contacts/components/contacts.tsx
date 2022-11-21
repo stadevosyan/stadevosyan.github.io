@@ -1,22 +1,11 @@
 import { observer } from 'mobx-react';
-import {
-    Button,
-    ButtonGroup,
-    Form,
-    Stack,
-    TableColumn,
-    Takeover,
-} from '@servicetitan/design-system';
-import { Fragment, SyntheticEvent, useEffect } from 'react';
-import { provide, useDependencies } from '@servicetitan/react-ioc';
-import { ContactsStore } from '../stores/contacts.store';
+import { Button, Form, Stack, TableColumn } from '@servicetitan/design-system';
+import { Fragment, SyntheticEvent } from 'react';
+import { useDependencies } from '@servicetitan/react-ioc';
 import { LoadStatus } from '../../common/enums/load-status';
 import { CenteredSpinner } from '../../common/components/centered-spinner/centered-spinner';
-import * as Styles from '../../auth/register/components/register.module.less';
-import { Label } from '@servicetitan/form';
-import { AddContactStore } from '../stores/add-contact.store';
-import { FilePickerStore } from '../../common/stores/file-picker.store';
 import { Table } from '@servicetitan/table';
+import { ContactsStore } from '../stores/contacts.store';
 import { AddContactTakeover } from './add-contact-takeover';
 
 export const Contacts = observer(() => {
