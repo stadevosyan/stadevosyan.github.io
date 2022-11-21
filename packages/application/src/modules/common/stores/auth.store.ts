@@ -20,7 +20,7 @@ export class AuthStore {
     @computed get isAdmin() {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        return this.user?.role === 0;
+        return this.user?.role === 2;
     }
 
     @computed get isUser() {

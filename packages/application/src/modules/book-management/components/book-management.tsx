@@ -27,7 +27,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
         const handleSelectBook = async (data: any) => {
             if (authStore.isAdmin) {
                 await bookStore.handleSelect(data); // process logic
-                history.push(`/${data.id}`);
+                history.push(`/book/${data.id}`);
             }
             if (authStore.isUser) {
                 await bookStore.handleSelect(data); // process logic
@@ -60,14 +60,16 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                                 className="m-b-0 p-r-2"
                                 placeholder="Որոնել գրքեր"
                             />
-                            <Button
-                                iconName="funnel"
-                                primary
-                                outline
-                                onClick={bookStore.openFilter}
-                            >
-                                Ֆիլտրել
-                            </Button>
+                            {authStore.isAdmin && (
+                                <Button
+                                    iconName="funnel"
+                                    primary
+                                    outline
+                                    onClick={bookStore.openFilter}
+                                >
+                                    Ֆիլտրել
+                                </Button>
+                            )}
                         </Stack>
 
                         {authStore.isAdmin && (
