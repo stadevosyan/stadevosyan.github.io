@@ -9,6 +9,7 @@ import { getFilterSet } from '../utils/table-utils';
 import { debounce } from 'debounce';
 
 interface Contact {
+    id: number;
     name: string;
     phoneNumber: string;
     email: string;

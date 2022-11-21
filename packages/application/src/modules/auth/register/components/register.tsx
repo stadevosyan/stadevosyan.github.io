@@ -6,13 +6,13 @@ import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { Form, ButtonGroup, Button, Page, Headline, Divider } from '@servicetitan/design-system';
 
 import { Label } from '@servicetitan/form';
-import { BackTo } from '../../components/back-to/back-to';
 import { AuthPaths } from '../../../common/utils/paths';
 import { observer } from 'mobx-react';
 import * as Styles from './register.module.less';
 import { SignUpStore } from '../../stores/sign-up.store';
 import { FilePickerStore } from '../../../common/stores/file-picker.store';
 import { FilePicker } from '../../../common/components/file-picker/file-picker';
+import { BackTo } from '../../../common/components/back-to/back-to';
 
 export const Register: FC<RouteComponentProps> = provide({
     singletons: [SignUpStore, FilePickerStore],

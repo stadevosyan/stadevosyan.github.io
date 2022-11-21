@@ -12,13 +12,14 @@ import { BookManagement } from './modules/book-management/components/book-manage
 import { BookDetails } from './modules/book-management/components/book-details/book-details';
 import { BooksStore } from './modules/book-management/stores/books.store';
 import { Account } from './modules/account/components/account';
-import { Contacts } from './modules/contacts/components/contacts';
 
-import * as Styles from './app.module.css';
+import * as Styles from './app.module.less';
 import { AuthPaths } from './modules/common/utils/paths';
 import { Logout } from './modules/auth/logout/components/logout';
 import { OwnBooks } from './modules/own-books/components/own-books';
 import { ContactsStore } from './modules/contacts/stores/contacts.store';
+import { ContactDetails } from './modules/contacts/components/contact-details/contact-details';
+import { Contacts } from './modules/contacts/components/contacts/contacts';
 
 const isProd = process.env.NODE_ENV === 'production';
 export const baseUrl = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
@@ -55,6 +56,13 @@ export const App = provide({
                                     )}
                                     {isAdmin && (
                                         <Route path="/contacts" exact component={Contacts} />
+                                    )}
+                                    {isAdmin && (
+                                        <Route
+                                            path="/contacts/:id"
+                                            exact
+                                            component={ContactDetails}
+                                        />
                                     )}
                                     <Route path={AuthPaths.logout} component={Logout} />
                                     <Redirect from="/*" to="/users" />
