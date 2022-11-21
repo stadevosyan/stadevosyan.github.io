@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { BodyText, Card, Headline, Stack, Tag } from '@servicetitan/design-system';
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
+import { baseUrl } from '../../../../app';
 
 enum Status {
     Avilable,
@@ -32,9 +33,9 @@ export const BookCard: FC<BookCardProps> = props => {
                 }}
             >
                 <Stack justifyContent="center" style={{ height: 224 }}>
-                    {Math.random() > 0.3 ? (
+                    {props.imgUrl ? (
                         <img
-                            src="https://edit.org/photos/img/blog/d3s-design-book-covers.jpg-840.jpg"
+                            src={`${baseUrl}${props.imgUrl}`}
                             style={{
                                 height: 'auto',
                                 display: 'block',
@@ -48,11 +49,11 @@ export const BookCard: FC<BookCardProps> = props => {
             </Card.Section>
 
             <Card.Section className="p-2" style={{ minHeight: 68, borderTop: 0 }}>
-                <Headline size="small" className="m-0">
-                    Գրքի անւոն
+                <Headline size="small" className="m-0  t-truncate">
+                    {props.name}
                 </Headline>
-                <BodyText size="small" className="m-0 p-t-1 p-b-1">
-                    Հեղինակի անուն
+                <BodyText size="small" className="m-0 p-t-1 p-b-1  t-truncate">
+                    {props.author}
                 </BodyText>
                 <Tag color="success" subtle>
                     Հասանելի է
