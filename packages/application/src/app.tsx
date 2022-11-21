@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { observer } from 'mobx-react';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom';
 import { Stack } from '@servicetitan/design-system';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 
@@ -19,6 +19,7 @@ import { AuthPaths } from './modules/common/utils/paths';
 import { Logout } from './modules/auth/logout/components/logout';
 import { OwnBooks } from './modules/own-books/components/own-books';
 import { ContactsStore } from './modules/contacts/stores/contacts.store';
+import { UserBookDetails } from './modules/book-management/components/user-book-details/user-book-details';
 
 const isProd = process.env.NODE_ENV === 'production';
 export const baseUrl = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
@@ -40,7 +41,7 @@ export const App = provide({
 
         return (
             <StrictMode>
-                <BrowserRouter>
+                <HashRouter>
                     <Stack className={Styles.app}>
                         {!isAuthenticated ? (
                             <AuthRouter />
@@ -48,10 +49,13 @@ export const App = provide({
                             <MainWrapper>
                                 <Switch>
                                     <Route path="/" exact component={BookManagement} />
-                                    <Route path="/book/:id" exact component={BookDetails} />
+                                    <Route path="/:id" exact component={BookDetails} />
                                     <Route path="/account" exact component={Account} />
                                     {isUser && (
                                         <Route path="/my-books" exact component={OwnBooks} />
+                                    )}
+                                    {isUser && (
+                                        <Route path="/user/:id" exact component={UserBookDetails} />
                                     )}
                                     {isAdmin && (
                                         <Route path="/contacts" exact component={Contacts} />
@@ -62,7 +66,7 @@ export const App = provide({
                             </MainWrapper>
                         )}
                     </Stack>
-                </BrowserRouter>
+                </HashRouter>
             </StrictMode>
         );
     })

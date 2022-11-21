@@ -34,17 +34,24 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                         ) : (
                             <ImagePlaceholder classes="m-r-3" />
                         )}
-                        <Stack className="m-r-3" direction="column" justifyContent="flex-start">
-                            <Headline size="small" className="m-0 t-truncate">
-                                {props.name}
-                            </Headline>
-                            <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
-                                {props.author}
-                            </BodyText>
-                            <Tag color="success" subtle>
-                                Հասանելի է
-                            </Tag>
-                        </Stack>
+                        <Stack.Item fill>
+                            <Stack
+                                className="m-r-3"
+                                direction="column"
+                                justifyContent="center"
+                                alignItems="flex-start"
+                            >
+                                <Headline size="small" className="w-66 m-0 t-truncate">
+                                    {props.name}
+                                </Headline>
+                                <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
+                                    {props.author}
+                                </BodyText>
+                                <Tag color="success" subtle>
+                                    Հասանելի է
+                                </Tag>
+                            </Stack>
+                        </Stack.Item>
                     </Stack>
                     <Divider vertical alignContent="end" />
                 </Stack>

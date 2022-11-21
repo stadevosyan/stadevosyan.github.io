@@ -25,8 +25,14 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
         const history = useHistory();
 
         const handleSelectBook = async (data: any) => {
-            await bookStore.handleSelect(data); // process logic
-            history.push(`/book/${data.id}`);
+            if (authStore.isAdmin) {
+                await bookStore.handleSelect(data); // process logic
+                history.push(`/${data.id}`);
+            }
+            if (authStore.isUser) {
+                await bookStore.handleSelect(data); // process logic
+                history.push(`/user/${data.id}`);
+            }
         };
 
         const handleCustomSearch = (
@@ -64,9 +70,11 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                             </Button>
                         </Stack>
 
-                        <Button primary onClick={newBookStore.handleOpen}>
-                            + Ավելացնել գիրք
-                        </Button>
+                        {authStore.isAdmin && (
+                            <Button primary onClick={newBookStore.handleOpen}>
+                                + Ավելացնել գիրք
+                            </Button>
+                        )}
                     </Stack>
                 </Stack>
                 {authStore.isAdmin && (

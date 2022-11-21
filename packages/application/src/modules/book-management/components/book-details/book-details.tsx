@@ -19,8 +19,9 @@ import { LoadStatus } from '../../../common/enums/load-status';
 
 export const BookDetails = provide({ singletons: [FilePickerStore] })(
     observer(() => {
-        const [{ setActiveTab, activeTab, initDetails, selectedBook, updateBook, loading }] =
-            useDependencies(BooksStore);
+        const [
+            { setActiveTab, activeTab, initDetails, selectedBook, updateBook, loading, resetForm },
+        ] = useDependencies(BooksStore);
         const params = useParams<{ id: string }>();
         const history = useHistory();
 
@@ -43,7 +44,7 @@ export const BookDetails = provide({ singletons: [FilePickerStore] })(
                                 <ButtonGroup>
                                     {activeTab === 0 && (
                                         <Fragment>
-                                            <Button>Չեղարկել</Button>
+                                            <Button onClick={resetForm}>Չեղարկել</Button>
                                             <Button
                                                 primary
                                                 loading={loading === LoadStatus.Loading}
@@ -71,7 +72,7 @@ export const BookDetails = provide({ singletons: [FilePickerStore] })(
                             </TabGroup>
                         </Stack>
                     </Stack>
-                    <Stack justifyContent="space-between" className="p-3" alignItems="center">
+                    <Stack className="p-3">
                         {activeTab === 0 && <BookSummary />}
                         {activeTab === 1 && <BookHistory />}
                     </Stack>

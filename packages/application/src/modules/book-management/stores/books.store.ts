@@ -3,8 +3,14 @@ import { action, makeObservable, observable } from 'mobx';
 import { FormState } from 'formstate';
 import { debounce } from 'debounce';
 import { CheckboxFieldState } from '@servicetitan/form-state';
-import { BookEntity, EditBookDto, ELibraryApi } from '../../common/api/e-library.client';
 import {
+    BookEntity,
+    CategoryEntity,
+    EditBookDto,
+    ELibraryApi,
+} from '../../common/api/e-library.client';
+import {
+    commitFormState,
     formStateToJS,
     FormValidators,
     InputFieldState,
@@ -22,6 +28,7 @@ export class BooksStore {
     @observable isFilterOpen = false;
     @observable books: BookEntity[] = [];
     @observable count = 0;
+    @observable categories = new Map();
     @observable selectedBook?: Partial<BookEntity> = {
         title: '',
         author: '',
@@ -90,6 +97,10 @@ export class BooksStore {
         this.activeTab = tab;
     };
 
+    @action resetForm = () => {
+        this.bookForm.reset();
+    };
+
     updateBook = async () => {
         const { hasError } = await this.bookForm.validate();
 
@@ -106,8 +117,9 @@ export class BooksStore {
                     categoryIds.push(id);
                 }
             });
-
-            await this.eLibraryApi.booksController_editCategory(this.selectedBook?.id!, {
+            // TODO fix issue with book id
+            const bookId = this.selectedBook!.id!;
+            await this.eLibraryApi.booksController_editCategory(bookId, {
                 title,
                 description,
                 author,
@@ -132,14 +144,36 @@ export class BooksStore {
         await this.getBooksList();
     };
 
-    initDetails = (id: number) => {
+    initDetails = async (id: number) => {
+        const categories: CategoryEntity[] = (
+            await this.eLibraryApi.categoryController_getCategories('')
+        ).data as unknown as CategoryEntity[];
+        // TODO replace with api call
         this.selectedBook = this.books.find(book => book.id === id);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        categories[0].forEach(item => {
+            this.categories.set(item.id, item.name);
+        });
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        for (const category of categories[0]) {
+            this.bookForm.$.categoryIds.$.set(
+                category.id,
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                new CheckboxFieldState(category.id === 1)
+            );
+        }
+
         setFormStateValues(this.bookForm, {
             title: this.selectedBook?.title ?? '',
             description: this.selectedBook?.description ?? '',
             author: this.selectedBook?.author ?? '',
             pictureUrl: this.selectedBook?.pictureUrl ?? '',
         });
+
+        commitFormState(this.bookForm);
 
         this.filePickerStore.setSavedImageUrl(`${baseUrl}${this.selectedBook?.pictureUrl}`);
     };
