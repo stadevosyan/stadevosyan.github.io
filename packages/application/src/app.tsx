@@ -18,17 +18,17 @@ import * as Styles from './app.module.css';
 import { AuthPaths } from './modules/common/utils/paths';
 import { Logout } from './modules/auth/logout/components/logout';
 import { OwnBooks } from './modules/own-books/components/own-books';
+import { ContactsStore } from './modules/contacts/stores/contacts.store';
 
 const isProd = process.env.NODE_ENV === 'production';
 export const baseUrl = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
-
-// SamSam1234
 
 export const App = provide({
     singletons: [
         ELibraryApi,
         AuthStore,
         BooksStore,
+        ContactsStore,
         {
             provide: BASE_URL_TOKEN_ELibraryApi,
             useValue: baseUrl,
