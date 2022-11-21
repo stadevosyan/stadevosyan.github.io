@@ -50,7 +50,7 @@ export const App = provide({
                             <MainWrapper>
                                 <Switch>
                                     <Route path="/" exact component={BookManagement} />
-                                    <Route path="/:id" exact component={BookDetails} />
+                                    <Route path="/book/:id" exact component={BookDetails} />
                                     <Route path="/account" exact component={Account} />
                                     {isUser && (
                                         <Route path="/my-books" exact component={OwnBooks} />
@@ -69,7 +69,7 @@ export const App = provide({
                                         />
                                     )}
                                     <Route path={AuthPaths.logout} component={Logout} />
-                                    <Redirect from="/*" to="/users" />
+                                    <Redirect from="/*" to="/" />
                                 </Switch>
                             </MainWrapper>
                         )}
