@@ -1,14 +1,14 @@
 import { provide, useDependencies } from '@servicetitan/react-ioc';
-import { AddContactStore } from '../stores/add-contact.store';
-import { FilePickerStore } from '../../common/stores/file-picker.store';
 import { observer } from 'mobx-react';
-import { ContactsStore } from '../stores/contacts.store';
 import { Button, ButtonGroup, Form, Takeover } from '@servicetitan/design-system';
 import { Label } from '@servicetitan/form';
 import { useEffect } from 'react';
-import { LoadStatus } from '../../common/enums/load-status';
-import { FilePicker } from '../../common/components/file-picker/file-picker';
 import * as Styles from './add-contact-takeover.module.less';
+import { FilePickerStore } from '../../../common/stores/file-picker.store';
+import { AddContactStore } from '../../stores/add-contact.store';
+import { ContactsStore } from '../../stores/contacts.store';
+import { FilePicker } from '../../../common/components/file-picker/file-picker';
+import { LoadStatus } from '../../../common/enums/load-status';
 
 export const AddContactTakeover = provide({
     singletons: [AddContactStore, FilePickerStore],

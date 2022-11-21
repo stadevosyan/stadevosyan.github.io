@@ -12,13 +12,14 @@ import { BookManagement } from './modules/book-management/components/book-manage
 import { BookDetails } from './modules/book-management/components/book-details/book-details';
 import { BooksStore } from './modules/book-management/stores/books.store';
 import { Account } from './modules/account/components/account';
-import { Contacts } from './modules/contacts/components/contacts';
 
 import * as Styles from './app.module.css';
 import { AuthPaths } from './modules/common/utils/paths';
 import { Logout } from './modules/auth/logout/components/logout';
 import { OwnBooks } from './modules/own-books/components/own-books';
 import { ContactsStore } from './modules/contacts/stores/contacts.store';
+import { Contacts } from './modules/contacts/components/contacts/contacts';
+import { ContactDetails } from './modules/contacts/components/contact-details/contact-details';
 import { UserBookDetails } from './modules/book-management/components/user-book-details/user-book-details';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -59,6 +60,13 @@ export const App = provide({
                                     )}
                                     {isAdmin && (
                                         <Route path="/contacts" exact component={Contacts} />
+                                    )}
+                                    {isAdmin && (
+                                        <Route
+                                            path="/contacts/:id"
+                                            exact
+                                            component={ContactDetails}
+                                        />
                                     )}
                                     <Route path={AuthPaths.logout} component={Logout} />
                                     <Redirect from="/*" to="/users" />
