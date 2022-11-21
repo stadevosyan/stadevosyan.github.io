@@ -26,7 +26,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
 
         const handleSelectBook = async (data: any) => {
             await bookStore.handleSelect(data); // process logic
-            history.push(`/book/${3}`);
+            history.push(`/book/${data.id}`);
         };
 
         const handleCustomSearch = (
@@ -73,6 +73,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                     <Stack className={Styles.bookList} direction="column" spacing={2}>
                         {bookStore.books.map(book => (
                             <BookCardExpanded
+                                id={book.id}
                                 name={book.title}
                                 author={book.author}
                                 imgUrl={book.pictureUrl}
@@ -87,6 +88,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                         {bookStore.books.map(book => (
                             <Stack.Item key={book.id}>
                                 <BookCard
+                                    id={book.id}
                                     name={book.title}
                                     author={book.author}
                                     imgUrl={book.pictureUrl}

@@ -5,17 +5,21 @@ import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/fo
 import { CheckboxFieldState } from '@servicetitan/form-state';
 import { CategoryEntity, CreateBookDto, ELibraryApi } from '../../common/api/e-library.client';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
+import { LoadStatus } from '../../common/enums/load-status';
+import { BooksStore } from './books.store';
 
 export const requiredWithCustomText = (error: string) => (value: any) =>
     FormValidators.required(value) && error;
 
 export const errorMessages = {
     RequiredTitle: 'Մուտքագրեք վերնագիրը',
+    RequiredAuthor: 'Մուտքագրեք հեղինակին',
+    RequiredDesc: 'Մուտքագրեք Նկարագրություն',
 };
 
 @injectable()
 export class NewBookStore {
-    @observable loading: any;
+    @observable loading: LoadStatus = LoadStatus.None;
     @observable open = false;
     @observable categories = new Map();
 
@@ -23,25 +27,36 @@ export class NewBookStore {
         title: new InputFieldState('').validators(
             requiredWithCustomText(errorMessages.RequiredTitle)
         ),
-        description: new InputFieldState('').validators(FormValidators.maxLength(1024)),
-        author: new InputFieldState('').validators(FormValidators.maxLength(124)),
+        author: new InputFieldState('').validators(
+            requiredWithCustomText(errorMessages.RequiredAuthor),
+            FormValidators.maxLength(124)
+        ),
+        description: new InputFieldState('').validators(
+            requiredWithCustomText(errorMessages.RequiredDesc),
+            FormValidators.maxLength(1024)
+        ),
         categoryIds: new FormState<Map<number, CheckboxFieldState>>(new Map()),
         pictureUrl: new InputFieldState(''),
     });
 
     constructor(
         @inject(FilePickerStore) private readonly filePickerStore: FilePickerStore,
-        @inject(ELibraryApi) private readonly eLibraryApi: ELibraryApi
+        @inject(ELibraryApi) private readonly eLibraryApi: ELibraryApi,
+        @inject(BooksStore) private readonly booksStore: BooksStore
     ) {
         makeObservable(this);
         this.init().catch();
     }
 
-    @action setLoading = (loading: any) => (this.loading = loading);
+    @action setLoading = (loading: LoadStatus) => (this.loading = loading);
 
     @action setOpen = (state: boolean) => (this.open = state);
 
-    @action handleClose = () => this.setOpen(false);
+    @action handleClose = () => {
+        this.filePickerStore.deleteImage();
+        this.newBookForm.reset();
+        this.setOpen(false);
+    };
 
     @action handleOpen = () => this.setOpen(true);
 
@@ -68,6 +83,7 @@ export class NewBookStore {
         if (hasError || this.filePickerStore.error) {
             return false;
         }
+        this.loading = LoadStatus.Loading;
 
         const { title, description, author } = formStateToJS(this.newBookForm);
         const profilePictureUrl = this.filePickerStore.imageUrlToSave;
@@ -85,10 +101,13 @@ export class NewBookStore {
                 pictureUrl: profilePictureUrl!,
                 categoryIds,
             } as unknown as CreateBookDto);
+
+            await this.booksStore.init();
+            this.setOpen(false);
         } catch {
-            //
+            // TODO error handling here
+        } finally {
+            this.loading = LoadStatus.Ok;
         }
     };
-
-    cancel = () => {};
 }
