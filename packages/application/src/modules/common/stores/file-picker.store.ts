@@ -3,7 +3,7 @@ import { action, computed, makeObservable, observable, runInAction } from 'mobx'
 import download from 'downloadjs';
 import { ELibraryApi } from '../api/e-library.client';
 import { LoadStatus } from '../enums/load-status';
-import { baseUrl } from '../../../app';
+import { urlToShow } from '../utils/url-helpers';
 
 export interface FileParameter {
     data: any;
@@ -35,8 +35,8 @@ export class FilePickerStore {
     @computed get imageUrlToShow() {
         return this.imageToUpload
             ? URL.createObjectURL(this.imageToUpload.data)
-            : this.urlToShow(this.imageSentToBE) ?? !this.imageDeleted
-            ? this.urlToShow(this.savedImageUrl)
+            : urlToShow(this.imageSentToBE) ?? !this.imageDeleted
+            ? urlToShow(this.savedImageUrl)
             : undefined;
     }
 
@@ -97,8 +97,6 @@ export class FilePickerStore {
     };
 
     @action setFileUploadStatus = (status: LoadStatus) => (this.fileUploadStatus = status);
-
-    private urlToShow = (url?: string) => (url ? `${baseUrl}${url}` : undefined);
 
     private addNewFile = async (file: FileParameter) => {
         this.imageToUpload = file;

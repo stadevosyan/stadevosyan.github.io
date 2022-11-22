@@ -15,6 +15,7 @@ import * as Styles from './main-wrapper.module.less';
 import { useDependencies } from '@servicetitan/react-ioc';
 import { AuthStore } from '../../stores/auth.store';
 import { observer } from 'mobx-react';
+import { getAvatarFirstLetters, urlToShow } from '../../utils/url-helpers';
 
 export const MainWrapper: FC = observer(({ children }) => {
     const [{ user, isAdmin, isUser }] = useDependencies(AuthStore);
@@ -38,7 +39,11 @@ export const MainWrapper: FC = observer(({ children }) => {
                     <Stack style={{ flex: 1 }} justifyContent="space-between">
                         <Stack.Item>{/*  */}</Stack.Item>
                         <Stack justifyContent="center" alignItems="center">
-                            <Avatar name="ԹՀ" autoColor />
+                            <Avatar
+                                name={getAvatarFirstLetters(user?.name)}
+                                autoColor
+                                image={urlToShow(user?.profilePictureUrl)}
+                            />
                             <BodyText className="p-l-1 t-truncate" size="medium">
                                 {user?.name}
                             </BodyText>
