@@ -78,6 +78,10 @@ export class AuthStore {
         if (authToken && user) {
             this.setupToken(authToken);
             this.user = user;
+        } else {
+            if (authToken || user) {
+                this.logout();
+            }
         }
     };
 
