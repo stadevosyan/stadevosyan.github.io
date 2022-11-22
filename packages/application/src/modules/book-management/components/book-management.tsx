@@ -108,7 +108,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                         ))}
                     </Stack>
                 )}
-                <NewBookTakeover />
+                {newBookStore.open && <NewBookTakeover />}
                 <FilterDrawer />
             </Stack>
         );

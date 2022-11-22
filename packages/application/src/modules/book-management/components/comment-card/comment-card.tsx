@@ -1,21 +1,37 @@
-import { Avatar, Stack } from '@servicetitan/design-system';
+import { Avatar, BodyText, Button, Stack } from '@servicetitan/design-system';
+import classNames from 'classnames';
+import { FC } from 'react';
 
-export const CommentCard = () => {
+interface CommentCardProps {
+    id: number;
+    name?: string;
+    review?: string;
+    deletable?: boolean;
+    createdOn?: string;
+    onDelete?: (id: number) => void;
+}
+
+export const CommentCard: FC<CommentCardProps> = ({ deletable, review, name }) => {
     return (
         <Stack.Item className="m-y-2">
             <Stack direction="column">
                 <Stack alignItems="center" className="m-b-2">
                     <Stack.Item className="m-r-6">
-                        <Avatar name="RT" />
-                        Անուն ազգանուն
+                        <Avatar className="m-r-2" name="RT" />
+                        {name}
                     </Stack.Item>
                     <Stack.Item>12.11.22</Stack.Item>
                 </Stack>
-                <Stack>
-                    Նոր դիստոպիան ապագայի մասին է, որտեղ երեխաներին սովորեցնում են արհեստական ընկեր
-                    կոչվող ռոբոտները: Վեպի գլխավոր հերոսուհին՝ Կլարան, հենց այդպիսի ռոբոտ է, և
-                    չնայած նրա գիտելիքները հսկայական են, նա շատ քիչ բան գիտի իրեն շրջապատող աշխարհի
-                    մասին, և նրա կյանքը ամբողջովին կախված է նրանից, թե ով է նրան գնում:
+                <Stack direction="row">
+                    <BodyText>{review}</BodyText>
+                    {deletable && (
+                        <Button
+                            className={classNames({ 'm-r-6 m-l-6': deletable })}
+                            negative
+                            outline
+                            iconName="delete"
+                        />
+                    )}
                 </Stack>
             </Stack>
         </Stack.Item>

@@ -12,6 +12,7 @@ export class UserBookDetailsStore {
     @observable open = false;
     @observable book?: BookEntity;
     @observable categories = new Map();
+    @observable bookReviews = {};
 
     commentForm = new FormState({
         review: new InputFieldState('').validators(

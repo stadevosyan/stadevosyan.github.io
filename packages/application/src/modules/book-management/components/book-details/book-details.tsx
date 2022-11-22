@@ -16,6 +16,7 @@ import { FilePickerStore } from '../../../common/stores/file-picker.store';
 import { useHistory, useParams } from 'react-router-dom';
 import { Fragment, useEffect } from 'react';
 import { LoadStatus } from '../../../common/enums/load-status';
+import { BookReviews } from './book-reviews';
 
 export const BookDetails = provide({ singletons: [FilePickerStore] })(
     observer(() => {
@@ -69,12 +70,16 @@ export const BookDetails = provide({ singletons: [FilePickerStore] })(
                                 <Tab onClick={() => setActiveTab(1)} active={activeTab === 1}>
                                     Հասանելիության պատմություն
                                 </Tab>
+                                <Tab onClick={() => setActiveTab(2)} active={activeTab === 2}>
+                                    Մեկնաբանություններ
+                                </Tab>
                             </TabGroup>
                         </Stack>
                     </Stack>
                     <Stack className="p-3">
                         {activeTab === 0 && <BookSummary />}
                         {activeTab === 1 && <BookHistory />}
+                        {activeTab === 2 && <BookReviews />}
                     </Stack>
                 </Stack>
             </Stack>

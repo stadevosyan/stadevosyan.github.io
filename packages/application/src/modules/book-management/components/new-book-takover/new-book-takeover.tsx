@@ -13,8 +13,10 @@ import { useDependencies } from '@servicetitan/react-ioc';
 
 import { FilePicker } from '../../../common/components/file-picker/file-picker';
 import { NewBookStore } from '../../stores/new-book.store';
-import { ReactElement } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { LoadStatus } from '../../../common/enums/load-status';
+
+import * as Styles from '../../../contacts/components/add-contact-takeover/add-contact-takeover.module.less';
 
 export const NewBookTakeover = observer(() => {
     const [newBookStore] = useDependencies(NewBookStore);
@@ -23,6 +25,13 @@ export const NewBookTakeover = observer(() => {
         newBookForm: { $ },
         categories,
     } = newBookStore;
+
+    useEffect(() => {
+        const elements = document.getElementsByClassName('BackLink__label');
+        if (elements.length) {
+            elements[0].textContent = 'Վերադառնալ գլխավոր էջ';
+        }
+    }, []);
 
     const generateCheckboxes = () => {
         const checkboxes: ReactElement[] = [];
@@ -44,12 +53,11 @@ export const NewBookTakeover = observer(() => {
 
     return (
         <Takeover
-            portal={false}
-            theme="light"
-            open={newBookStore.open}
+            open
             focusTrapOptions={{ disabled: true }}
             title="Ավելացնել նոր գիրք"
             backLabel="Վերադառնալ գլխավոր էջ"
+            className={Styles.takeover}
             footer={
                 <ButtonGroup>
                     <Button onClick={newBookStore.handleClose}>Չեղարկել</Button>

@@ -8,6 +8,7 @@ import {
     CategoryEntity,
     EditBookDto,
     ELibraryApi,
+    UserEntity,
 } from '../../common/api/e-library.client';
 import {
     commitFormState,
@@ -27,8 +28,16 @@ export class BooksStore {
     @observable activeTab = 0;
     @observable isFilterOpen = false;
     @observable books: BookEntity[] = [];
+
     @observable count = 0;
     @observable categories = new Map();
+
+    @observable assignModal = false;
+    @observable assignModalLoading = false;
+    @observable users: Map<number, UserEntity> = new Map();
+    @observable usersIds: number[] = [];
+    @observable categoriesIds: number[] = [];
+
     @observable selectedBook?: Partial<BookEntity> = {
         title: '',
         author: '',
@@ -59,7 +68,10 @@ export class BooksStore {
         ),
         categoryIds: new FormState<Map<number, CheckboxFieldState>>(new Map()),
         pictureUrl: new InputFieldState(''),
+        isAvailable: new CheckboxFieldState(false),
     });
+
+    userForm = new FormState<Map<number, CheckboxFieldState>>(new Map());
 
     searchDebounced: (() => Promise<void>) & { clear(): void } & { flush(): void };
 
@@ -101,6 +113,33 @@ export class BooksStore {
 
     @action resetForm = () => {
         this.bookForm.reset();
+    };
+
+    @action cleanBookEditState = () => {
+        this.resetForm();
+    };
+
+    @action openAssignBookModal = async () => {
+        this.assignModalLoading = false;
+        this.assignModal = true;
+        this.userForm = new FormState(new Map());
+        this.users = new Map();
+        this.usersIds = [];
+
+        const users = (await this.eLibraryApi.usersController_getUsers('', 1, 1000)).data;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        users.data.forEach(user => {
+            this.userForm.$.set(user.id, new CheckboxFieldState(false));
+            this.users.set(user.id, user);
+            this.usersIds.push(user.id);
+        });
+
+        this.assignModalLoading = true;
+    };
+
+    @action closeAssignBookModal = () => {
+        this.assignModal = false;
     };
 
     updateBook = async () => {
@@ -169,22 +208,31 @@ export class BooksStore {
         const categories: CategoryEntity[] = (
             await this.eLibraryApi.categoryController_getCategories('')
         ).data as unknown as CategoryEntity[];
+        this.categoriesIds = [];
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         categories[0].forEach(item => {
             this.categories.set(item.id, item.name);
+            this.categoriesIds.push(item.id);
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         for (const category of categories[0]) {
             this.bookForm.$.categoryIds.$.set(
                 category.id,
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 new CheckboxFieldState(category.id === 1)
             );
             this.filterForm.$.all.$.set(category.id, new CheckboxFieldState(false));
         }
+    };
+
+    assignToUser = () => {
+        this.closeAssignBookModal();
+    };
+
+    resetAssignForm = () => {
+        this.userForm.reset();
+        this.closeAssignBookModal();
     };
 }

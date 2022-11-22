@@ -103,9 +103,11 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                     </Stack.Item>
                 </Stack>
                 <Stack className="p-3" direction="column">
-                    <CommentCard />
-                    <CommentCard />
-                    <CommentCard />
+                    <CommentCard
+                        id={0}
+                        review="Նոր դիստոպիան ապագայի մասին է, որտեղ երեխաներին սովորեցնում են արհեստական ընկեր կոչվող ռոբոտները: Վեպի գլխավոր հերոսուհին՝ Կլարան, հենց այդպիսի ռոբոտ է, և չնայած նրա գիտելիքները հսկայական են, նա շատ քիչ բան գիտի իրեն շրջապատող աշխարհի մասին, և նրա կյանքը ամբողջովին կախված է նրանից, թե ով է նրան գնում:"
+                        name="Անուն ազգանուն"
+                    />
                 </Stack>
                 <Modal
                     open={open}
