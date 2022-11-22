@@ -64,6 +64,7 @@ export class SignUpStore {
         const { name, phoneNumber, password, email } = formStateToJS(this.form);
         const profilePictureUrl = this.imageStore.imageUrlToSave;
 
+        console.log({ profilePictureUrl });
         try {
             await this.api.authController_signUpUser({
                 name,

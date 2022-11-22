@@ -32,11 +32,11 @@ export class FilePickerStore {
         return !!this.imageSentToBE || !!this.imageToUpload || this.imageDeleted || this.error;
     }
 
-    @computed get imageUrl() {
+    @computed get imageUrlToShow() {
         return this.imageToUpload
             ? URL.createObjectURL(this.imageToUpload.data)
-            : this.imageSentToBE ?? !this.imageDeleted
-            ? this.savedImageUrl
+            : this.urlToShow(this.imageSentToBE) ?? !this.imageDeleted
+            ? this.urlToShow(this.savedImageUrl)
             : undefined;
     }
 
@@ -98,6 +98,8 @@ export class FilePickerStore {
 
     @action setFileUploadStatus = (status: LoadStatus) => (this.fileUploadStatus = status);
 
+    private urlToShow = (url?: string) => (url ? `${baseUrl}${url}` : undefined);
+
     private addNewFile = async (file: FileParameter) => {
         this.imageToUpload = file;
         const isValid = await this.verifyImageSize();
@@ -110,7 +112,7 @@ export class FilePickerStore {
             try {
                 const { data } = await this.api.uploadController_uploadFile(fileForm);
                 runInAction(() => {
-                    this.imageSentToBE = `${baseUrl}${data.url}`;
+                    this.imageSentToBE = data.url;
                 });
                 this.setFileUploadStatus(LoadStatus.Ok);
             } catch {
@@ -120,7 +122,7 @@ export class FilePickerStore {
     };
 
     @action private async verifyImageSize() {
-        const size = await this.getImageSize(this.imageUrl!);
+        const size = await this.getImageSize(this.imageUrlToShow!);
         runInAction(() => {
             if (size) {
                 const MIN_SIZE = 180;

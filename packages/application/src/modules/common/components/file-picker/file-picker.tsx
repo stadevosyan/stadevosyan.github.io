@@ -34,7 +34,7 @@ export const FilePicker: FC<FilePickerProps> = observer(
                 replaceFile,
                 setSavedImageUrl,
                 error,
-                imageUrl,
+                imageUrlToShow,
                 selectFile,
                 downloadImage,
                 deleteImage,
@@ -62,7 +62,7 @@ export const FilePicker: FC<FilePickerProps> = observer(
             <Stack className={className} direction="column" spacing={1}>
                 {/* <Label required>Logo</Label>*/}
                 {!!error && <Banner status="critical" title={error} icon className="m-y-2" />}
-                {!imageUrl ? (
+                {!imageUrlToShow ? (
                     <Picker
                         buttonLabel={buttonLabel}
                         buttonProps={{ iconName: 'add_a_photo' }}
@@ -77,7 +77,7 @@ export const FilePicker: FC<FilePickerProps> = observer(
                             justifyContent="center"
                             className={Styles.logoContainer}
                         >
-                            <img src={imageUrl} alt="cover" />
+                            <img src={imageUrlToShow} alt="cover" />
                             <div className={Styles.logoAction}>
                                 <ButtonGroup>
                                     <Tooltip el="div" text="Փոխել">
