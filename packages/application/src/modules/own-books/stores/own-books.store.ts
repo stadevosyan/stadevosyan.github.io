@@ -1,5 +1,5 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, computed, makeObservable, observable, runInAction } from 'mobx';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
 import { BookEntity, ELibraryApi } from '../../common/api/e-library.client';
 import { FormState } from 'formstate';
@@ -13,14 +13,7 @@ export class OwnBooksStore {
     @observable booksToShow: BookEntity[] = [];
     @observable count = 0;
 
-    // @computed get booksToShow() {
-    //     return this.books.filter(item =>
-    //         item.title.toLowerCase().includes(this.searchForm.$.search.value.trim().toLowerCase())
-    //     );
-    // }
-
     searchDebounced: (() => void) & { clear(): void } & { flush(): void };
-
     searchForm = new FormState({
         search: new InputFieldState(''),
     });
@@ -40,6 +33,7 @@ export class OwnBooksStore {
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     init = async (id: number) => {
         this.setLoadingOwnBooksStatus(LoadStatus.Loading);
         try {
