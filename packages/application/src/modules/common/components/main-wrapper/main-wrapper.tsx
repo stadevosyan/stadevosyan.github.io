@@ -8,8 +8,8 @@ import {
     SideNav,
     Stack,
 } from '@servicetitan/design-system';
-import { FC, useCallback } from 'react';
-import { Link, matchPath, useHistory } from 'react-router-dom';
+import { FC, useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import * as Styles from './main-wrapper.module.less';
 import { useDependencies } from '@servicetitan/react-ioc';
@@ -18,15 +18,7 @@ import { observer } from 'mobx-react';
 import { getAvatarFirstLetters, urlToShow } from '../../utils/url-helpers';
 
 export const MainWrapper: FC = observer(({ children }) => {
-    const [{ user, isAdmin, isUser }] = useDependencies(AuthStore);
-    const history = useHistory();
-
-    const isActive = useCallback(
-        path => {
-            return !!matchPath(history.location.pathname, { path, exact: true });
-        },
-        [history.location.pathname]
-    );
+    const [{ user }] = useDependencies(AuthStore);
 
     return (
         <Page
@@ -51,59 +43,96 @@ export const MainWrapper: FC = observer(({ children }) => {
                     </Stack>
                 ),
             }}
-            sidebar={
-                <Sidebar localStorageKey="" className={Styles.sidebar}>
-                    <Icon iconName="odometer" />
-                    <Sidebar.Section>
-                        <SideNav>
-                            <Link to="/">
-                                <SideNav.Item active={isActive('/')}>
-                                    <Icon name="import_contacts" className="m-r-1 m-b-half" />
-                                    Բոլոր գրքերը
-                                </SideNav.Item>
-                            </Link>
-                            {isUser && (
-                                <Link to="/my-books">
-                                    {' '}
-                                    <SideNav.Item active={isActive('/my-books')}>
-                                        <Icon name="library_books" className="m-r-1 m-b-half" />
-                                        Իմ գրքերը
-                                    </SideNav.Item>
-                                </Link>
-                            )}
-                            {isAdmin && (
-                                <Link to="/contacts">
-                                    {' '}
-                                    <SideNav.Item active={isActive('/contacts')}>
-                                        <Icon name="library_books" className="m-r-1" />
-                                        Կոնտակտներ{' '}
-                                    </SideNav.Item>
-                                </Link>
-                            )}
-                        </SideNav>
-                    </Sidebar.Section>
-                    <Sidebar.Section className={Styles.sidebarMainSection}>
-                        <SideNav className={Styles.myAccountNav}>
-                            <Link to="/account">
-                                <SideNav.Item active={isActive('/account')}>
-                                    <Icon name="face" className="m-r-1 m-b-half" />
-                                    Իմ հաշիվը
-                                </SideNav.Item>
-                            </Link>
-                        </SideNav>
-                        <SideNav>
-                            <Link to="/logout">
-                                <SideNav.Item active>
-                                    <Icon name="call_missed_outgoing" className="m-r-1 m-b-half" />
-                                    Դուրս գալ
-                                </SideNav.Item>
-                            </Link>
-                        </SideNav>
-                    </Sidebar.Section>
-                </Sidebar>
-            }
+            sidebar={<MySideBar />}
         >
             <Layout>{children}</Layout>
         </Page>
+    );
+});
+
+const MySideBar: FC = observer(() => {
+    const [{ isAdmin, isUser }] = useDependencies(AuthStore);
+    const [activeRoute, setActiveRoute] = useState(1);
+
+    const isActive = useCallback(
+        route => {
+            return route === activeRoute;
+        },
+        [activeRoute]
+    );
+
+    return (
+        <Sidebar localStorageKey="" className={Styles.sidebar}>
+            <Icon iconName="odometer" />
+            <Sidebar.Section>
+                <SideNav>
+                    <Link
+                        onClick={() => {
+                            setActiveRoute(1);
+                        }}
+                        to="/"
+                    >
+                        <SideNav.Item active={isActive(1)}>
+                            <Icon name="import_contacts" className="m-r-1 m-b-half" />
+                            Բոլոր գրքերը
+                        </SideNav.Item>
+                    </Link>
+                    {isUser && (
+                        <Link
+                            to="/my-books"
+                            onClick={() => {
+                                setActiveRoute(2);
+                            }}
+                        >
+                            <SideNav.Item active={isActive(2)}>
+                                <Icon name="library_books" className="m-r-1 m-b-half" />
+                                Իմ գրքերը
+                            </SideNav.Item>
+                        </Link>
+                    )}
+                    {isAdmin && (
+                        <Link
+                            to="/contacts"
+                            onClick={() => {
+                                setActiveRoute(3);
+                            }}
+                        >
+                            <SideNav.Item active={isActive(3)}>
+                                <Icon name="library_books" className="m-r-1" />
+                                Կոնտակտներ{' '}
+                            </SideNav.Item>
+                        </Link>
+                    )}
+                </SideNav>
+            </Sidebar.Section>
+            <Sidebar.Section className={Styles.sidebarMainSection}>
+                <SideNav className={Styles.myAccountNav}>
+                    <Link
+                        to="/account"
+                        onClick={() => {
+                            setActiveRoute(4);
+                        }}
+                    >
+                        <SideNav.Item active={isActive(4)}>
+                            <Icon name="face" className="m-r-1 m-b-half" />
+                            Իմ հաշիվը
+                        </SideNav.Item>
+                    </Link>
+                </SideNav>
+                <SideNav>
+                    <Link
+                        to="/logout"
+                        onClick={() => {
+                            setActiveRoute(5);
+                        }}
+                    >
+                        <SideNav.Item active>
+                            <Icon name="call_missed_outgoing" className="m-r-1 m-b-half" />
+                            Դուրս գալ
+                        </SideNav.Item>
+                    </Link>
+                </SideNav>
+            </Sidebar.Section>
+        </Sidebar>
     );
 });
