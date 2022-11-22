@@ -36,8 +36,9 @@ export class BooksStore {
     };
 
     filterForm = new FormState({
-        all: new CheckboxFieldState(false),
+        all: new FormState<Map<number, CheckboxFieldState>>(new Map()),
         isAvailable: new CheckboxFieldState(false),
+        isBooked: new CheckboxFieldState(false),
     });
 
     searchForm = new FormState({
@@ -72,6 +73,7 @@ export class BooksStore {
     }
 
     cancelFilter = () => {
+        this.filterForm.reset();
         this.closeFilter();
     };
 
@@ -142,14 +144,32 @@ export class BooksStore {
 
     init = async () => {
         await this.getBooksList();
+        this.getCategories().then();
     };
 
-    initDetails = async (id: number) => {
+    initDetails = (id: number) => {
+        // TODO replace with api call
+        this.selectedBook = this.books.find(book => book.id === id);
+
+        this.getCategories().then();
+
+        setFormStateValues(this.bookForm, {
+            title: this.selectedBook?.title ?? '',
+            description: this.selectedBook?.description ?? '',
+            author: this.selectedBook?.author ?? '',
+            pictureUrl: this.selectedBook?.pictureUrl ?? '',
+        });
+
+        commitFormState(this.bookForm);
+
+        this.filePickerStore.setSavedImageUrl(`${baseUrl}${this.selectedBook?.pictureUrl}`);
+    };
+
+    getCategories = async () => {
         const categories: CategoryEntity[] = (
             await this.eLibraryApi.categoryController_getCategories('')
         ).data as unknown as CategoryEntity[];
-        // TODO replace with api call
-        this.selectedBook = this.books.find(book => book.id === id);
+
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         categories[0].forEach(item => {
@@ -164,17 +184,7 @@ export class BooksStore {
                 // @ts-ignore
                 new CheckboxFieldState(category.id === 1)
             );
+            this.filterForm.$.all.$.set(category.id, new CheckboxFieldState(false));
         }
-
-        setFormStateValues(this.bookForm, {
-            title: this.selectedBook?.title ?? '',
-            description: this.selectedBook?.description ?? '',
-            author: this.selectedBook?.author ?? '',
-            pictureUrl: this.selectedBook?.pictureUrl ?? '',
-        });
-
-        commitFormState(this.bookForm);
-
-        this.filePickerStore.setSavedImageUrl(`${baseUrl}${this.selectedBook?.pictureUrl}`);
     };
 }
