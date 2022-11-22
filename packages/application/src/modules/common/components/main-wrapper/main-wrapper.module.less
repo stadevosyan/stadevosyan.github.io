@@ -14,3 +14,20 @@
         }
     }
 }
+
+.sidebar {
+    :global(.Sidebar__content) {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-main-section {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .my-account-nav {
+        flex-grow: 1;
+    }
+}

@@ -47,13 +47,13 @@ export const MainWrapper: FC = observer(({ children }) => {
                 ),
             }}
             sidebar={
-                <Sidebar localStorageKey="">
+                <Sidebar localStorageKey="" className={Styles.sidebar}>
                     <Icon iconName="odometer" />
                     <Sidebar.Section>
                         <SideNav>
                             <Link to="/">
                                 <SideNav.Item active={isActive('/')}>
-                                    <Icon name="access_alarms" className="m-r-1" />
+                                    <Icon name="import_contacts" className="m-r-1 m-b-half" />
                                     Բոլոր գրքերը
                                 </SideNav.Item>
                             </Link>
@@ -61,7 +61,7 @@ export const MainWrapper: FC = observer(({ children }) => {
                                 <Link to="/my-books">
                                     {' '}
                                     <SideNav.Item active={isActive('/my-books')}>
-                                        <Icon name="library_books" className="m-r-1" />
+                                        <Icon name="library_books" className="m-r-1 m-b-half" />
                                         Իմ գրքերը
                                     </SideNav.Item>
                                 </Link>
@@ -77,12 +77,20 @@ export const MainWrapper: FC = observer(({ children }) => {
                             )}
                         </SideNav>
                     </Sidebar.Section>
-                    <Sidebar.Section>
-                        <SideNav>
+                    <Sidebar.Section className={Styles.sidebarMainSection}>
+                        <SideNav className={Styles.myAccountNav}>
                             <Link to="/account">
                                 <SideNav.Item active={isActive('/account')}>
-                                    <Icon name="face" className="m-r-1" />
+                                    <Icon name="face" className="m-r-1 m-b-half" />
                                     Իմ հաշիվը
+                                </SideNav.Item>
+                            </Link>
+                        </SideNav>
+                        <SideNav>
+                            <Link to="/logout">
+                                <SideNav.Item active>
+                                    <Icon name="call_missed_outgoing" className="m-r-1 m-b-half" />
+                                    Դուրս գալ
                                 </SideNav.Item>
                             </Link>
                         </SideNav>
