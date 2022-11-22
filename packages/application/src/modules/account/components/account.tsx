@@ -63,7 +63,7 @@ export const Account = provide({
                             />
                         </Form>
                         <Button className="m-t-4" outline width="250px" onClick={handleModalOpen}>
-                            <Icon name="bolt" className="m-r-half" />
+                            <Icon name="vpn_key" className="m-r-half" />
                             Փոխել գաղտնաբառը
                         </Button>
                     </Stack>
