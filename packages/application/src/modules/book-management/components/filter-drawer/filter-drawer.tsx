@@ -1,4 +1,4 @@
-import { FC, ReactElement } from 'react';
+import { FC, Fragment } from 'react';
 import { BodyText, Button, ButtonGroup, Divider, Drawer, Form } from '@servicetitan/design-system';
 import { observer } from 'mobx-react';
 import { useDependencies } from '@servicetitan/react-ioc';
@@ -8,23 +8,7 @@ export const FilterDrawer: FC = observer(() => {
     const [bookStore] = useDependencies(BooksStore);
     const { filterForm, categoriesMap } = bookStore;
 
-    const generateCheckboxes = () => {
-        const checkboxes: ReactElement[] = [];
-
-        filterForm.$.all.$.forEach((category, id) => {
-            checkboxes.push(
-                <Form.Checkbox
-                    className="m-b-2-i"
-                    checked={category.value}
-                    value={!category.value}
-                    onChange={category.onChange}
-                    label={categoriesMap.get(id)?.name ?? ''}
-                />
-            );
-        });
-
-        return checkboxes;
-    };
+    const categoryFilters = Array.from(filterForm.$.categories.$);
 
     return (
         <Drawer
@@ -35,7 +19,7 @@ export const FilterDrawer: FC = observer(() => {
                 <ButtonGroup>
                     <Button onClick={bookStore.cancelFilter}>Չեղարկել</Button>
                     <Button onClick={bookStore.applyFilter} primary>
-                        Կիրառել
+                        Փակել
                     </Button>
                 </ButtonGroup>
             }
@@ -43,7 +27,18 @@ export const FilterDrawer: FC = observer(() => {
             <Form className="">
                 <Form.Group grouped className="flex-grow-1">
                     <label>Ժանրեր</label>
-                    {generateCheckboxes()}
+                    <Fragment>
+                        {categoryFilters.map(([id, category]) => (
+                            <Form.Checkbox
+                                key={id}
+                                className="m-b-2-i"
+                                checked={category.value}
+                                value={!category.value}
+                                onChange={category.onChange}
+                                label={categoriesMap.get(id)?.name ?? ''}
+                            />
+                        ))}
+                    </Fragment>
                 </Form.Group>
                 <Divider className="m-b-2" />
                 <BodyText className="m-b-2 t-truncate" size="small" bold>
