@@ -4,12 +4,12 @@ import { Avatar, BodyText, Card, Divider, Headline, Stack, Tag } from '@servicet
 import { BookCardProps } from '../book-card/book-card';
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
 import { baseUrl } from '../../../../app';
-import { UserEntity } from '../../api/e-library.client';
+import { UserModel } from '../../api/e-library.client';
 import { urlToShow } from '../../utils/url-helpers';
 
 interface BookCardExpandedProps extends BookCardProps {
     name?: string;
-    user?: UserEntity;
+    user?: UserModel;
     onClick: (selfProps: BookCardProps) => void;
 }
 
