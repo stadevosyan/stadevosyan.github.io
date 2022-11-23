@@ -1,12 +1,15 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { Avatar, BodyText, Card, Divider, Headline, Stack, Tag } from '@servicetitan/design-system';
 
 import { BookCardProps } from '../book-card/book-card';
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
 import { baseUrl } from '../../../../app';
+import { UserEntity } from '../../api/e-library.client';
+import { urlToShow } from '../../utils/url-helpers';
 
 interface BookCardExpandedProps extends BookCardProps {
     name?: string;
+    user?: UserEntity;
     onClick: (selfProps: BookCardProps) => void;
 }
 
@@ -47,9 +50,12 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                                 <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
                                     {props.author}
                                 </BodyText>
-                                <Tag color="success" subtle>
-                                    Հասանելի է
-                                </Tag>
+                                {!props.status && (
+                                    <Tag color="success" subtle>
+                                        Հասանելի է
+                                    </Tag>
+                                )}
+                                {props.status && <Tag>Վարձակալված է</Tag>}
                             </Stack>
                         </Stack.Item>
                     </Stack>
@@ -61,10 +67,20 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                             Վարձակալի անուն
                         </BodyText>
                         <Stack justifyContent="center" alignItems="center">
-                            <Avatar name="ԹՀ" autoColor />
-                            <BodyText className="p-l-1 t-truncate" size="medium">
-                                {props.name ?? 'Թամարա Հարությունյան'}
-                            </BodyText>
+                            {props.user?.name ? (
+                                <Fragment>
+                                    <Avatar
+                                        name={props.user?.name.charAt(0)}
+                                        image={urlToShow(props.user?.profilePictureUrl)}
+                                        autoColor
+                                    />
+                                    <BodyText className="p-l-1 t-truncate" size="medium">
+                                        {props.user?.name ?? '--'}
+                                    </BodyText>
+                                </Fragment>
+                            ) : (
+                                '--'
+                            )}
                         </Stack>
                     </Stack>
                     <Divider vertical />

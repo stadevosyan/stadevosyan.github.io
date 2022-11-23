@@ -8,6 +8,7 @@ import {
     CategoryEntity,
     EditBookDto,
     ELibraryApi,
+    HoldBookDto,
     UserEntity,
 } from '../../common/api/e-library.client';
 import {
@@ -65,6 +66,7 @@ export class BooksStore {
         categoryIds: new FormState<Map<number, CheckboxFieldState>>(new Map()),
         pictureUrl: new InputFieldState(''),
         isAvailable: new CheckboxFieldState(false),
+        holdUser: new InputFieldState<number | undefined>(undefined),
     });
 
     userForm = new FormState<Map<number, CheckboxFieldState>>(new Map());
@@ -141,12 +143,12 @@ export class BooksStore {
     updateBook = async () => {
         const { hasError } = await this.bookForm.validate();
 
-        if (hasError || this.filePickerStore.error) {
+        if (hasError || this.filePickerStore.error || !this.selectedBook) {
             return false;
         }
         this.loading = LoadStatus.Loading;
         try {
-            const { title, description, author } = formStateToJS(this.bookForm);
+            const { title, description, author, holdUser } = formStateToJS(this.bookForm);
             const profilePictureUrl = this.filePickerStore.imageUrlToSave;
             const categoryIds: number[] = [];
             this.bookForm.$.categoryIds.$.forEach((category, id) => {
@@ -154,8 +156,9 @@ export class BooksStore {
                     categoryIds.push(id);
                 }
             });
-            // TODO fix issue with book id
-            const bookId = this.selectedBook!.id!;
+
+            const bookId: number = this.selectedBook.id!;
+
             await this.eLibraryApi.booksController_editBook(bookId, {
                 title,
                 description,
@@ -163,6 +166,20 @@ export class BooksStore {
                 pictureUrl: profilePictureUrl!,
                 categoryIds,
             } as unknown as EditBookDto);
+
+            if (holdUser) {
+                this.eLibraryApi.booksController_holdBook({
+                    bookId,
+                    userId: holdUser,
+                } as HoldBookDto);
+            } else {
+                if (this.selectedBook.holdUser && !holdUser) {
+                    this.eLibraryApi.booksController_unHoldBook({
+                        bookId,
+                        userId: this.selectedBook.holdUser,
+                    } as HoldBookDto);
+                }
+            }
         } catch (e) {
             //
         }
@@ -223,6 +240,13 @@ export class BooksStore {
     };
 
     assignToUser = () => {
+        this.userForm.$.forEach((user, id) => {
+            if (user.value) {
+                this.bookForm.$.holdUser.onChange(id);
+            } else {
+                this.bookForm.$.holdUser.onChange(undefined);
+            }
+        });
         this.closeAssignBookModal();
     };
 

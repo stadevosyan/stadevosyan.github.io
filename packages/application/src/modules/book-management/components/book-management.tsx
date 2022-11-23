@@ -88,6 +88,8 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                                 author={book.author}
                                 imgUrl={book.pictureUrl}
                                 onClick={handleSelectBook}
+                                status={!!book.holdedUser}
+                                user={book.holdedUser}
                                 key={book.id}
                             />
                         ))}
@@ -102,6 +104,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                                     name={book.title}
                                     author={book.author}
                                     imgUrl={book.pictureUrl}
+                                    status={!!book.holdedUser}
                                     onClick={handleSelectBook}
                                 />
                             </Stack.Item>

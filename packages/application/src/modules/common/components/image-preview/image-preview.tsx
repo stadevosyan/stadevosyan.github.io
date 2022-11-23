@@ -1,9 +1,9 @@
 import { Card } from '@servicetitan/design-system';
 import { FC } from 'react';
+import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
+import { urlToShow } from '../../utils/url-helpers';
 
 import * as Styles from './image-preview.module.less';
-import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
-import { baseUrl } from '../../../../app';
 
 interface ImagePreviewProps {
     url?: string;
@@ -14,7 +14,7 @@ export const ImagePreview: FC<ImagePreviewProps> = ({ url }) => {
         <Card className={Styles.root} padding="thin">
             {url ? (
                 <img
-                    src={`${baseUrl}${url}`}
+                    src={urlToShow(url)}
                     style={{
                         height: 'auto',
                         display: 'block',

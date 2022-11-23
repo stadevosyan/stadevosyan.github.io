@@ -103,7 +103,7 @@ export const BookSummary = provide({
                     <Form.Togglebox
                         control="radio"
                         value={!bookForm.$.isAvailable.value}
-                        checked={bookForm.$.isAvailable.value === true}
+                        checked={bookForm.$.isAvailable.value === false}
                         onClick={bookForm.$.isAvailable.onChange}
                         title="Հասանելի"
                         label=""
@@ -111,13 +111,13 @@ export const BookSummary = provide({
                     <Form.Togglebox
                         control="radio"
                         value={!bookForm.$.isAvailable.value}
-                        checked={bookForm.$.isAvailable.value === false}
+                        checked={bookForm.$.isAvailable.value === true}
                         onClick={bookForm.$.isAvailable.onChange}
                         title="Վարձակալված"
                         label=""
                     />
                 </Form.Group>
-                {!bookForm.$.isAvailable.value && (
+                {bookForm.$.isAvailable.value && (
                     <Button
                         iconName="keyboard_arrow_right"
                         iconPosition="right"

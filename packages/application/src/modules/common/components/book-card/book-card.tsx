@@ -3,17 +3,12 @@ import { BodyText, Card, Headline, Stack, Tag } from '@servicetitan/design-syste
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
 import { baseUrl } from '../../../../app';
 
-enum Status {
-    Avilable,
-    Unavilable,
-}
-
 export interface BookCardProps {
     id?: number;
     name?: string;
     author?: string;
     imgUrl?: string;
-    status?: Status;
+    status?: boolean;
     onClick: (selfProps: BookCardProps) => void;
 }
 
