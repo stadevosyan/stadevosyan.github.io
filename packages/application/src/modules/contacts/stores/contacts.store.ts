@@ -49,7 +49,6 @@ export class ContactsStore {
                 pageSize
             );
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const data: Contact[] = response.data
                 .sort((item1, item2) => item1.id - item2.id)
                 .map(item => ({
@@ -60,7 +59,7 @@ export class ContactsStore {
                     profilePictureUrl: item.profilePictureUrl,
                 }));
 
-            this.contactsTableState.setDataSource(new InMemoryDataSource([])).catch();
+            this.contactsTableState.setDataSource(new InMemoryDataSource(data ?? [])).catch();
 
             this.setContactsLoadStatus(LoadStatus.Ok);
         } catch {

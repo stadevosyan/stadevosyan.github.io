@@ -1,4 +1,4 @@
-import { Button, Form, Headline, Stack } from '@servicetitan/design-system';
+import { BodyText, Button, Form, Headline, Stack } from '@servicetitan/design-system';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
@@ -49,8 +49,11 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
             bookStore.searchDebounced();
         };
 
+        const showEmpty =
+            bookStore.books.length === 0 && bookStore.fetchBooksLoadStatus === LoadStatus.Ok;
+
         return (
-            <Stack direction="column" className="p-3">
+            <Stack direction="column" className="p-3" style={{ height: 'calc(100% - 50px)' }}>
                 <Stack direction="column" className="filters p-b-3">
                     <Stack>
                         <Headline className="m-b-2 t-truncate" size="large">
@@ -69,25 +72,29 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                                 onChange={handleCustomSearch}
                                 className="m-b-0 p-r-2"
                                 placeholder="Որոնել գրքեր"
+                                disabled={showEmpty}
                             />
                             <Button
                                 iconName="funnel"
                                 primary
                                 outline
                                 onClick={bookStore.openFilter}
+                                disabled={showEmpty}
                             >
                                 Ֆիլտրել
                             </Button>
                         </Stack>
 
-                        {authStore.isAdmin && (
+                        {!showEmpty && authStore.isAdmin && (
                             <Button primary onClick={newBookStore.handleOpen}>
                                 + Ավելացնել գիրք
                             </Button>
                         )}
                     </Stack>
                 </Stack>
-                {bookStore.fetchBooksLoadStatus === LoadStatus.Loading ? (
+                {showEmpty ? (
+                    <EmptyBooksPlaceholder />
+                ) : bookStore.fetchBooksLoadStatus === LoadStatus.Loading ? (
                     <CenteredSpinner />
                 ) : authStore.isAdmin ? (
                     <Stack
@@ -131,3 +138,29 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
         );
     })
 );
+
+const EmptyBooksPlaceholder = () => {
+    const [{ handleOpen }] = useDependencies(NewBookStore);
+
+    return (
+        <Stack alignItems="center" justifyContent="center" className="h-100">
+            <Stack
+                direction="column"
+                spacing={1}
+                style={{ height: '460px', width: '300px' }}
+                justifyContent="center"
+            >
+                <img src={require('../../common/assets/no-data-1.png')} />
+                <BodyText className="ta-center m-t-2-i">Այս պահին ավելացված գրքեր չկան</BodyText>
+                <Button
+                    primary
+                    onClick={handleOpen}
+                    style={{ width: '225px', marginLeft: '40px' }}
+                    className="m-t-2-i"
+                >
+                    + Ավելացնել գիրք
+                </Button>
+            </Stack>
+        </Stack>
+    );
+};

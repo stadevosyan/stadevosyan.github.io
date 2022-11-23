@@ -71,6 +71,13 @@ export class BooksStore {
             .map(([categoryId, _]) => categoryId);
     }
 
+    @computed get filtersApplied() {
+        return (
+            this.selectedCategoriesFromDrawer.length > 0 ||
+            this.reservationFilterStatus !== undefined
+        );
+    }
+
     constructor(
         @inject(GeneralDataStore) private readonly generalDataStore: GeneralDataStore,
         @inject(ELibraryApi) private eLibraryApi: ELibraryApi
