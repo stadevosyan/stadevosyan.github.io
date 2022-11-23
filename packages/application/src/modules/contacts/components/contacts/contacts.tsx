@@ -9,6 +9,7 @@ import { ContactsStore } from '../../stores/contacts.store';
 import { LoadStatus } from '../../../common/enums/load-status';
 import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
 import { AddContactTakeover } from '../add-contact-takeover/add-contact-takeover';
+import { NameCell } from './name-cell';
 
 export const Contacts = observer(() => {
     const [
@@ -67,7 +68,7 @@ export const Contacts = observer(() => {
                     <CenteredSpinner />
                 ) : (
                     <Table tableState={contactsTableState} rowRender={rowRender}>
-                        <TableColumn field="name" title="Անուն" />
+                        <TableColumn field="name" title="Անուն" cell={NameCell} />
                         <TableColumn field="phoneNumber" title="Հեռախոսահամար" />
                         <TableColumn field="email" title="Էլեկտրոնային հասցե" />
                     </Table>

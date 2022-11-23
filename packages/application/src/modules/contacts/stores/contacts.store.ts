@@ -8,11 +8,12 @@ import { InMemoryDataSource, TableState } from '@servicetitan/table';
 import { getFilterSet } from '../utils/table-utils';
 import { debounce } from 'debounce';
 
-interface Contact {
+export interface Contact {
     id: number;
     name: string;
     phoneNumber: string;
     email: string;
+    profilePictureUrl?: string;
 }
 
 export const pageSize = 10;
@@ -48,15 +49,15 @@ export class ContactsStore {
                 pageSize
             );
 
-            const myData = [
-                ...response.data,
-                ...response.data.map(item => ({
-                    ...item,
-                    name: 'blo',
-                })),
-            ];
+            const data: Contact[] = response.data.map(item => ({
+                id: item.id,
+                name: item.name,
+                phoneNumber: item.phoneNumber,
+                email: item.email,
+                profilePictureUrl: item.profilePictureUrl,
+            }));
 
-            this.contactsTableState.setDataSource(new InMemoryDataSource(myData || [])).catch();
+            this.contactsTableState.setDataSource(new InMemoryDataSource(data || [])).catch();
             this.setContactsLoadStatus(LoadStatus.Ok);
         } catch {
             this.setContactsLoadStatus(LoadStatus.Error);

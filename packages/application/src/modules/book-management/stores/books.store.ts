@@ -243,7 +243,7 @@ export class BooksStore {
         }
     };
 
-    createCategories = () => {
+    @action createCategories = () => {
         this.categoriesIds = [];
 
         for (const category of this.categories) {
