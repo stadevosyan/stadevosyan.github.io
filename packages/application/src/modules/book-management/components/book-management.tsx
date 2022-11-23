@@ -14,6 +14,8 @@ import { FilePickerStore } from '../../common/stores/file-picker.store';
 
 import * as Styles from './book-managment.module.less';
 import { SyntheticEvent, useEffect } from 'react';
+import { LoadStatus } from '../../common/enums/load-status';
+import { CenteredSpinner } from '../../common/components/centered-spinner/centered-spinner';
 
 export const BookManagement = provide({ singletons: [NewBookStore, FilePickerStore] })(
     observer(() => {
@@ -87,14 +89,16 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                         )}
                     </Stack>
                 </Stack>
-                {authStore.isAdmin && (
+                {bookStore.fetchBooksLoadStatus === LoadStatus.Loading ? (
+                    <CenteredSpinner />
+                ) : authStore.isAdmin ? (
                     <Stack
                         className={Styles.bookList}
                         direction="column"
                         spacing={2}
                         style={{ minWidth: '800px' }}
                     >
-                        {bookStore.books.map(book => (
+                        {bookStore.booksToShow.map(book => (
                             <BookCardExpanded
                                 id={book.id}
                                 name={book.title}
@@ -107,10 +111,9 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                             />
                         ))}
                     </Stack>
-                )}
-                {authStore.isUser && (
+                ) : (
                     <Stack wrap="wrap" className={Styles.bookList} spacing={2}>
-                        {bookStore.books.map(book => (
+                        {bookStore.booksToShow.map(book => (
                             <Stack.Item key={book.id}>
                                 <BookCard
                                     id={book.id}

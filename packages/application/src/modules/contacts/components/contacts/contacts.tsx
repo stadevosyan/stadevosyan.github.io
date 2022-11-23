@@ -110,10 +110,10 @@ const EmptyContactsPlaceholder = () => {
                 <Button
                     primary
                     onClick={showTakeover}
-                    style={{ width: '260px', marginLeft: '30px' }}
+                    style={{ width: '225px', marginLeft: '40px' }}
                     className="m-t-2-i"
                 >
-                    + Ավելացնել նոր կոնտակտ
+                    + Ավելացնել կոնտակտ
                 </Button>
             </Stack>
         </Stack>

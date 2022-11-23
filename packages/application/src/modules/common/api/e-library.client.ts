@@ -149,6 +149,27 @@ export class ELibraryApi {
         return this.opts.axios.request<UserModel>(options_);
     }
 
+    usersController_editMyPassword(body: EditPasswordDto, cancelToken?: CancelToken): AxiosPromise<UserModel> {
+        let url_ = "/users/profile/password";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = body;
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            data: content_,
+            url: url_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<UserModel>(options_);
+    }
+
     usersController_getUserById(id: number, cancelToken?: CancelToken): AxiosPromise<UserModel> {
         let url_ = "/users/{id}";
         if (id === undefined || id === null)
@@ -960,6 +981,54 @@ export interface IEditUserDto {
     name: string;
     profilePictureUrl: string;
     phoneNumber: string;
+
+    [key: string]: any;
+}
+
+export class EditPasswordDto implements IEditPasswordDto {
+    password!: string;
+
+    [key: string]: any;
+
+    constructor(data?: IEditPasswordDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.password = _data["password"];
+        }
+    }
+
+    static fromJS(data: any): EditPasswordDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EditPasswordDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["password"] = this.password;
+        return data;
+    }
+}
+
+export interface IEditPasswordDto {
+    password: string;
 
     [key: string]: any;
 }
