@@ -1,5 +1,5 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 import { FormState } from 'formstate';
 import { debounce } from 'debounce';
 import { CheckboxFieldState } from '@servicetitan/form-state';
@@ -32,13 +32,15 @@ export class BooksStore {
 
     @observable count = 0;
     @observable categories = new Map();
+    @observable categoriesData: CategoryEntity[] = [];
 
     @observable assignModal = false;
     @observable assignModalLoading = false;
+
     @observable users: Map<number, UserEntity> = new Map();
     @observable usersIds: number[] = [];
-    @observable categoriesIds: number[] = [];
 
+    @observable categoriesIds: number[] = [];
     @observable selectedBook?: BookModel;
 
     filterForm = new FormState({
@@ -82,17 +84,6 @@ export class BooksStore {
         this.searchDebounced = debounce(this.getBooksList, 300);
     }
 
-    cancelFilter = () => {
-        this.filterForm.reset();
-        this.closeFilter();
-    };
-
-    applyFilter = () => {
-        this.closeFilter();
-    };
-
-    handleSearch = () => {};
-
     @action openFilter = () => {
         this.isFilterOpen = true;
     };
@@ -110,6 +101,7 @@ export class BooksStore {
     };
 
     @action resetForm = () => {
+        this.categoriesIds = [];
         this.bookForm.reset();
     };
 
@@ -190,8 +182,10 @@ export class BooksStore {
         const { data: books } = await this.eLibraryApi.booksController_getBooks(
             this.searchForm.$.search.value || ''
         );
-        this.books = books.data;
-        this.count = books.count;
+        runInAction(() => {
+            this.books = books.data;
+            this.count = books.count;
+        });
     };
 
     init = async () => {
@@ -201,7 +195,6 @@ export class BooksStore {
 
     initDetails = async (id: number) => {
         this.selectedBook = (await this.eLibraryApi.booksController_getBookById(id)).data;
-        this.getCategories().then();
 
         setFormStateValues(this.bookForm, {
             title: this.selectedBook?.title ?? '',
@@ -209,7 +202,15 @@ export class BooksStore {
             author: this.selectedBook?.author ?? '',
             pictureUrl: this.selectedBook?.pictureUrl ?? '',
             isAvailable: !!this.selectedBook?.holdedUser,
+            categoryIds: [],
         });
+
+        if (!this.categoriesData.length) {
+            await this.getCategories();
+            this.createCategories();
+        } else {
+            this.createCategories();
+        }
 
         commitFormState(this.bookForm);
 
@@ -217,20 +218,26 @@ export class BooksStore {
     };
 
     getCategories = async () => {
+        runInAction(() => {
+            this.categoriesIds = [];
+        });
+
         const categories: CategoryEntity[] = (
             await this.eLibraryApi.categoryController_getCategories('')
         ).data as unknown as CategoryEntity[];
-        this.categoriesIds = [];
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        categories[0].forEach(item => {
+        runInAction(() => {
+            this.categoriesData = categories[0] as unknown as CategoryEntity[];
+        });
+    };
+
+    createCategories = () => {
+        this.categoriesData.forEach(item => {
             this.categories.set(item.id, item.name);
             this.categoriesIds.push(item.id);
         });
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        for (const category of categories[0]) {
+
+        for (const category of this.categoriesData) {
             this.bookForm.$.categoryIds.$.set(
                 category.id,
                 new CheckboxFieldState(category.id === 1)
@@ -254,4 +261,15 @@ export class BooksStore {
         this.userForm.reset();
         this.closeAssignBookModal();
     };
+
+    cancelFilter = () => {
+        this.filterForm.reset();
+        this.closeFilter();
+    };
+
+    applyFilter = () => {
+        this.closeFilter();
+    };
+
+    handleSearch = () => {};
 }
