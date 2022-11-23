@@ -4,7 +4,7 @@ import { FormState } from 'formstate';
 import { debounce } from 'debounce';
 import { CheckboxFieldState } from '@servicetitan/form-state';
 import {
-    BookEntity,
+    BookModel,
     CategoryEntity,
     EditBookDto,
     ELibraryApi,
@@ -27,7 +27,7 @@ export class BooksStore {
     @observable loading: any;
     @observable activeTab = 0;
     @observable isFilterOpen = false;
-    @observable books: BookEntity[] = [];
+    @observable books: BookModel[] = [];
 
     @observable count = 0;
     @observable categories = new Map();
@@ -38,11 +38,7 @@ export class BooksStore {
     @observable usersIds: number[] = [];
     @observable categoriesIds: number[] = [];
 
-    @observable selectedBook?: Partial<BookEntity> = {
-        title: '',
-        author: '',
-        description: '',
-    };
+    @observable selectedBook?: BookModel;
 
     filterForm = new FormState({
         all: new FormState<Map<number, CheckboxFieldState>>(new Map()),
@@ -160,7 +156,7 @@ export class BooksStore {
             });
             // TODO fix issue with book id
             const bookId = this.selectedBook!.id!;
-            await this.eLibraryApi.booksController_editCategory(bookId, {
+            await this.eLibraryApi.booksController_editBook(bookId, {
                 title,
                 description,
                 author,
@@ -186,10 +182,8 @@ export class BooksStore {
         this.getCategories().then();
     };
 
-    initDetails = (id: number) => {
-        // TODO replace with api call
-        this.selectedBook = this.books.find(book => book.id === id);
-
+    initDetails = async (id: number) => {
+        this.selectedBook = (await this.eLibraryApi.booksController_getBookById(id)).data;
         this.getCategories().then();
 
         setFormStateValues(this.bookForm, {
@@ -197,6 +191,7 @@ export class BooksStore {
             description: this.selectedBook?.description ?? '',
             author: this.selectedBook?.author ?? '',
             pictureUrl: this.selectedBook?.pictureUrl ?? '',
+            isAvailable: !!this.selectedBook?.holdedUser,
         });
 
         commitFormState(this.bookForm);

@@ -3,6 +3,7 @@ import { FC } from 'react';
 
 import * as Styles from './image-preview.module.less';
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
+import { baseUrl } from '../../../../app';
 
 interface ImagePreviewProps {
     url?: string;
@@ -13,7 +14,7 @@ export const ImagePreview: FC<ImagePreviewProps> = ({ url }) => {
         <Card className={Styles.root} padding="thin">
             {url ? (
                 <img
-                    src={url}
+                    src={`${baseUrl}${url}`}
                     style={{
                         height: 'auto',
                         display: 'block',

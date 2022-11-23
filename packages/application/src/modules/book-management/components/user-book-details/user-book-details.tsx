@@ -53,7 +53,7 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                                 ← Վերադառնալ նախորդ էջ
                             </BodyText>
                             <Stack>
-                                <ImagePreview url="" />
+                                <ImagePreview url={book?.pictureUrl} />
                                 <Stack direction="column" className="m-l-2">
                                     <Headline className="m-b-2 t-truncate" size="large">
                                         {book?.title ?? '--'}
@@ -65,11 +65,9 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                                         {book?.author ?? '--'}
                                     </Eyebrow>
                                     <Stack className="m-b-2">
-                                        {book?.categories.map(c => (
-                                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                            // @ts-ignore
-                                            <Tag key={c} className="m-1">
-                                                {categories.get(c)}
+                                        {book?.categories?.map((categoryId: number) => (
+                                            <Tag key={categoryId} className="m-1">
+                                                {categories.get(categoryId)}
                                             </Tag>
                                         ))}
                                     </Stack>

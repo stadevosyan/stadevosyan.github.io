@@ -1,7 +1,7 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
 import { action, makeObservable, observable, runInAction } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
-import { BookEntity, ELibraryApi } from '../../common/api/e-library.client';
+import { BookModel, ELibraryApi } from '../../common/api/e-library.client';
 import { FormState } from 'formstate';
 import { InputFieldState } from '@servicetitan/form';
 import { debounce } from 'debounce';
@@ -9,8 +9,8 @@ import { debounce } from 'debounce';
 @injectable()
 export class OwnBooksStore {
     @observable loadingOwnBooksStatus = LoadStatus.None;
-    @observable books: BookEntity[] = [];
-    @observable booksToShow: BookEntity[] = [];
+    @observable books: BookModel[] = [];
+    @observable booksToShow: BookModel[] = [];
     @observable count = 0;
 
     searchDebounced: (() => void) & { clear(): void } & { flush(): void };
