@@ -22,19 +22,8 @@ import { useEffect } from 'react';
 
 export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
     observer(() => {
-        const [
-            {
-                open,
-                openModal,
-                closeModal,
-                saveReview,
-                commentForm,
-                loading,
-                init,
-                book,
-                categories,
-            },
-        ] = useDependencies(UserBookDetailsStore);
+        const [{ open, openModal, closeModal, saveReview, commentForm, loading, init, book }] =
+            useDependencies(UserBookDetailsStore);
         const history = useHistory();
         const { id } = useParams<{ id: string }>();
 
@@ -67,21 +56,14 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                                     <Stack className="m-b-2">
                                         {book?.categories?.map(item => (
                                             <Tag key={item.categoryId} className="m-1">
-                                                {categories.get(item.categoryId)}
+                                                {item.name}
                                             </Tag>
                                         ))}
                                     </Stack>
                                     <Headline className="m-b-2 t-truncate" size="small">
                                         Նկարագրություն
                                     </Headline>
-                                    <BodyText>
-                                        Նոր դիստոպիան ապագայի մասին է, որտեղ երեխաներին սովորեցնում
-                                        են արհեստական ընկեր կոչվող ռոբոտները: Վեպի գլխավոր
-                                        հերոսուհին՝ Կլարան, հենց այդպիսի ռոբոտ է, և չնայած նրա
-                                        գիտելիքները հսկայական են, նա շատ քիչ բան գիտի իրեն շրջապատող
-                                        աշխարհի մասին, և նրա կյանքը ամբողջովին կախված է նրանից, թե
-                                        ով է նրան գնում:
-                                    </BodyText>
+                                    <BodyText>{book?.description}</BodyText>
                                 </Stack>
                             </Stack>
                         </Stack>

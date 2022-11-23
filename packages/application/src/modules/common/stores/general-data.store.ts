@@ -1,6 +1,6 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
 
-import { action, makeObservable, observable, runInAction } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { CategoryEntity, ELibraryApi } from '../api/e-library.client';
 import { LoadStatus } from '../enums/load-status';
 
@@ -8,6 +8,10 @@ import { LoadStatus } from '../enums/load-status';
 export class GeneralDataStore {
     @observable categories: CategoryEntity[] = [];
     @observable fetchCategoriesStatus = LoadStatus.None;
+
+    @computed get categoriesMap() {
+        return new Map(this.categories.map(item => [item.id, item]));
+    }
 
     constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
         makeObservable(this);

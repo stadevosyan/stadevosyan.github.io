@@ -59,7 +59,7 @@ export class BookDetailsStore {
     }
 
     @computed get categoriesMap() {
-        return new Map(this.categories.map(item => [item.id, item]));
+        return this.generalDataStore.categoriesMap;
     }
 
     constructor(

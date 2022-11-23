@@ -4,14 +4,13 @@ import { FormState } from 'formstate';
 import { FormValidators, InputFieldState } from '@servicetitan/form';
 import { errorMessages, requiredWithCustomText } from './new-book.store';
 import { LoadStatus } from '../../common/enums/load-status';
-import { BookModel, CategoryEntity, ELibraryApi } from '../../common/api/e-library.client';
+import { BookModel, ELibraryApi } from '../../common/api/e-library.client';
 
 @injectable()
 export class UserBookDetailsStore {
     @observable loading: LoadStatus = LoadStatus.None;
     @observable open = false;
     @observable book?: BookModel;
-    @observable categories = new Map();
     @observable bookReviews = {};
 
     commentForm = new FormState({
@@ -52,16 +51,6 @@ export class UserBookDetailsStore {
     };
 
     init = async (id: number) => {
-        const categories: CategoryEntity[] = (
-            await this.eLibraryApi.categoryController_getCategories('')
-        ).data as unknown as CategoryEntity[];
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        categories[0].forEach(item => {
-            this.categories.set(item.id, item.name);
-        });
-
         this.book = (await this.eLibraryApi.booksController_getBookById(id)).data;
     };
 }
