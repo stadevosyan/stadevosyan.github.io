@@ -42,7 +42,8 @@ export class SignUpStore {
                         'Ձեր գաղտնաբառը պիտի բաղկացած լինի նվազագույնը 8 սիմվոլից և պարունակի գոնե 1 թվանշան, փոքրատառ և մեծատառ'
                 )
                 .disableAutoValidation(),
-        });
+        }).compose();
+        this.form.disableAutoValidation();
     }
 
     phoneValidator =
@@ -55,7 +56,7 @@ export class SignUpStore {
 
     async register() {
         this.setRegisterStatus(LoadStatus.Loading);
-        const res = await this.form.validate();
+        const res = await this.form.enableAutoValidationAndValidate();
         if (res.hasError || this.imageStore.error) {
             this.setRegisterStatus(LoadStatus.Ok);
             return false;

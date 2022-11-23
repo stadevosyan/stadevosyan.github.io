@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Form, Headline, Page } from '@servicetitan/design-system';
+import { BodyText, Button, ButtonGroup, Form, Headline, Page } from '@servicetitan/design-system';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { observer } from 'mobx-react';
 import { Label } from '@servicetitan/form';
@@ -47,6 +47,13 @@ export const ForgotPassword = provide({ singletons: [ForgotPasswordStore] })(
                         Մուտք գործել
                     </Button>
                 </ButtonGroup>
+
+                <BodyText italic size="large" className="m-t-5">
+                    under construction...
+                </BodyText>
+                <BodyText italic size="large">
+                    sorry for inconveniense
+                </BodyText>
             </Page>
         );
     })

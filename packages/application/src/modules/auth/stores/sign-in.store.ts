@@ -22,7 +22,7 @@ export class SignInStore {
     form = new FormState({
         email: new InputFieldState('').validators(FormValidators.required),
         password: new InputFieldState('').validators(FormValidators.required),
-    });
+    }).compose();
 
     @computed
     get isDirty() {
@@ -37,6 +37,7 @@ export class SignInStore {
         @inject(AuthStore) private readonly authStore: AuthStore
     ) {
         makeObservable(this);
+        this.form.disableAutoValidation();
     }
 
     // TODO understand why to return is authenticated
@@ -47,7 +48,7 @@ export class SignInStore {
 
         this.setError('');
         this.setLoginStatus(LoadStatus.Loading);
-        const res = await this.form.validate();
+        const res = await this.form.enableAutoValidationAndValidate();
         if (res.hasError) {
             this.setLoginStatus(LoadStatus.Error);
             return false;
