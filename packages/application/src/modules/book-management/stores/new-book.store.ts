@@ -61,18 +61,15 @@ export class NewBookStore {
     @action handleOpen = () => this.setOpen(true);
 
     init = async () => {
-        const categories: CategoryEntity[] = (
-            await this.eLibraryApi.categoryController_getCategories('')
-        ).data as unknown as CategoryEntity[];
+        const { data: categories } = (await this.eLibraryApi.categoryController_getCategories(''))
+            .data;
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        categories[0].forEach(item => {
+        categories.forEach((item: CategoryEntity) => {
             this.categories.set(item.id, item.name);
         });
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        for (const category of categories[0]) {
+        for (const category of categories) {
             this.newBookForm.$.categoryIds.$.set(category.id, new CheckboxFieldState(false));
         }
     };

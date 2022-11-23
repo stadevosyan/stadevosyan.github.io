@@ -218,26 +218,17 @@ export class BooksStore {
     };
 
     getCategories = async () => {
-        runInAction(() => {
-            this.categoriesIds = [];
-        });
-
-        const categories: CategoryEntity[] = (
-            await this.eLibraryApi.categoryController_getCategories('')
-        ).data as unknown as CategoryEntity[];
-
-        runInAction(() => {
-            this.categoriesData = categories[0] as unknown as CategoryEntity[];
-        });
+        const { data: categories } = (await this.eLibraryApi.categoryController_getCategories(''))
+            .data;
+        this.categoriesData = categories;
     };
 
     createCategories = () => {
-        this.categoriesData.forEach(item => {
-            this.categories.set(item.id, item.name);
-            this.categoriesIds.push(item.id);
-        });
+        this.categoriesIds = [];
 
         for (const category of this.categoriesData) {
+            this.categories.set(category.id, category.name);
+            this.categoriesIds.push(category.id);
             this.bookForm.$.categoryIds.$.set(
                 category.id,
                 new CheckboxFieldState(category.id === 1)
