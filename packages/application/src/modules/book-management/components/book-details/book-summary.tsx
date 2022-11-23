@@ -35,6 +35,9 @@ export const BookSummary = provide({
                 categoriesIds,
                 resetAssignForm,
                 assignToUser,
+                selectedBook,
+                updateUserId,
+                holderUserId,
             },
             { fetchCategoriesStatus },
         ] = useDependencies(BooksStore, GeneralDataStore);
@@ -157,16 +160,21 @@ export const BookSummary = provide({
                         </ButtonGroup>
                     }
                 >
-                    {usersIds.map(id => (
-                        <Form.Togglebox
-                            key={id}
-                            className="m-b-2-i"
-                            checked={userForm.$.get(id)!.value}
-                            value={!userForm.$.get(id)!.value}
-                            onClick={userForm.$.get(id)!.onChange}
-                            label={users.get(id)!.name}
-                        />
-                    ))}
+                    {usersIds.map(id => {
+                        return (
+                            <Form.Togglebox
+                                key={id}
+                                control="radio"
+                                className="m-b-2-i"
+                                checked={id === holderUserId}
+                                value={id}
+                                onClick={() => {
+                                    updateUserId(id);
+                                }}
+                                label={users.get(id)!.name}
+                            />
+                        );
+                    })}
                 </Drawer>
             </div>
         );

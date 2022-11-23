@@ -66,6 +66,7 @@ export class NewBookStore {
         await when(() => this.generalDataStore.fetchCategoriesStatus === LoadStatus.Ok);
 
         for (const category of this.generalDataStore.categories) {
+            this.categories.set(category.id, category);
             this.newBookForm.$.categoryIds.$.set(category.id, new CheckboxFieldState(false));
         }
     };

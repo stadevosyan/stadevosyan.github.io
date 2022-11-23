@@ -23,6 +23,7 @@ import { LoadStatus } from '../../common/enums/load-status';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
 import { baseUrl } from '../../../app';
 import { GeneralDataStore } from '../../common/stores/general-data.store';
+import { act } from 'react-dom/test-utils';
 
 @injectable()
 export class BooksStore {
@@ -32,7 +33,10 @@ export class BooksStore {
     @observable isFilterOpen = false;
     @observable books: BookModel[] = [];
 
+    @observable holderUserId?: number;
     @observable count = 0;
+    @observable categoriesData: any[] = [];
+
     @observable assignModal = false;
     @observable assignModalLoading = false;
 
@@ -111,6 +115,8 @@ export class BooksStore {
     @action resetForm = () => {
         this.categoriesIds = [];
         this.bookForm.reset();
+        // Hide after merge
+        // this.createCategories();
     };
 
     @action cleanBookEditState = () => {
@@ -125,16 +131,17 @@ export class BooksStore {
         this.userForm = new FormState(new Map());
         this.users = new Map();
         this.usersIds = [];
+        const holderUserId = this.selectedBook?.holdedUser.id;
 
         const users = (await this.eLibraryApi.usersController_getUsers('', 1, 1000)).data;
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+
         users.data.forEach(user => {
-            this.userForm.$.set(user.id, new CheckboxFieldState(false));
+            this.userForm.$.set(user.id, new CheckboxFieldState(holderUserId === user.id));
             this.users.set(user.id, user);
             this.usersIds.push(user.id);
         });
 
+        this.holderUserId = holderUserId;
         this.assignModalLoading = true;
     };
 
@@ -142,17 +149,20 @@ export class BooksStore {
         this.assignModal = false;
     };
 
-    updateBook = async () => {
+    @action updateBook = async () => {
         const { hasError } = await this.bookForm.validate();
 
         if (hasError || this.filePickerStore.error || !this.selectedBook) {
             return false;
         }
         this.setBookUpdateLoadStatus(LoadStatus.Loading);
+
+        const bookId: number = this.selectedBook.id!;
+        const { title, description, author, holdUser } = formStateToJS(this.bookForm);
+        const profilePictureUrl = this.filePickerStore.imageUrlToSave;
+        const categoryIds: number[] = [];
+
         try {
-            const { title, description, author, holdUser } = formStateToJS(this.bookForm);
-            const profilePictureUrl = this.filePickerStore.imageUrlToSave;
-            const categoryIds: number[] = [];
             this.bookForm.$.categoryIds.$.forEach((category, id) => {
                 if (category.value) {
                     categoryIds.push(id);
@@ -182,10 +192,18 @@ export class BooksStore {
                     } as HoldBookDto);
                 }
             }
-
             this.setBookUpdateLoadStatus(LoadStatus.Ok);
         } catch (e) {
             this.setBookUpdateLoadStatus(LoadStatus.Error);
+        }
+    };
+
+    updateUserId = (id: number) => {
+        if (this.holderUserId === id) {
+            this.userForm.$.get(id)!.onChange(false);
+        } else {
+            this.userForm.$.get(id)!.onChange(true);
+            this.holderUserId = id;
         }
     };
 
@@ -246,7 +264,8 @@ export class BooksStore {
     createCategories = () => {
         this.categoriesIds = [];
 
-        for (const category of this.categories) {
+        for (const category of this.categoriesData) {
+            this.categories.set(category.id, category);
             this.categoriesIds.push(category.id);
             this.bookForm.$.categoryIds.$.set(
                 category.id,
