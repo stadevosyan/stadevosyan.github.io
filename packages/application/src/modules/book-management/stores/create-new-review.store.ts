@@ -5,6 +5,7 @@ import { FormValidators, InputFieldState } from '@servicetitan/form';
 import { errorMessages, requiredWithCustomText } from './new-book.store';
 import { LoadStatus } from '../../common/enums/load-status';
 import { CreateReviewDto, ELibraryApi } from '../../common/api/e-library.client';
+import { UserBookDetailsStore } from './user-book-details.store';
 
 @injectable()
 export class CreateNewReviewStore {
@@ -17,7 +18,10 @@ export class CreateNewReviewStore {
         ),
     });
 
-    constructor(@inject(ELibraryApi) private api: ELibraryApi) {
+    constructor(
+        @inject(ELibraryApi) private api: ELibraryApi,
+        @inject(UserBookDetailsStore) private bookDetailsStore: UserBookDetailsStore
+    ) {
         makeObservable(this);
     }
 
@@ -35,6 +39,7 @@ export class CreateNewReviewStore {
                 bookId,
                 review: this.commentForm.$.review.value,
             } as CreateReviewDto);
+            await this.bookDetailsStore.fetchReviews(bookId);
             this.setSaveBookReviewLoadStatus(LoadStatus.Ok);
         } catch {
             this.setSaveBookReviewLoadStatus(LoadStatus.Error);

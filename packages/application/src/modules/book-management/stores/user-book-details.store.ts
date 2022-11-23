@@ -20,10 +20,6 @@ export class UserBookDetailsStore {
         this.open = false;
     };
 
-    getReviews = () => {
-        //
-    };
-
     init = (id: number) => {
         this.fetchBooks(id).catch();
         this.fetchReviews(id).catch();
@@ -47,7 +43,7 @@ export class UserBookDetailsStore {
         try {
             const { data: response } = await this.eLibraryApi.reviewsController_getBookReviews(id);
             runInAction(() => {
-                this.bookReviews = response.data;
+                this.bookReviews = response.data.sort((item1, item2) => item2.id - item1.id);
             });
 
             if (this.fetchBookDetailsLoadStatus !== LoadStatus.Ok) {
