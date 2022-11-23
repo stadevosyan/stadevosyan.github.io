@@ -1,24 +1,15 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, makeObservable, observable, runInAction } from 'mobx';
-import { FormState } from 'formstate';
-import { FormValidators, InputFieldState } from '@servicetitan/form';
-import { errorMessages, requiredWithCustomText } from './new-book.store';
+import { action, makeObservable, observable, runInAction, when } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
-import { BookModel, ELibraryApi } from '../../common/api/e-library.client';
+import { BookModel, ELibraryApi, ReviewModel } from '../../common/api/e-library.client';
 
 @injectable()
 export class UserBookDetailsStore {
-    @observable loading: LoadStatus = LoadStatus.None;
+    @observable fetchBookDetailsLoadStatus: LoadStatus = LoadStatus.None;
+    @observable fetchBookReviewsLoadStatus: LoadStatus = LoadStatus.None;
     @observable open = false;
     @observable book?: BookModel;
-    @observable bookReviews = {};
-
-    commentForm = new FormState({
-        review: new InputFieldState('').validators(
-            requiredWithCustomText(errorMessages.RequiredDesc),
-            FormValidators.maxLength(1024)
-        ),
-    });
+    @observable bookReviews: ReviewModel[] = [];
 
     constructor(@inject(ELibraryApi) private eLibraryApi: ELibraryApi) {
         makeObservable(this);
@@ -26,7 +17,6 @@ export class UserBookDetailsStore {
 
     @action openModal = () => (this.open = true);
     @action closeModal = () => {
-        this.commentForm.reset();
         this.open = false;
     };
 
@@ -34,23 +24,43 @@ export class UserBookDetailsStore {
         //
     };
 
-    saveReview = async () => {
-        const { hasError } = await this.commentForm.validate();
+    init = (id: number) => {
+        this.fetchBooks(id).catch();
+        this.fetchReviews(id).catch();
+    };
 
-        if (!hasError) {
-            runInAction(() => (this.loading = LoadStatus.Loading));
-
-            /*
-             *  const form = formStateToJS(this.commentForm);
-             *  saveReview
-             *  getReviews
-             */
+    fetchBooks = async (id: number) => {
+        this.setFetchBookDetailsLoadStatus(LoadStatus.Loading);
+        try {
+            const { data } = await this.eLibraryApi.booksController_getBookById(id);
+            runInAction(() => {
+                this.book = data;
+            });
+            this.setFetchBookDetailsLoadStatus(LoadStatus.Ok);
+        } catch {
+            this.setFetchBookDetailsLoadStatus(LoadStatus.Error);
         }
-
-        runInAction(() => (this.loading = LoadStatus.Ok));
     };
 
-    init = async (id: number) => {
-        this.book = (await this.eLibraryApi.booksController_getBookById(id)).data;
+    fetchReviews = async (id: number) => {
+        this.setFetchBookReviewsLoadStatus(LoadStatus.Loading);
+        try {
+            const { data: response } = await this.eLibraryApi.reviewsController_getBookReviews(id);
+            runInAction(() => {
+                this.bookReviews = response.data;
+            });
+
+            if (this.fetchBookDetailsLoadStatus !== LoadStatus.Ok) {
+                await when(() => this.fetchBookDetailsLoadStatus === LoadStatus.Ok);
+            }
+            this.setFetchBookReviewsLoadStatus(LoadStatus.Ok);
+        } catch {
+            this.setFetchBookReviewsLoadStatus(LoadStatus.Error);
+        }
     };
+
+    @action setFetchBookDetailsLoadStatus = (status: LoadStatus) =>
+        (this.fetchBookDetailsLoadStatus = status);
+    @action setFetchBookReviewsLoadStatus = (status: LoadStatus) =>
+        (this.fetchBookReviewsLoadStatus = status);
 }

@@ -1,28 +1,19 @@
-import {
-    BodyText,
-    Button,
-    ButtonGroup,
-    Divider,
-    Eyebrow,
-    Form,
-    Headline,
-    Modal,
-    Stack,
-    Tag,
-} from '@servicetitan/design-system';
+import { BodyText, Divider, Eyebrow, Headline, Stack, Tag } from '@servicetitan/design-system';
 
 import { useHistory, useParams } from 'react-router-dom';
 import { ImagePreview } from '../../../common/components/image-preview/image-preview';
-import { CommentCard } from '../comment-card/comment-card';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { UserBookDetailsStore } from '../../stores/user-book-details.store';
 import { observer } from 'mobx-react';
 import { LoadStatus } from '../../../common/enums/load-status';
 import { useEffect } from 'react';
+import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
+import { WriteReviewModal } from './write-review-modal';
+import { ReviewsSection } from './reviews-section';
 
 export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
     observer(() => {
-        const [{ open, openModal, closeModal, saveReview, commentForm, loading, init, book }] =
+        const [{ open, init, book, fetchBookDetailsLoadStatus }] =
             useDependencies(UserBookDetailsStore);
         const history = useHistory();
         const { id } = useParams<{ id: string }>();
@@ -41,80 +32,44 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                             <BodyText onClick={history.goBack} className="cursor-pointer m-b-3">
                                 ← Վերադառնալ նախորդ էջ
                             </BodyText>
-                            <Stack>
-                                <ImagePreview url={book?.pictureUrl} />
-                                <Stack direction="column" className="m-l-2">
-                                    <Headline className="m-b-2 t-truncate" size="large">
-                                        {book?.title ?? '--'}
-                                        <Tag className="m-l-2" color="success" subtle>
-                                            Հասանելի է
-                                        </Tag>
-                                    </Headline>
-                                    <Eyebrow className="m-b-2 t-truncate" size="medium">
-                                        {book?.author ?? '--'}
-                                    </Eyebrow>
-                                    <Stack className="m-b-2">
-                                        {book?.categories?.map(item => (
-                                            <Tag key={item.categoryId} className="m-1">
-                                                {item.name}
+
+                            {fetchBookDetailsLoadStatus === LoadStatus.Loading ? (
+                                <div style={{ height: '280px' }}>
+                                    <CenteredSpinner />
+                                </div>
+                            ) : (
+                                <Stack>
+                                    <ImagePreview url={book?.pictureUrl} />
+                                    <Stack direction="column" className="m-l-2">
+                                        <Headline className="m-b-2 t-truncate" size="large">
+                                            {book?.title ?? '--'}
+                                            <Tag className="m-l-2" color="success" subtle>
+                                                Հասանելի է
                                             </Tag>
-                                        ))}
+                                        </Headline>
+                                        <Eyebrow className="m-b-2 t-truncate" size="medium">
+                                            {book?.author ?? '--'}
+                                        </Eyebrow>
+                                        <Stack className="m-b-2">
+                                            {book?.categories?.map(item => (
+                                                <Tag key={item.categoryId} className="m-1">
+                                                    {item.name}
+                                                </Tag>
+                                            ))}
+                                        </Stack>
+                                        <Headline className="m-b-2 t-truncate" size="small">
+                                            Նկարագրություն
+                                        </Headline>
+                                        <BodyText>{book?.description}</BodyText>
                                     </Stack>
-                                    <Headline className="m-b-2 t-truncate" size="small">
-                                        Նկարագրություն
-                                    </Headline>
-                                    <BodyText>{book?.description}</BodyText>
                                 </Stack>
-                            </Stack>
+                            )}
                         </Stack>
                     </Stack>
                     <Divider className="m-t-4" />
+                    <ReviewsSection />
                 </Stack>
-                <Stack className="p-3" justifyContent="space-between">
-                    <Stack.Item>
-                        <Headline className="m-b-2 t-truncate" size="small">
-                            Մեկնաբանություններ
-                        </Headline>
-                    </Stack.Item>
-                    <Stack.Item>
-                        <Button iconName="comment" outline onClick={openModal}>
-                            Գրել մեկնաբանություն
-                        </Button>
-                    </Stack.Item>
-                </Stack>
-                <Stack className="p-3" direction="column">
-                    <CommentCard
-                        id={0}
-                        review="Նոր դիստոպիան ապագայի մասին է, որտեղ երեխաներին սովորեցնում են արհեստական ընկեր կոչվող ռոբոտները: Վեպի գլխավոր հերոսուհին՝ Կլարան, հենց այդպիսի ռոբոտ է, և չնայած նրա գիտելիքները հսկայական են, նա շատ քիչ բան գիտի իրեն շրջապատող աշխարհի մասին, և նրա կյանքը ամբողջովին կախված է նրանից, թե ով է նրան գնում:"
-                        name="Անուն ազգանուն"
-                    />
-                </Stack>
-                <Modal
-                    open={open}
-                    focusTrapOptions={{ disabled: true }}
-                    onClose={closeModal}
-                    title="Գրել մեկնաբանություն"
-                    footer={
-                        <ButtonGroup>
-                            <Button onClick={closeModal}>Չեղարկել</Button>
-                            <Button
-                                loading={loading === LoadStatus.Loading}
-                                onClick={saveReview}
-                                primary
-                            >
-                                Պահպանել
-                            </Button>
-                        </ButtonGroup>
-                    }
-                    portal={false}
-                >
-                    <Form.TextArea
-                        label="Իմ մեկնաբանությունը"
-                        value={commentForm.$.review.value}
-                        onChange={commentForm.$.review.onChangeHandler}
-                        error={commentForm.$.review.error}
-                    />
-                </Modal>
+                {open && <WriteReviewModal bookId={+id} />}
             </Stack>
         );
     })

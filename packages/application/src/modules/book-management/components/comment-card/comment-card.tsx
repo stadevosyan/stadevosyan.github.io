@@ -11,7 +11,7 @@ interface CommentCardProps {
     onDelete?: (id: number) => void;
 }
 
-export const CommentCard: FC<CommentCardProps> = ({ deletable, review, name }) => {
+export const CommentCard: FC<CommentCardProps> = ({ deletable, review, name, createdOn }) => {
     return (
         <Stack.Item className="m-y-2">
             <Stack direction="column">
@@ -20,7 +20,7 @@ export const CommentCard: FC<CommentCardProps> = ({ deletable, review, name }) =
                         <Avatar className="m-r-2" name="RT" />
                         {name}
                     </Stack.Item>
-                    <Stack.Item>12.11.22</Stack.Item>
+                    <Stack.Item>{createdOn}</Stack.Item>
                 </Stack>
                 <Stack direction="row">
                     <BodyText>{review}</BodyText>
