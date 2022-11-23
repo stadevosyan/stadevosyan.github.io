@@ -148,10 +148,7 @@ export class BookDetailsStore {
                 }
             });
 
-            // profilePictureUrl?.split('uploads')[1] ?? ''
-
-            console.log('update-book');
-            const { data: savebook } = await this.eLibraryApi.booksController_editBook(bookId, {
+            await this.eLibraryApi.booksController_editBook(bookId, {
                 title,
                 description,
                 author,
@@ -162,7 +159,7 @@ export class BookDetailsStore {
             runInAction(() => {
                 // this.selectedBook = savebook;
             });
-            // this.generalDataStore
+
             this.setBookUpdateLoadStatus(LoadStatus.Ok);
         } catch (e) {
             this.setBookUpdateLoadStatus(LoadStatus.Error);
@@ -205,7 +202,7 @@ export class BookDetailsStore {
 
     createCategories = () => {
         this.categoriesIds = [];
-        const ids = this.selectedBook?.categories.map(c => c.id) || [];
+        const ids = this.selectedBook?.categories.map(c => c.id) ?? [];
         for (const category of this.categories) {
             this.categoriesIds.push(category.id);
             this.bookForm.$.categoryIds.$.set(
@@ -240,6 +237,7 @@ export class BookDetailsStore {
                 userId: prevHolderUser.id,
             } as HoldBookDto);
             this.bookForm.$.holdUser.onChange(undefined);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             this.selectedBook.holdedUser = null;
         }

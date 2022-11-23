@@ -88,8 +88,6 @@ export class BooksStore {
     applyFilter = () => {
         this.closeFilter();
     };
-
-    handleSearch = () => {};
 }
 
 function myXOR(a: boolean, b: boolean) {
