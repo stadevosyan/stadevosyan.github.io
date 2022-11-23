@@ -51,7 +51,11 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                             {`Բոլոր գրքերը (${bookStore.count})`}
                         </Headline>
                     </Stack>
-                    <Stack justifyContent="space-between" alignItems="center">
+                    <Stack
+                        justifyContent="space-between"
+                        alignItems="center"
+                        style={{ minWidth: '800px' }}
+                    >
                         <Stack alignItems="center">
                             <Form.Input
                                 style={{ width: '354px' }}
@@ -80,7 +84,12 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                     </Stack>
                 </Stack>
                 {authStore.isAdmin && (
-                    <Stack className={Styles.bookList} direction="column" spacing={2}>
+                    <Stack
+                        className={Styles.bookList}
+                        direction="column"
+                        spacing={2}
+                        style={{ minWidth: '800px' }}
+                    >
                         {bookStore.books.map(book => (
                             <BookCardExpanded
                                 id={book.id}
