@@ -128,7 +128,6 @@ export class BooksStore {
 
     cancelFilter = () => {
         this.filterForm.reset();
-        this.closeFilter();
     };
 
     applyFilter = () => {
