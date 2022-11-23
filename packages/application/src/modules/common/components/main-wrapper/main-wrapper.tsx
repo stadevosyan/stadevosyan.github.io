@@ -31,11 +31,13 @@ export const MainWrapper: FC = observer(({ children }) => {
                     <Stack style={{ flex: 1 }} justifyContent="space-between">
                         <Stack.Item>{/*  */}</Stack.Item>
                         <Stack justifyContent="center" alignItems="center">
-                            <Avatar
-                                name={getAvatarFirstLetters(user?.name)}
-                                autoColor
-                                image={urlToShow(user?.profilePictureUrl)}
-                            />
+                            {!!user && (
+                                <Avatar
+                                    name={getAvatarFirstLetters(user?.name)}
+                                    autoColor
+                                    image={urlToShow(user?.profilePictureUrl)}
+                                />
+                            )}
                             <BodyText className="p-l-1 t-truncate" size="medium">
                                 {user?.name}
                             </BodyText>
