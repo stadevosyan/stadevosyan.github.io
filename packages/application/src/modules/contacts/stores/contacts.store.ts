@@ -37,6 +37,7 @@ export class ContactsStore {
         makeObservable(this);
         this.fetchContactsData().catch(null);
         this.searchDebounced = debounce(this.refresh, 300);
+
     }
 
     fetchContactsData = async (name?: string, pageNumber?: number, pageSize?: number) => {
@@ -59,7 +60,8 @@ export class ContactsStore {
                     profilePictureUrl: item.profilePictureUrl,
                 }));
 
-            this.contactsTableState.setDataSource(new InMemoryDataSource(data || [])).catch();
+            this.contactsTableState.setDataSource(new InMemoryDataSource([])).catch();
+
             this.setContactsLoadStatus(LoadStatus.Ok);
         } catch {
             this.setContactsLoadStatus(LoadStatus.Error);
