@@ -2,7 +2,13 @@ import { inject, injectable } from '@servicetitan/react-ioc';
 
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { Storage } from '../utils/storage';
-import { EditUserDto, ELibraryApi, LoginUserDto, UserEntity } from '../api/e-library.client';
+import {
+    EditUserDto,
+    ELibraryApi,
+    LoginUserDto,
+    UserEntity,
+    UserEntityRole,
+} from '../api/e-library.client';
 import axios, { AxiosRequestConfig } from 'axios';
 
 export const AUTHENTICATED_USER_KEY = 'AuthenticatedUser';
@@ -18,15 +24,11 @@ export class AuthStore {
     }
 
     @computed get isAdmin() {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return this.user?.role === 2;
+        return this.user?.role === UserEntityRole.Admin;
     }
 
     @computed get isUser() {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return this.user?.role === 1;
+        return this.user?.role === UserEntityRole.User;
     }
 
     constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
@@ -86,6 +88,7 @@ export class AuthStore {
     };
 
     setupToken = (token: string) => {
+        this.resetToken();
         this.storedInterceptor = axios.interceptors.request.use((params: AxiosRequestConfig) => {
             if (params.headers) {
                 params.headers.Authorization = `Bearer ${token}`;
@@ -96,7 +99,7 @@ export class AuthStore {
     };
 
     resetToken = () => {
-        if (this.storedInterceptor) {
+        if (this.storedInterceptor !== undefined) {
             axios.interceptors.request.eject(this.storedInterceptor);
             this.storedInterceptor = undefined;
         }

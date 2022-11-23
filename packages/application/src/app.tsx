@@ -14,8 +14,6 @@ import { BooksStore } from './modules/book-management/stores/books.store';
 import { Account } from './modules/account/components/account';
 
 import * as Styles from './app.module.css';
-import { AuthPaths } from './modules/common/utils/paths';
-import { Logout } from './modules/auth/logout/components/logout';
 import { OwnBooks } from './modules/own-books/components/own-books';
 import { ContactsStore } from './modules/contacts/stores/contacts.store';
 import { Contacts } from './modules/contacts/components/contacts/contacts';
@@ -68,7 +66,6 @@ export const App = provide({
                                             component={ContactDetails}
                                         />
                                     )}
-                                    <Route path={AuthPaths.logout} component={Logout} />
                                     <Redirect from="/*" to="/" />
                                 </Switch>
                             </MainWrapper>

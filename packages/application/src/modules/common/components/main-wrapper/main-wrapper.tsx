@@ -53,7 +53,7 @@ export const MainWrapper: FC = observer(({ children }) => {
 });
 
 const MySideBar: FC = observer(() => {
-    const [{ isAdmin, isUser }] = useDependencies(AuthStore);
+    const [{ isAdmin, isUser, logout }] = useDependencies(AuthStore);
     const [activeRoute, setActiveRoute] = useState(1);
 
     const isActive = useCallback(
@@ -122,17 +122,12 @@ const MySideBar: FC = observer(() => {
                     </Link>
                 </SideNav>
                 <SideNav>
-                    <Link
-                        to="/logout"
-                        onClick={() => {
-                            setActiveRoute(5);
-                        }}
-                    >
+                    <div onClick={logout}>
                         <SideNav.Item active>
                             <Icon name="call_missed_outgoing" className="m-r-1 m-b-half" />
                             Դուրս գալ
                         </SideNav.Item>
-                    </Link>
+                    </div>
                 </SideNav>
             </Sidebar.Section>
         </Sidebar>
