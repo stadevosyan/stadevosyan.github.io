@@ -131,7 +131,8 @@ export class BooksStore {
         this.userForm = new FormState(new Map());
         this.users = new Map();
         this.usersIds = [];
-        const holderUserId = this.selectedBook?.holdedUser.id;
+
+        const holderUserId = this.selectedBook?.holdedUser?.id;
 
         const users = (await this.eLibraryApi.usersController_getUsers('', 1, 1000)).data;
 
@@ -175,11 +176,11 @@ export class BooksStore {
                 title,
                 description,
                 author,
-                pictureUrl: profilePictureUrl!,
-                categoryIds,
+                pictureUrl: profilePictureUrl?.split('uploads')[1],
+                categoryIds: [],
             } as unknown as EditBookDto);
 
-            if (holdUser) {
+            if (holdUser && this.bookForm.$.isAvailable.value) {
                 this.eLibraryApi.booksController_holdBook({
                     bookId,
                     userId: holdUser,
@@ -188,8 +189,9 @@ export class BooksStore {
                 if (this.selectedBook.holdUser && !holdUser) {
                     this.eLibraryApi.booksController_unHoldBook({
                         bookId,
-                        userId: this.selectedBook.holdUser,
+                        userId: this.selectedBook.holdedUser.id,
                     } as HoldBookDto);
+                    this.bookForm.$.holdUser.onChange(undefined);
                 }
             }
             this.setBookUpdateLoadStatus(LoadStatus.Ok);
@@ -265,7 +267,7 @@ export class BooksStore {
         this.categoriesIds = [];
 
         for (const category of this.categoriesData) {
-            this.categories.set(category.id, category);
+            // this.categoriesMap.set(category.id, category);
             this.categoriesIds.push(category.id);
             this.bookForm.$.categoryIds.$.set(
                 category.id,

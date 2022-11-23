@@ -35,7 +35,6 @@ export const BookSummary = provide({
                 categoriesIds,
                 resetAssignForm,
                 assignToUser,
-                selectedBook,
                 updateUserId,
                 holderUserId,
             },
