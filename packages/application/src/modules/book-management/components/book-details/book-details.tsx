@@ -17,11 +17,21 @@ import { useHistory, useParams } from 'react-router-dom';
 import { Fragment, useEffect } from 'react';
 import { LoadStatus } from '../../../common/enums/load-status';
 import { BookReviews } from './book-reviews';
+import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
 
 export const BookDetails = provide({ singletons: [FilePickerStore] })(
     observer(() => {
         const [
-            { setActiveTab, activeTab, initDetails, selectedBook, updateBook, loading, resetForm },
+            {
+                setActiveTab,
+                activeTab,
+                initDetails,
+                selectedBook,
+                updateBook,
+                bookUpdateLoadStatus,
+                resetForm,
+                bookDetailsReadyStatus,
+            },
         ] = useDependencies(BooksStore);
         const params = useParams<{ id: string }>();
         const history = useHistory();
@@ -29,6 +39,10 @@ export const BookDetails = provide({ singletons: [FilePickerStore] })(
         useEffect(() => {
             initDetails(+params.id);
         }, [initDetails, params.id]);
+
+        if (bookDetailsReadyStatus === LoadStatus.Loading) {
+            return <CenteredSpinner />;
+        }
 
         return (
             <Stack direction="column" className="filters p-b-3">
@@ -48,7 +62,9 @@ export const BookDetails = provide({ singletons: [FilePickerStore] })(
                                             <Button onClick={resetForm}>Չեղարկել</Button>
                                             <Button
                                                 primary
-                                                loading={loading === LoadStatus.Loading}
+                                                loading={
+                                                    bookUpdateLoadStatus === LoadStatus.Loading
+                                                }
                                                 onClick={updateBook}
                                             >
                                                 Պահպանել

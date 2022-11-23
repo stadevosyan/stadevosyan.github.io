@@ -13,6 +13,9 @@ import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { BooksStore } from '../../stores/books.store';
 import { useEffect } from 'react';
 import { FilePickerStore } from '../../../common/stores/file-picker.store';
+import { GeneralDataStore } from '../../../common/stores/general-data.store';
+import { LoadStatus } from '../../../common/enums/load-status';
+import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
 
 export const BookSummary = provide({
     singletons: [FilePickerStore],
@@ -23,7 +26,7 @@ export const BookSummary = provide({
                 userForm,
                 users,
                 bookForm,
-                categories,
+                categoriesMap,
                 cleanBookEditState,
                 openAssignBookModal,
                 closeAssignBookModal,
@@ -33,13 +36,18 @@ export const BookSummary = provide({
                 resetAssignForm,
                 assignToUser,
             },
-        ] = useDependencies(BooksStore);
+            { fetchCategoriesStatus },
+        ] = useDependencies(BooksStore, GeneralDataStore);
 
         useEffect(() => {
             return () => {
                 cleanBookEditState();
             };
         }, [cleanBookEditState]);
+
+        if (fetchCategoriesStatus === LoadStatus.Loading) {
+            return <CenteredSpinner />;
+        }
 
         return (
             <div className="w-100">
@@ -82,24 +90,26 @@ export const BookSummary = provide({
                     <BodyText el="div" size="small" bold className="m-b-1 d-b">
                         Ժանրեր
                     </BodyText>
-                    <Form.Group>
-                        {categoriesIds.map(id => {
-                            if (!bookForm.$.categoryIds.$.get(id)) {
-                                return null;
-                            }
+                    {!!categoriesIds.length && !!bookForm.$.categoryIds.$.size && (
+                        <Form.Group>
+                            {categoriesIds.map(id => {
+                                if (!bookForm.$.categoryIds.$.get(id)) {
+                                    return <div />;
+                                }
 
-                            return (
-                                <Form.Togglebox
-                                    key={id}
-                                    className="m-b-2-i"
-                                    checked={bookForm.$.categoryIds.$.get(id)!.value}
-                                    value={!bookForm.$.categoryIds.$.get(id)!.value}
-                                    onClick={bookForm.$.categoryIds.$.get(id)!.onChange}
-                                    label={categories.get(id)}
-                                />
-                            );
-                        })}
-                    </Form.Group>
+                                return (
+                                    <Form.Togglebox
+                                        key={id}
+                                        className="m-b-2-i"
+                                        checked={bookForm.$.categoryIds.$.get(id)!.value}
+                                        value={!bookForm.$.categoryIds.$.get(id)!.value}
+                                        onClick={bookForm.$.categoryIds.$.get(id)!.onChange}
+                                        label={categoriesMap.get(id)?.name ?? ''}
+                                    />
+                                );
+                            })}
+                        </Form.Group>
+                    )}
                 </Stack>
                 <Divider className="m-y-3" />
                 <BodyText className="m-b-2 t-truncate" size="small" bold>

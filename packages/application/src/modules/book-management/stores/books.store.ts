@@ -1,14 +1,14 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, makeObservable, observable, runInAction } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction, when } from 'mobx';
 import { FormState } from 'formstate';
 import { debounce } from 'debounce';
 import { CheckboxFieldState } from '@servicetitan/form-state';
 import {
     BookModel,
-    CategoryEntity,
     EditBookDto,
     ELibraryApi,
     HoldBookDto,
+    Status,
     UserModel,
 } from '../../common/api/e-library.client';
 import {
@@ -22,18 +22,17 @@ import { errorMessages, requiredWithCustomText } from './new-book.store';
 import { LoadStatus } from '../../common/enums/load-status';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
 import { baseUrl } from '../../../app';
+import { GeneralDataStore } from '../../common/stores/general-data.store';
 
 @injectable()
 export class BooksStore {
-    @observable loading: any;
+    @observable bookUpdateLoadStatus: LoadStatus = LoadStatus.None;
+    @observable bookDetailsReadyStatus: LoadStatus = LoadStatus.None;
     @observable activeTab = 0;
     @observable isFilterOpen = false;
     @observable books: BookModel[] = [];
 
     @observable count = 0;
-    @observable categories = new Map();
-    @observable categoriesData: CategoryEntity[] = [];
-
     @observable assignModal = false;
     @observable assignModalLoading = false;
 
@@ -75,12 +74,21 @@ export class BooksStore {
 
     searchDebounced: (() => Promise<void>) & { clear(): void } & { flush(): void };
 
+    @computed get categories() {
+        return this.generalDataStore.categories;
+    }
+
+    @computed get categoriesMap() {
+        return new Map(this.categories.map(item => [item.id, item]));
+    }
+
     constructor(
         @inject(FilePickerStore) private readonly filePickerStore: FilePickerStore,
+        @inject(GeneralDataStore) private readonly generalDataStore: GeneralDataStore,
         @inject(ELibraryApi) private eLibraryApi: ELibraryApi
     ) {
         makeObservable(this);
-        this.init();
+        this.init().catch(null);
         this.searchDebounced = debounce(this.getBooksList, 300);
     }
 
@@ -107,6 +115,8 @@ export class BooksStore {
 
     @action cleanBookEditState = () => {
         this.resetForm();
+        this.setBookUpdateLoadStatus(LoadStatus.None);
+        this.setBookDetailsReadyStatus(LoadStatus.None);
     };
 
     @action openAssignBookModal = async () => {
@@ -138,7 +148,7 @@ export class BooksStore {
         if (hasError || this.filePickerStore.error || !this.selectedBook) {
             return false;
         }
-        this.loading = LoadStatus.Loading;
+        this.setBookUpdateLoadStatus(LoadStatus.Loading);
         try {
             const { title, description, author, holdUser } = formStateToJS(this.bookForm);
             const profilePictureUrl = this.filePickerStore.imageUrlToSave;
@@ -172,15 +182,28 @@ export class BooksStore {
                     } as HoldBookDto);
                 }
             }
+
+            this.setBookUpdateLoadStatus(LoadStatus.Ok);
         } catch (e) {
-            //
+            this.setBookUpdateLoadStatus(LoadStatus.Error);
         }
-        this.loading = LoadStatus.Ok;
     };
 
+    @action setBookUpdateLoadStatus = (status: LoadStatus) => (this.bookUpdateLoadStatus = status);
+    @action setBookDetailsReadyStatus = (status: LoadStatus) =>
+        (this.bookDetailsReadyStatus = status);
+
     getBooksList = async () => {
+        const isAvailable = this.filterForm.$.isAvailable.value;
+        const isBooked = this.filterForm.$.isBooked.value;
+
+        let filterStatus: Status | undefined;
+        if (myXOR(isAvailable, isBooked)) {
+            filterStatus = isAvailable ? Status.Available : Status.Hold;
+        }
+
         const { data: books } = await this.eLibraryApi.booksController_getBooks(
-            undefined,
+            filterStatus,
             this.searchForm.$.search.value || '',
             undefined
         );
@@ -192,44 +215,38 @@ export class BooksStore {
 
     init = async () => {
         await this.getBooksList();
-        this.getCategories().then();
     };
 
     initDetails = async (id: number) => {
-        this.selectedBook = (await this.eLibraryApi.booksController_getBookById(id)).data;
+        this.setBookDetailsReadyStatus(LoadStatus.Loading);
+        try {
+            this.selectedBook = (await this.eLibraryApi.booksController_getBookById(id)).data;
 
-        setFormStateValues(this.bookForm, {
-            title: this.selectedBook?.title ?? '',
-            description: this.selectedBook?.description ?? '',
-            author: this.selectedBook?.author ?? '',
-            pictureUrl: this.selectedBook?.pictureUrl ?? '',
-            isAvailable: !!this.selectedBook?.holdedUser,
-            categoryIds: [],
-        });
+            setFormStateValues(this.bookForm, {
+                title: this.selectedBook?.title ?? '',
+                description: this.selectedBook?.description ?? '',
+                author: this.selectedBook?.author ?? '',
+                pictureUrl: this.selectedBook?.pictureUrl ?? '',
+                isAvailable: !!this.selectedBook?.holdedUser,
+                categoryIds: [],
+            });
 
-        if (!this.categoriesData.length) {
-            await this.getCategories();
+            await when(() => this.generalDataStore.fetchCategoriesStatus !== LoadStatus.Loading);
             this.createCategories();
-        } else {
-            this.createCategories();
+
+            commitFormState(this.bookForm);
+
+            this.filePickerStore.setSavedImageUrl(`${baseUrl}${this.selectedBook?.pictureUrl}`);
+            this.setBookDetailsReadyStatus(LoadStatus.Ok);
+        } catch {
+            this.setBookDetailsReadyStatus(LoadStatus.Error);
         }
-
-        commitFormState(this.bookForm);
-
-        this.filePickerStore.setSavedImageUrl(`${baseUrl}${this.selectedBook?.pictureUrl}`);
-    };
-
-    getCategories = async () => {
-        const { data: categories } = (await this.eLibraryApi.categoryController_getCategories(''))
-            .data;
-        this.categoriesData = categories;
     };
 
     createCategories = () => {
         this.categoriesIds = [];
 
-        for (const category of this.categoriesData) {
-            this.categories.set(category.id, category.name);
+        for (const category of this.categories) {
             this.categoriesIds.push(category.id);
             this.bookForm.$.categoryIds.$.set(
                 category.id,
@@ -265,4 +282,8 @@ export class BooksStore {
     };
 
     handleSearch = () => {};
+}
+
+function myXOR(a: boolean, b: boolean) {
+    return (a || b) && !(a && b);
 }

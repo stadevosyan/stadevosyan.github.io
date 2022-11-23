@@ -6,7 +6,7 @@ import { BooksStore } from '../../stores/books.store';
 
 export const FilterDrawer: FC = observer(() => {
     const [bookStore] = useDependencies(BooksStore);
-    const { filterForm, categories } = bookStore;
+    const { filterForm, categoriesMap } = bookStore;
 
     const generateCheckboxes = () => {
         const checkboxes: ReactElement[] = [];
@@ -18,7 +18,7 @@ export const FilterDrawer: FC = observer(() => {
                     checked={category.value}
                     value={!category.value}
                     onChange={category.onChange}
-                    label={categories.get(id)}
+                    label={categoriesMap.get(id)}
                 />
             );
         });
