@@ -33,8 +33,10 @@ export const BookCard: FC<BookCardProps> = props => {
                             src={`${baseUrl}${props.imgUrl}`}
                             style={{
                                 height: 'auto',
-                                display: 'block',
-                                maxWidth: '100%',
+                                width: 'auto',
+                                objectFit: 'contain',
+                                maxWidth: '196px',
+                                maxHeight: '224px',
                             }}
                         />
                     ) : (
