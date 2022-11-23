@@ -1,12 +1,13 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable, when } from 'mobx';
 import { FormState } from 'formstate';
 import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
 import { CheckboxFieldState } from '@servicetitan/form-state';
-import { CategoryEntity, CreateBookDto, ELibraryApi } from '../../common/api/e-library.client';
+import { CreateBookDto, ELibraryApi } from '../../common/api/e-library.client';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
 import { LoadStatus } from '../../common/enums/load-status';
 import { BooksStore } from './books.store';
+import { GeneralDataStore } from '../../common/stores/general-data.store';
 
 export const requiredWithCustomText = (error: string) => (value: any) =>
     FormValidators.required(value) && error;
@@ -42,7 +43,8 @@ export class NewBookStore {
     constructor(
         @inject(FilePickerStore) private readonly filePickerStore: FilePickerStore,
         @inject(ELibraryApi) private readonly eLibraryApi: ELibraryApi,
-        @inject(BooksStore) private readonly booksStore: BooksStore
+        @inject(BooksStore) private readonly booksStore: BooksStore,
+        @inject(GeneralDataStore) private readonly generalDataStore: GeneralDataStore
     ) {
         makeObservable(this);
         this.init().catch();
@@ -61,15 +63,9 @@ export class NewBookStore {
     @action handleOpen = () => this.setOpen(true);
 
     init = async () => {
-        const { data: categories } = (await this.eLibraryApi.categoryController_getCategories(''))
-            .data;
+        await when(() => this.generalDataStore.fetchCategoriesStatus === LoadStatus.Ok);
 
-        categories.forEach((item: CategoryEntity) => {
-            this.categories.set(item.id, item.name);
-        });
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        for (const category of categories) {
+        for (const category of this.generalDataStore.categories) {
             this.newBookForm.$.categoryIds.$.set(category.id, new CheckboxFieldState(false));
         }
     };

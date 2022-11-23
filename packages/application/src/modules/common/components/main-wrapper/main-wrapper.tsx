@@ -8,49 +8,55 @@ import {
     SideNav,
     Stack,
 } from '@servicetitan/design-system';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import * as Styles from './main-wrapper.module.less';
-import { useDependencies } from '@servicetitan/react-ioc';
+import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { AuthStore } from '../../stores/auth.store';
 import { observer } from 'mobx-react';
 import { getAvatarFirstLetters, urlToShow } from '../../utils/url-helpers';
+import { GeneralDataStore } from '../../stores/general-data.store';
 
-export const MainWrapper: FC = observer(({ children }) => {
-    const [{ user }] = useDependencies(AuthStore);
+export const MainWrapper: FC = provide({ singletons: [GeneralDataStore] })(
+    observer(({ children }) => {
+        const [{ user }, { init }] = useDependencies(AuthStore, GeneralDataStore);
+        useEffect(() => {
+            init();
+        }, [init]);
 
-    return (
-        <Page
-            maxWidth="wide"
-            style={{ height: '100%' }}
-            className={Styles.mainRoot}
-            actionToolbar={{
-                sticky: true,
-                content: (
-                    <Stack style={{ flex: 1 }} justifyContent="space-between">
-                        <Stack.Item>{/*  */}</Stack.Item>
-                        <Stack justifyContent="center" alignItems="center">
-                            {!!user && (
-                                <Avatar
-                                    name={getAvatarFirstLetters(user?.name)}
-                                    autoColor
-                                    image={urlToShow(user?.profilePictureUrl)}
-                                />
-                            )}
-                            <BodyText className="p-l-1 t-truncate" size="medium">
-                                {user?.name}
-                            </BodyText>
+        return (
+            <Page
+                maxWidth="wide"
+                style={{ height: '100%' }}
+                className={Styles.mainRoot}
+                actionToolbar={{
+                    sticky: true,
+                    content: (
+                        <Stack style={{ flex: 1 }} justifyContent="space-between">
+                            <Stack.Item>{/*  */}</Stack.Item>
+                            <Stack justifyContent="center" alignItems="center">
+                                {!!user && (
+                                    <Avatar
+                                        name={getAvatarFirstLetters(user?.name)}
+                                        autoColor
+                                        image={urlToShow(user?.profilePictureUrl)}
+                                    />
+                                )}
+                                <BodyText className="p-l-1 t-truncate" size="medium">
+                                    {user?.name}
+                                </BodyText>
+                            </Stack>
                         </Stack>
-                    </Stack>
-                ),
-            }}
-            sidebar={<MySideBar />}
-        >
-            <Layout>{children}</Layout>
-        </Page>
-    );
-});
+                    ),
+                }}
+                sidebar={<MySideBar />}
+            >
+                <Layout>{children}</Layout>
+            </Page>
+        );
+    })
+);
 
 const MySideBar: FC = observer(() => {
     const [{ isAdmin, isUser, logout }] = useDependencies(AuthStore);
