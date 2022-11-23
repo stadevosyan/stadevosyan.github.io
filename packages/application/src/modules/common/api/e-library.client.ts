@@ -110,7 +110,7 @@ export class ELibraryApi {
         return this.opts.axios.request<GetUsersResponseDto>(options_);
     }
 
-    usersController_getMyProfile(cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+    usersController_getMyProfile(cancelToken?: CancelToken): AxiosPromise<UserModel> {
         let url_ = "/users/profile";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -125,10 +125,10 @@ export class ELibraryApi {
             }
         };
 
-        return this.opts.axios.request<UserEntity>(options_);
+        return this.opts.axios.request<UserModel>(options_);
     }
 
-    usersController_editMyProfile(body: EditUserDto, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+    usersController_editMyProfile(body: EditUserDto, cancelToken?: CancelToken): AxiosPromise<UserModel> {
         let url_ = "/users/profile";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -146,10 +146,10 @@ export class ELibraryApi {
             }
         };
 
-        return this.opts.axios.request<UserEntity>(options_);
+        return this.opts.axios.request<UserModel>(options_);
     }
 
-    usersController_getUserById(id: number, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+    usersController_getUserById(id: number, cancelToken?: CancelToken): AxiosPromise<UserModel> {
         let url_ = "/users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -167,10 +167,10 @@ export class ELibraryApi {
             }
         };
 
-        return this.opts.axios.request<UserEntity>(options_);
+        return this.opts.axios.request<UserModel>(options_);
     }
 
-    usersController_editCategory(id: number, body: EditUserDto, cancelToken?: CancelToken): AxiosPromise<UserEntity> {
+    usersController_editUser(id: number, body: EditUserDto, cancelToken?: CancelToken): AxiosPromise<UserModel> {
         let url_ = "/users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -191,10 +191,10 @@ export class ELibraryApi {
             }
         };
 
-        return this.opts.axios.request<UserEntity>(options_);
+        return this.opts.axios.request<UserModel>(options_);
     }
 
-    usersController_deleteCategory(id: number, cancelToken?: CancelToken): AxiosPromise<void> {
+    usersController_deleteUser(id: number, cancelToken?: CancelToken): AxiosPromise<void> {
         let url_ = "/users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -234,12 +234,20 @@ export class ELibraryApi {
         return this.opts.axios.request<void>(options_);
     }
 
-    booksController_getBooks(title: string | undefined, cancelToken?: CancelToken): AxiosPromise<GetBooksResponseDto> {
+    booksController_getBooks(status: Status | undefined, title: string | undefined, categories: number[] | undefined, cancelToken?: CancelToken): AxiosPromise<GetBooksResponseDto> {
         let url_ = "/books?";
+        if (status === null)
+            throw new Error("The parameter 'status' cannot be null.");
+        else if (status !== undefined)
+            url_ += "status=" + encodeURIComponent("" + status) + "&";
         if (title === null)
             throw new Error("The parameter 'title' cannot be null.");
         else if (title !== undefined)
             url_ += "title=" + encodeURIComponent("" + title) + "&";
+        if (categories === null)
+            throw new Error("The parameter 'categories' cannot be null.");
+        else if (categories !== undefined)
+            categories && categories.forEach(item => { url_ += "categories=" + encodeURIComponent("" + item) + "&"; });
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <AxiosRequestConfig>{
@@ -296,7 +304,7 @@ export class ELibraryApi {
         return this.opts.axios.request<void>(options_);
     }
 
-    booksController_editBook(id: number, body: EditBookDto, cancelToken?: CancelToken): AxiosPromise<BookEntity> {
+    booksController_editBook(id: number, body: EditBookDto, cancelToken?: CancelToken): AxiosPromise<BookModel> {
         let url_ = "/books/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -317,7 +325,7 @@ export class ELibraryApi {
             }
         };
 
-        return this.opts.axios.request<BookEntity>(options_);
+        return this.opts.axios.request<BookModel>(options_);
     }
 
     booksController_getBookById(id: number, cancelToken?: CancelToken): AxiosPromise<BookModel> {
@@ -556,7 +564,7 @@ export class ELibraryApi {
         return this.opts.axios.request<GetBookReviewsResponseDto>(options_);
     }
 
-    reviewsController_editCategory(id: number, body: EditReviewDto, cancelToken?: CancelToken): AxiosPromise<ReviewEntity> {
+    reviewsController_editReview(id: number, body: EditReviewDto, cancelToken?: CancelToken): AxiosPromise<ReviewModel> {
         let url_ = "/reviews/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -577,10 +585,10 @@ export class ELibraryApi {
             }
         };
 
-        return this.opts.axios.request<ReviewEntity>(options_);
+        return this.opts.axios.request<ReviewModel>(options_);
     }
 
-    reviewsController_deleteCategory(id: number, cancelToken?: CancelToken): AxiosPromise<void> {
+    reviewsController_deleteReview(id: number, cancelToken?: CancelToken): AxiosPromise<void> {
         let url_ = "/reviews/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -769,362 +777,22 @@ export interface ILoginResponseDto {
     [key: string]: any;
 }
 
-export class CategoryEntity implements ICategoryEntity {
-    name!: string;
+export class UserModel implements IUserModel {
     id!: number;
-    created_at!: Date;
-    updated_at!: Date;
-
-    [key: string]: any;
-
-    constructor(data?: ICategoryEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.name = _data["name"];
-            this.id = _data["id"];
-            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
-            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): CategoryEntity {
-        data = typeof data === 'object' ? data : {};
-        let result = new CategoryEntity();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["name"] = this.name;
-        data["id"] = this.id;
-        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
-        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface ICategoryEntity {
-    name: string;
-    id: number;
-    created_at: Date;
-    updated_at: Date;
-
-    [key: string]: any;
-}
-
-export class ReviewEntity implements IReviewEntity {
-    review!: string;
-    bookId!: number;
-    userId!: number;
-    user!: UserEntity;
-    book!: BookEntity;
-    id!: number;
-    created_at!: Date;
-    updated_at!: Date;
-
-    [key: string]: any;
-
-    constructor(data?: IReviewEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.user = new UserEntity();
-            this.book = new BookEntity();
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.review = _data["review"];
-            this.bookId = _data["bookId"];
-            this.userId = _data["userId"];
-            this.user = _data["user"] ? UserEntity.fromJS(_data["user"]) : new UserEntity();
-            this.book = _data["book"] ? BookEntity.fromJS(_data["book"]) : new BookEntity();
-            this.id = _data["id"];
-            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
-            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): ReviewEntity {
-        data = typeof data === 'object' ? data : {};
-        let result = new ReviewEntity();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["review"] = this.review;
-        data["bookId"] = this.bookId;
-        data["userId"] = this.userId;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        data["book"] = this.book ? this.book.toJSON() : <any>undefined;
-        data["id"] = this.id;
-        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
-        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IReviewEntity {
-    review: string;
-    bookId: number;
-    userId: number;
-    user: UserEntity;
-    book: BookEntity;
-    id: number;
-    created_at: Date;
-    updated_at: Date;
-
-    [key: string]: any;
-}
-
-export class BookEntity implements IBookEntity {
-    title!: string;
-    description!: string;
-    author!: string;
-    count!: number;
-    pictureUrl!: string;
-    categories!: CategoryEntity[];
-    userBooks!: UserBookEntity[];
-    reviews!: ReviewEntity[];
-    id!: number;
-    created_at!: Date;
-    updated_at!: Date;
-
-    [key: string]: any;
-
-    constructor(data?: IBookEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.categories = [];
-            this.userBooks = [];
-            this.reviews = [];
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.author = _data["author"];
-            this.count = _data["count"];
-            this.pictureUrl = _data["pictureUrl"];
-            if (Array.isArray(_data["categories"])) {
-                this.categories = [] as any;
-                for (let item of _data["categories"])
-                    this.categories!.push(CategoryEntity.fromJS(item));
-            }
-            if (Array.isArray(_data["userBooks"])) {
-                this.userBooks = [] as any;
-                for (let item of _data["userBooks"])
-                    this.userBooks!.push(UserBookEntity.fromJS(item));
-            }
-            if (Array.isArray(_data["reviews"])) {
-                this.reviews = [] as any;
-                for (let item of _data["reviews"])
-                    this.reviews!.push(ReviewEntity.fromJS(item));
-            }
-            this.id = _data["id"];
-            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
-            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): BookEntity {
-        data = typeof data === 'object' ? data : {};
-        let result = new BookEntity();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["author"] = this.author;
-        data["count"] = this.count;
-        data["pictureUrl"] = this.pictureUrl;
-        if (Array.isArray(this.categories)) {
-            data["categories"] = [];
-            for (let item of this.categories)
-                data["categories"].push(item.toJSON());
-        }
-        if (Array.isArray(this.userBooks)) {
-            data["userBooks"] = [];
-            for (let item of this.userBooks)
-                data["userBooks"].push(item.toJSON());
-        }
-        if (Array.isArray(this.reviews)) {
-            data["reviews"] = [];
-            for (let item of this.reviews)
-                data["reviews"].push(item.toJSON());
-        }
-        data["id"] = this.id;
-        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
-        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IBookEntity {
-    title: string;
-    description: string;
-    author: string;
-    count: number;
-    pictureUrl: string;
-    categories: CategoryEntity[];
-    userBooks: UserBookEntity[];
-    reviews: ReviewEntity[];
-    id: number;
-    created_at: Date;
-    updated_at: Date;
-
-    [key: string]: any;
-}
-
-export class UserBookEntity implements IUserBookEntity {
-    bookToUserId!: number;
-    bookId!: number;
-    userId!: number;
-    book!: BookEntity;
-    user!: UserEntity;
-    createdAt!: Date;
-    endDate!: Date;
-
-    [key: string]: any;
-
-    constructor(data?: IUserBookEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.book = new BookEntity();
-            this.user = new UserEntity();
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.bookToUserId = _data["bookToUserId"];
-            this.bookId = _data["bookId"];
-            this.userId = _data["userId"];
-            this.book = _data["book"] ? BookEntity.fromJS(_data["book"]) : new BookEntity();
-            this.user = _data["user"] ? UserEntity.fromJS(_data["user"]) : new UserEntity();
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
-            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): UserBookEntity {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserBookEntity();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["bookToUserId"] = this.bookToUserId;
-        data["bookId"] = this.bookId;
-        data["userId"] = this.userId;
-        data["book"] = this.book ? this.book.toJSON() : <any>undefined;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
-        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IUserBookEntity {
-    bookToUserId: number;
-    bookId: number;
-    userId: number;
-    book: BookEntity;
-    user: UserEntity;
-    createdAt: Date;
-    endDate: Date;
-
-    [key: string]: any;
-}
-
-export class UserEntity implements IUserEntity {
     email!: string;
-    password!: string;
     name!: string;
     role!: UserEntityRole;
     phoneNumber!: string;
-    profilePictureUrl!: string;
-    userBooks!: UserBookEntity[];
-    id!: number;
-    created_at!: Date;
-    updated_at!: Date;
+    profilePictureUrl!: string | undefined;
 
     [key: string]: any;
 
-    constructor(data?: IUserEntity) {
+    constructor(data?: IUserModel) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
                     (<any>this)[property] = (<any>data)[property];
             }
-        }
-        if (!data) {
-            this.userBooks = [];
         }
     }
 
@@ -1134,26 +802,18 @@ export class UserEntity implements IUserEntity {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.id = _data["id"];
             this.email = _data["email"];
-            this.password = _data["password"];
             this.name = _data["name"];
             this.role = _data["role"];
             this.phoneNumber = _data["phoneNumber"];
             this.profilePictureUrl = _data["profilePictureUrl"];
-            if (Array.isArray(_data["userBooks"])) {
-                this.userBooks = [] as any;
-                for (let item of _data["userBooks"])
-                    this.userBooks!.push(UserBookEntity.fromJS(item));
-            }
-            this.id = _data["id"];
-            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
-            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): UserEntity {
+    static fromJS(data: any): UserModel {
         data = typeof data === 'object' ? data : {};
-        let result = new UserEntity();
+        let result = new UserModel();
         result.init(data);
         return result;
     }
@@ -1164,41 +824,29 @@ export class UserEntity implements IUserEntity {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["id"] = this.id;
         data["email"] = this.email;
-        data["password"] = this.password;
         data["name"] = this.name;
         data["role"] = this.role;
         data["phoneNumber"] = this.phoneNumber;
         data["profilePictureUrl"] = this.profilePictureUrl;
-        if (Array.isArray(this.userBooks)) {
-            data["userBooks"] = [];
-            for (let item of this.userBooks)
-                data["userBooks"].push(item.toJSON());
-        }
-        data["id"] = this.id;
-        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
-        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
         return data;
     }
 }
 
-export interface IUserEntity {
+export interface IUserModel {
+    id: number;
     email: string;
-    password: string;
     name: string;
     role: UserEntityRole;
     phoneNumber: string;
-    profilePictureUrl: string;
-    userBooks: UserBookEntity[];
-    id: number;
-    created_at: Date;
-    updated_at: Date;
+    profilePictureUrl: string | undefined;
 
     [key: string]: any;
 }
 
 export class GetUsersResponseDto implements IGetUsersResponseDto {
-    data!: UserEntity[];
+    data!: UserModel[];
     count!: number;
 
     [key: string]: any;
@@ -1224,7 +872,7 @@ export class GetUsersResponseDto implements IGetUsersResponseDto {
             if (Array.isArray(_data["data"])) {
                 this.data = [] as any;
                 for (let item of _data["data"])
-                    this.data!.push(UserEntity.fromJS(item));
+                    this.data!.push(UserModel.fromJS(item));
             }
             this.count = _data["count"];
         }
@@ -1254,7 +902,7 @@ export class GetUsersResponseDto implements IGetUsersResponseDto {
 }
 
 export interface IGetUsersResponseDto {
-    data: UserEntity[];
+    data: UserModel[];
     count: number;
 
     [key: string]: any;
@@ -1518,17 +1166,15 @@ export interface IEditBookDto {
     [key: string]: any;
 }
 
-export class UserModel implements IUserModel {
-    id!: number;
-    email!: string;
+export class CategoryEntity implements ICategoryEntity {
     name!: string;
-    role!: UserEntityRole;
-    phoneNumber!: string;
-    profilePictureUrl!: string | undefined;
+    id!: number;
+    created_at!: Date;
+    updated_at!: Date;
 
     [key: string]: any;
 
-    constructor(data?: IUserModel) {
+    constructor(data?: ICategoryEntity) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1543,18 +1189,16 @@ export class UserModel implements IUserModel {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
-            this.id = _data["id"];
-            this.email = _data["email"];
             this.name = _data["name"];
-            this.role = _data["role"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.profilePictureUrl = _data["profilePictureUrl"];
+            this.id = _data["id"];
+            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
+            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): UserModel {
+    static fromJS(data: any): CategoryEntity {
         data = typeof data === 'object' ? data : {};
-        let result = new UserModel();
+        let result = new CategoryEntity();
         result.init(data);
         return result;
     }
@@ -1565,23 +1209,19 @@ export class UserModel implements IUserModel {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
-        data["id"] = this.id;
-        data["email"] = this.email;
         data["name"] = this.name;
-        data["role"] = this.role;
-        data["phoneNumber"] = this.phoneNumber;
-        data["profilePictureUrl"] = this.profilePictureUrl;
+        data["id"] = this.id;
+        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
+        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
         return data;
     }
 }
 
-export interface IUserModel {
-    id: number;
-    email: string;
+export interface ICategoryEntity {
     name: string;
-    role: UserEntityRole;
-    phoneNumber: string;
-    profilePictureUrl: string | undefined;
+    id: number;
+    created_at: Date;
+    updated_at: Date;
 
     [key: string]: any;
 }
@@ -2479,6 +2119,11 @@ export interface IEditReviewDto {
     bookId: number;
 
     [key: string]: any;
+}
+
+export enum Status {
+    Available = 1,
+    Hold = 2,
 }
 
 export enum UserEntityRole {

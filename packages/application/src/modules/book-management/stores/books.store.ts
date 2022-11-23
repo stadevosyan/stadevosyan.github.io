@@ -9,7 +9,7 @@ import {
     EditBookDto,
     ELibraryApi,
     HoldBookDto,
-    UserEntity,
+    UserModel,
 } from '../../common/api/e-library.client';
 import {
     commitFormState,
@@ -37,7 +37,7 @@ export class BooksStore {
     @observable assignModal = false;
     @observable assignModalLoading = false;
 
-    @observable users: Map<number, UserEntity> = new Map();
+    @observable users: Map<number, UserModel> = new Map();
     @observable usersIds: number[] = [];
 
     @observable categoriesIds: number[] = [];
@@ -180,7 +180,9 @@ export class BooksStore {
 
     getBooksList = async () => {
         const { data: books } = await this.eLibraryApi.booksController_getBooks(
-            this.searchForm.$.search.value || ''
+            undefined,
+            this.searchForm.$.search.value || '',
+            undefined
         );
         runInAction(() => {
             this.books = books.data;

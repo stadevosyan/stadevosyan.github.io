@@ -38,7 +38,11 @@ export class OwnBooksStore {
         this.setLoadingOwnBooksStatus(LoadStatus.Loading);
         try {
             // TODO should be by endpoint of user books
-            const { data: books } = await this.eLibraryApi.booksController_getBooks('');
+            const { data: books } = await this.eLibraryApi.booksController_getBooks(
+                undefined,
+                undefined,
+                undefined
+            );
             runInAction(() => {
                 this.books = books.data;
                 this.booksToShow = books.data;

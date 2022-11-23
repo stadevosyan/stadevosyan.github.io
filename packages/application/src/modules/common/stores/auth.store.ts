@@ -6,7 +6,7 @@ import {
     EditUserDto,
     ELibraryApi,
     LoginUserDto,
-    UserEntity,
+    UserModel,
     UserEntityRole,
 } from '../api/e-library.client';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -16,7 +16,7 @@ export const AUTHENTICATED_USER_TOKEN = 'AuthToken';
 
 @injectable()
 export class AuthStore {
-    @observable user?: UserEntity;
+    @observable user?: UserModel;
     storedInterceptor?: number;
 
     @computed get isAuthenticated() {
