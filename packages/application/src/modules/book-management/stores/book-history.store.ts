@@ -35,7 +35,7 @@ export class BookHistoryStore {
     @action refresh = (name: string) => {
         const filter = getFilterSet([{ column: 'name', value: name }]);
 
-        this.historyTableState.fetchData({ newFilter: filter }).catch(() => null);
+        // this.historyTableState.fetchData({ newFilter: filter }).catch(() => null);
     };
 
     init = async (bookId: number) => {

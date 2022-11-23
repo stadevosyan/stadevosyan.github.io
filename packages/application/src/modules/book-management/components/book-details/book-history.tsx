@@ -17,7 +17,7 @@ export const BookHistory = provide({ singletons: [BookHistoryStore] })(
 
         useEffect(() => {
             init(+id);
-        });
+        }, [id, init]);
 
         return (
             <Stack className="p-y-3">
