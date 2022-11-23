@@ -10,12 +10,12 @@ import {
 import { FilePicker } from '../../../common/components/file-picker/file-picker';
 import { observer } from 'mobx-react';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
-import { BooksStore } from '../../stores/books.store';
 import { useEffect } from 'react';
 import { FilePickerStore } from '../../../common/stores/file-picker.store';
 import { GeneralDataStore } from '../../../common/stores/general-data.store';
 import { LoadStatus } from '../../../common/enums/load-status';
 import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
+import { BookDetailsStore } from '../../stores/book-details.store';
 
 export const BookSummary = provide({
     singletons: [FilePickerStore],
@@ -23,7 +23,6 @@ export const BookSummary = provide({
     observer(() => {
         const [
             {
-                userForm,
                 users,
                 bookForm,
                 categoriesMap,
@@ -34,17 +33,19 @@ export const BookSummary = provide({
                 usersIds,
                 categoriesIds,
                 resetAssignForm,
-                assignToUser,
+                handleAssignToUser,
                 updateUserId,
                 holderUserId,
             },
             { fetchCategoriesStatus },
-        ] = useDependencies(BooksStore, GeneralDataStore);
+        ] = useDependencies(BookDetailsStore, GeneralDataStore);
 
         useEffect(() => {
-            return () => {
-                cleanBookEditState();
-            };
+            /*
+             * return () => {
+             *     cleanBookEditState();
+             * };
+             */
         }, [cleanBookEditState]);
 
         if (fetchCategoriesStatus === LoadStatus.Loading) {
@@ -153,7 +154,7 @@ export const BookSummary = provide({
                     footer={
                         <ButtonGroup>
                             <Button onClick={resetAssignForm}>Չեղարկել</Button>
-                            <Button primary onClick={assignToUser}>
+                            <Button primary onClick={handleAssignToUser}>
                                 Կիրառել
                             </Button>
                         </ButtonGroup>
