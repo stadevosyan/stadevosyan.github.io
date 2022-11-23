@@ -70,16 +70,14 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                                 className="m-b-0 p-r-2"
                                 placeholder="Որոնել գրքեր"
                             />
-                            {authStore.isAdmin && (
-                                <Button
-                                    iconName="funnel"
-                                    primary
-                                    outline
-                                    onClick={bookStore.openFilter}
-                                >
-                                    Ֆիլտրել
-                                </Button>
-                            )}
+                            <Button
+                                iconName="funnel"
+                                primary
+                                outline
+                                onClick={bookStore.openFilter}
+                            >
+                                Ֆիլտրել
+                            </Button>
                         </Stack>
 
                         {authStore.isAdmin && (
