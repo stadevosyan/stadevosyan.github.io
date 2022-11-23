@@ -6,7 +6,7 @@ import { SyntheticEvent, useEffect } from 'react';
 import * as Styles from '../../book-management/components/book-managment.module.less';
 import { BookCardExpanded } from '../../common/components/book-card-expanded/book-card-expanded';
 import { OwnBooksStore } from '../stores/own-books.store';
-import { BookEntity } from '../../common/api/e-library.client';
+import { BookModel } from '../../common/api/e-library.client';
 
 export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
     observer(() => {
@@ -52,7 +52,7 @@ export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
                     </Stack>
                 </Stack>
                 <Stack className={Styles.bookList} direction="column" spacing={2}>
-                    {booksToShow.map((book: BookEntity) => (
+                    {booksToShow.map((book: BookModel) => (
                         <BookCardExpanded
                             id={book.id}
                             name={book.title}

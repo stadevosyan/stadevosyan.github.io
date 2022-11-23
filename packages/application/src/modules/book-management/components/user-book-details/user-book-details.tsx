@@ -65,9 +65,9 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                                         {book?.author ?? '--'}
                                     </Eyebrow>
                                     <Stack className="m-b-2">
-                                        {book?.categories?.map((categoryId: number) => (
-                                            <Tag key={categoryId} className="m-1">
-                                                {categories.get(categoryId)}
+                                        {book?.categories?.map(item => (
+                                            <Tag key={item.categoryId} className="m-1">
+                                                {categories.get(item.categoryId)}
                                             </Tag>
                                         ))}
                                     </Stack>

@@ -1338,11 +1338,17 @@ export interface IEditBookDto {
     [key: string]: any;
 }
 
-export class BookModel implements IBookModel {
+export class UserModel implements IUserModel {
+    id!: number;
+    email!: string;
+    name!: string;
+    role!: UserEntityRole;
+    phoneNumber!: string;
+    profilePictureUrl!: string | undefined;
 
     [key: string]: any;
 
-    constructor(data?: IBookModel) {
+    constructor(data?: IUserModel) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1357,6 +1363,89 @@ export class BookModel implements IBookModel {
                 if (_data.hasOwnProperty(property))
                     this[property] = _data[property];
             }
+            this.id = _data["id"];
+            this.email = _data["email"];
+            this.name = _data["name"];
+            this.role = _data["role"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.profilePictureUrl = _data["profilePictureUrl"];
+        }
+    }
+
+    static fromJS(data: any): UserModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["email"] = this.email;
+        data["name"] = this.name;
+        data["role"] = this.role;
+        data["phoneNumber"] = this.phoneNumber;
+        data["profilePictureUrl"] = this.profilePictureUrl;
+        return data;
+    }
+}
+
+export interface IUserModel {
+    id: number;
+    email: string;
+    name: string;
+    role: UserEntityRole;
+    phoneNumber: string;
+    profilePictureUrl: string | undefined;
+
+    [key: string]: any;
+}
+
+export class BookModel implements IBookModel {
+    id!: number;
+    title!: string;
+    description!: string;
+    author!: string;
+    pictureUrl!: string | undefined;
+    categories!: CategoryEntity[];
+    holdedUser!: UserModel;
+
+    [key: string]: any;
+
+    constructor(data?: IBookModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.categories = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.author = _data["author"];
+            this.pictureUrl = _data["pictureUrl"];
+            if (Array.isArray(_data["categories"])) {
+                this.categories = [] as any;
+                for (let item of _data["categories"])
+                    this.categories!.push(CategoryEntity.fromJS(item));
+            }
+            this.holdedUser = _data["holdedUser"] ? UserModel.fromJS(_data["holdedUser"]) : <any>undefined;
         }
     }
 
@@ -1373,11 +1462,29 @@ export class BookModel implements IBookModel {
             if (this.hasOwnProperty(property))
                 data[property] = this[property];
         }
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["author"] = this.author;
+        data["pictureUrl"] = this.pictureUrl;
+        if (Array.isArray(this.categories)) {
+            data["categories"] = [];
+            for (let item of this.categories)
+                data["categories"].push(item.toJSON());
+        }
+        data["holdedUser"] = this.holdedUser ? this.holdedUser.toJSON() : <any>undefined;
         return data;
     }
 }
 
 export interface IBookModel {
+    id: number;
+    title: string;
+    description: string;
+    author: string;
+    pictureUrl: string | undefined;
+    categories: CategoryEntity[];
+    holdedUser: UserModel;
 
     [key: string]: any;
 }
@@ -1441,50 +1548,6 @@ export class GetBooksResponseDto implements IGetBooksResponseDto {
 export interface IGetBooksResponseDto {
     data: BookModel[];
     count: number;
-
-    [key: string]: any;
-}
-
-export class UserModel implements IUserModel {
-
-    [key: string]: any;
-
-    constructor(data?: IUserModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-        }
-    }
-
-    static fromJS(data: any): UserModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        return data;
-    }
-}
-
-export interface IUserModel {
 
     [key: string]: any;
 }
@@ -1938,6 +2001,6 @@ export interface IFileUploadResponseDto {
 }
 
 export enum UserEntityRole {
-    User = "User",
-    Admin = "Admin",
+    User = 1,
+    Admin = 2,
 }
