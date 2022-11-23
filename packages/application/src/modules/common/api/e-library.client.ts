@@ -403,7 +403,7 @@ export class ELibraryApi {
         return this.opts.axios.request<void>(options_);
     }
 
-    categoryController_getCategories(name: string | undefined, cancelToken?: CancelToken): AxiosPromise<void> {
+    categoryController_getCategories(name: string | undefined, cancelToken?: CancelToken): AxiosPromise<GetCategoriesResponseDto> {
         let url_ = "/category?";
         if (name === null)
             throw new Error("The parameter 'name' cannot be null.");
@@ -418,10 +418,11 @@ export class ELibraryApi {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
-        return this.opts.axios.request<void>(options_);
+        return this.opts.axios.request<GetCategoriesResponseDto>(options_);
     }
 
     categoryController_getCategoryById(id: number, cancelToken?: CancelToken): AxiosPromise<CategoryEntity> {
@@ -511,6 +512,92 @@ export class ELibraryApi {
         };
 
         return this.opts.axios.request<FileUploadResponseDto>(options_);
+    }
+
+    reviewsController_addReview(body: CreateReviewDto, cancelToken?: CancelToken): AxiosPromise<ReviewModel> {
+        let url_ = "/reviews";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = body;
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            data: content_,
+            url: url_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<ReviewModel>(options_);
+    }
+
+    reviewsController_getBookReviews(bookId: number, cancelToken?: CancelToken): AxiosPromise<GetBookReviewsResponseDto> {
+        let url_ = "/reviews/books/{bookId}";
+        if (bookId === undefined || bookId === null)
+            throw new Error("The parameter 'bookId' must be defined.");
+        url_ = url_.replace("{bookId}", encodeURIComponent("" + bookId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<GetBookReviewsResponseDto>(options_);
+    }
+
+    reviewsController_editCategory(id: number, body: EditReviewDto, cancelToken?: CancelToken): AxiosPromise<ReviewEntity> {
+        let url_ = "/reviews/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = body;
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            data: content_,
+            url: url_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<ReviewEntity>(options_);
+    }
+
+    reviewsController_deleteCategory(id: number, cancelToken?: CancelToken): AxiosPromise<void> {
+        let url_ = "/reviews/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.opts.axios.request<void>(options_);
     }
 }
 
@@ -742,6 +829,86 @@ export interface ICategoryEntity {
     [key: string]: any;
 }
 
+export class ReviewEntity implements IReviewEntity {
+    review!: string;
+    bookId!: number;
+    userId!: number;
+    user!: UserEntity;
+    book!: BookEntity;
+    id!: number;
+    created_at!: Date;
+    updated_at!: Date;
+
+    [key: string]: any;
+
+    constructor(data?: IReviewEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.user = new UserEntity();
+            this.book = new BookEntity();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.review = _data["review"];
+            this.bookId = _data["bookId"];
+            this.userId = _data["userId"];
+            this.user = _data["user"] ? UserEntity.fromJS(_data["user"]) : new UserEntity();
+            this.book = _data["book"] ? BookEntity.fromJS(_data["book"]) : new BookEntity();
+            this.id = _data["id"];
+            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
+            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): ReviewEntity {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReviewEntity();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["review"] = this.review;
+        data["bookId"] = this.bookId;
+        data["userId"] = this.userId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        data["book"] = this.book ? this.book.toJSON() : <any>undefined;
+        data["id"] = this.id;
+        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
+        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IReviewEntity {
+    review: string;
+    bookId: number;
+    userId: number;
+    user: UserEntity;
+    book: BookEntity;
+    id: number;
+    created_at: Date;
+    updated_at: Date;
+
+    [key: string]: any;
+}
+
 export class BookEntity implements IBookEntity {
     title!: string;
     description!: string;
@@ -750,6 +917,7 @@ export class BookEntity implements IBookEntity {
     pictureUrl!: string;
     categories!: CategoryEntity[];
     userBooks!: UserBookEntity[];
+    reviews!: ReviewEntity[];
     id!: number;
     created_at!: Date;
     updated_at!: Date;
@@ -766,6 +934,7 @@ export class BookEntity implements IBookEntity {
         if (!data) {
             this.categories = [];
             this.userBooks = [];
+            this.reviews = [];
         }
     }
 
@@ -789,6 +958,11 @@ export class BookEntity implements IBookEntity {
                 this.userBooks = [] as any;
                 for (let item of _data["userBooks"])
                     this.userBooks!.push(UserBookEntity.fromJS(item));
+            }
+            if (Array.isArray(_data["reviews"])) {
+                this.reviews = [] as any;
+                for (let item of _data["reviews"])
+                    this.reviews!.push(ReviewEntity.fromJS(item));
             }
             this.id = _data["id"];
             this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
@@ -824,6 +998,11 @@ export class BookEntity implements IBookEntity {
             for (let item of this.userBooks)
                 data["userBooks"].push(item.toJSON());
         }
+        if (Array.isArray(this.reviews)) {
+            data["reviews"] = [];
+            for (let item of this.reviews)
+                data["reviews"].push(item.toJSON());
+        }
         data["id"] = this.id;
         data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
         data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
@@ -839,6 +1018,7 @@ export interface IBookEntity {
     pictureUrl: string;
     categories: CategoryEntity[];
     userBooks: UserBookEntity[];
+    reviews: ReviewEntity[];
     id: number;
     created_at: Date;
     updated_at: Date;
@@ -1852,6 +2032,69 @@ export interface ICreateCategoryDto {
     [key: string]: any;
 }
 
+export class GetCategoriesResponseDto implements IGetCategoriesResponseDto {
+    data!: CategoryEntity[];
+    count!: number;
+
+    [key: string]: any;
+
+    constructor(data?: IGetCategoriesResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.data = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(CategoryEntity.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): GetCategoriesResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetCategoriesResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IGetCategoriesResponseDto {
+    data: CategoryEntity[];
+    count: number;
+
+    [key: string]: any;
+}
+
 export class EditCategoryDto implements IEditCategoryDto {
     name!: string;
 
@@ -1996,6 +2239,244 @@ export class FileUploadResponseDto implements IFileUploadResponseDto {
 export interface IFileUploadResponseDto {
     filename: string;
     url: string;
+
+    [key: string]: any;
+}
+
+export class CreateReviewDto implements ICreateReviewDto {
+    review!: string;
+    bookId!: number;
+
+    [key: string]: any;
+
+    constructor(data?: ICreateReviewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.review = _data["review"];
+            this.bookId = _data["bookId"];
+        }
+    }
+
+    static fromJS(data: any): CreateReviewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateReviewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["review"] = this.review;
+        data["bookId"] = this.bookId;
+        return data;
+    }
+}
+
+export interface ICreateReviewDto {
+    review: string;
+    bookId: number;
+
+    [key: string]: any;
+}
+
+export class ReviewModel implements IReviewModel {
+    id!: number;
+    created_at!: Date;
+    updated_at!: Date;
+    review!: string;
+    bookId!: number;
+    user!: UserModel;
+
+    [key: string]: any;
+
+    constructor(data?: IReviewModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.user = new UserModel();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.created_at = _data["created_at"] ? new Date(_data["created_at"].toString()) : <any>undefined;
+            this.updated_at = _data["updated_at"] ? new Date(_data["updated_at"].toString()) : <any>undefined;
+            this.review = _data["review"];
+            this.bookId = _data["bookId"];
+            this.user = _data["user"] ? UserModel.fromJS(_data["user"]) : new UserModel();
+        }
+    }
+
+    static fromJS(data: any): ReviewModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReviewModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["created_at"] = this.created_at ? this.created_at.toISOString() : <any>undefined;
+        data["updated_at"] = this.updated_at ? this.updated_at.toISOString() : <any>undefined;
+        data["review"] = this.review;
+        data["bookId"] = this.bookId;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IReviewModel {
+    id: number;
+    created_at: Date;
+    updated_at: Date;
+    review: string;
+    bookId: number;
+    user: UserModel;
+
+    [key: string]: any;
+}
+
+export class GetBookReviewsResponseDto implements IGetBookReviewsResponseDto {
+    data!: ReviewModel[];
+    count!: number;
+
+    [key: string]: any;
+
+    constructor(data?: IGetBookReviewsResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.data = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(ReviewModel.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): GetBookReviewsResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetBookReviewsResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IGetBookReviewsResponseDto {
+    data: ReviewModel[];
+    count: number;
+
+    [key: string]: any;
+}
+
+export class EditReviewDto implements IEditReviewDto {
+    review!: string;
+    bookId!: number;
+
+    [key: string]: any;
+
+    constructor(data?: IEditReviewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.review = _data["review"];
+            this.bookId = _data["bookId"];
+        }
+    }
+
+    static fromJS(data: any): EditReviewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new EditReviewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["review"] = this.review;
+        data["bookId"] = this.bookId;
+        return data;
+    }
+}
+
+export interface IEditReviewDto {
+    review: string;
+    bookId: number;
 
     [key: string]: any;
 }
