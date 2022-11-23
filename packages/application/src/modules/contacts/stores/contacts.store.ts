@@ -49,13 +49,15 @@ export class ContactsStore {
                 pageSize
             );
 
-            const data: Contact[] = response.data.map(item => ({
-                id: item.id,
-                name: item.name,
-                phoneNumber: item.phoneNumber,
-                email: item.email,
-                profilePictureUrl: item.profilePictureUrl,
-            }));
+            const data: Contact[] = response.data
+                .sort((item1, item2) => item1.id - item2.id)
+                .map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    phoneNumber: item.phoneNumber,
+                    email: item.email,
+                    profilePictureUrl: item.profilePictureUrl,
+                }));
 
             this.contactsTableState.setDataSource(new InMemoryDataSource(data || [])).catch();
             this.setContactsLoadStatus(LoadStatus.Ok);

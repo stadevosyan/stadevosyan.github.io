@@ -6,6 +6,7 @@ import { CreateUserDto, ELibraryApi } from '../../common/api/e-library.client';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
+import { ContactsStore } from './contacts.store';
 
 @injectable()
 export class AddContactStore {
@@ -28,7 +29,8 @@ export class AddContactStore {
 
     constructor(
         @inject(ELibraryApi) private readonly api: ELibraryApi,
-        @inject(FilePickerStore) private readonly imageStore: FilePickerStore
+        @inject(FilePickerStore) private readonly imageStore: FilePickerStore,
+        @inject(ContactsStore) private readonly contactsStore: ContactsStore
     ) {
         makeObservable(this);
         this.form = new FormState({
@@ -80,8 +82,10 @@ export class AddContactStore {
                 phoneNumber,
                 profilePictureUrl,
             } as CreateUserDto);
+            await this.contactsStore.fetchContactsData();
 
             this.setAddContactStatus(LoadStatus.Ok);
+            this.contactsStore.hideTakeover();
         } catch {
             this.setAddContactStatus(LoadStatus.Error);
         }
