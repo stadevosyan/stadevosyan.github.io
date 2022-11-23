@@ -18,7 +18,7 @@ export const FilterDrawer: FC = observer(() => {
                     checked={category.value}
                     value={!category.value}
                     onChange={category.onChange}
-                    label={categoriesMap.get(id)}
+                    label={categoriesMap.get(id)?.name ?? ''}
                 />
             );
         });

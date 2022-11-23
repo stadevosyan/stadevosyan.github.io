@@ -43,7 +43,7 @@ export const NewBookTakeover = observer(() => {
                     checked={category.value}
                     value={!category.value}
                     onClick={category.onChange}
-                    label={categories.get(id)}
+                    label={categories.get(id).name}
                 />
             );
         });

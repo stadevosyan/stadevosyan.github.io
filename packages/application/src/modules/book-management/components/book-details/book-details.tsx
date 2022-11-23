@@ -9,7 +9,6 @@ import {
 } from '@servicetitan/design-system';
 import { observer } from 'mobx-react';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
-import { BooksStore } from '../../stores/books.store';
 import { BookHistory } from './book-history';
 import { BookSummary } from './book-summary';
 import { FilePickerStore } from '../../../common/stores/file-picker.store';
@@ -18,8 +17,9 @@ import { Fragment, useEffect } from 'react';
 import { LoadStatus } from '../../../common/enums/load-status';
 import { BookReviews } from './book-reviews';
 import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
+import { BookDetailsStore } from '../../stores/book-details.store';
 
-export const BookDetails = provide({ singletons: [FilePickerStore] })(
+export const BookDetails = provide({ singletons: [BookDetailsStore, FilePickerStore] })(
     observer(() => {
         const [
             {
@@ -32,7 +32,7 @@ export const BookDetails = provide({ singletons: [FilePickerStore] })(
                 resetForm,
                 bookDetailsReadyStatus,
             },
-        ] = useDependencies(BooksStore);
+        ] = useDependencies(BookDetailsStore);
         const params = useParams<{ id: string }>();
         const history = useHistory();
 

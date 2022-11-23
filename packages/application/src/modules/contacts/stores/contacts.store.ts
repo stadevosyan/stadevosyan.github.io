@@ -37,7 +37,6 @@ export class ContactsStore {
         makeObservable(this);
         this.fetchContactsData().catch(null);
         this.searchDebounced = debounce(this.refresh, 300);
-
     }
 
     fetchContactsData = async (name?: string, pageNumber?: number, pageSize?: number) => {
@@ -50,6 +49,7 @@ export class ContactsStore {
                 pageSize
             );
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const data: Contact[] = response.data
                 .sort((item1, item2) => item1.id - item2.id)
                 .map(item => ({
