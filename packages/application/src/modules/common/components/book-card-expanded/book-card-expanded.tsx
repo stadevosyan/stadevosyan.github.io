@@ -23,15 +23,17 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
         >
             <Stack alignItems="center" justifyContent="space-between" spacing="4">
                 <Stack justifyContent="space-between" className="w-33 h-100">
-                    <Stack justifyContent="flex-start" style={{ height: 120 }}>
+                    <Stack justifyContent="flex-start" style={{ height: 120, width: 100 }}>
                         {props.imgUrl ? (
                             <img
                                 className="m-r-3"
                                 src={`${baseUrl}${props.imgUrl}`}
                                 style={{
                                     height: 'auto',
-                                    display: 'block',
-                                    maxWidth: '100%',
+                                    width: 'auto',
+                                    maxWidth: '100px',
+                                    maxHeight: '120px',
+                                    objectFit: 'contain',
                                 }}
                             />
                         ) : (
@@ -44,7 +46,7 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                                 justifyContent="center"
                                 alignItems="flex-start"
                             >
-                                <Headline size="small" className="w-66 m-0 t-truncate">
+                                <Headline size="small" className="m-0 t-truncate">
                                     {props.name}
                                 </Headline>
                                 <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
@@ -79,7 +81,9 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                                     </BodyText>
                                 </Fragment>
                             ) : (
-                                '--'
+                                <BodyText className="m-b-2 t-truncate" size="small">
+                                    --
+                                </BodyText>
                             )}
                         </Stack>
                     </Stack>

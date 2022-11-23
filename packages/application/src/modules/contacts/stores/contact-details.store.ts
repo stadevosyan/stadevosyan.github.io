@@ -38,46 +38,59 @@ export class ContactDetailsStore {
         this.setFetchContactDataStatus(LoadStatus.Loading);
         try {
             const { data: userData } = await this.api.usersController_getUserById(id);
-            // const { data: userBooksData } = await this.api.booksController_getBooksByUserId()
-            const userBooksData = [
-                {
-                    id: 1,
-                    author: 'author1',
-                    title: 'title1',
-                    bookingDate: new Date(1876, 3, 27),
-                    bookImageUrl: 'https://picsum.photos/200/300',
-                },
-                {
-                    id: 2,
-                    author: 'author2',
-                    title: 'title2',
-                    bookingDate: new Date(1876, 3, 27),
-                },
-                {
-                    id: 3,
-                    author: 'author3',
-                    title: 'title4',
-                    bookingDate: new Date(1876, 3, 27),
-                },
-                {
-                    id: 4,
-                    author: 'author6',
-                    title: 'title5',
-                    bookingDate: new Date(1876, 3, 27),
-                },
-                {
-                    id: 5,
-                    author: 'author7',
-                    title: 'title7',
-                    bookingDate: new Date(1876, 3, 27),
-                },
-                {
-                    id: 6,
-                    author: 'author8',
-                    title: 'title8',
-                    bookingDate: new Date(1876, 3, 27),
-                },
-            ];
+            const { data: booksData } = await this.api.booksController_getRentHistoryByUserId(id);
+
+            const userBooksData = booksData.data
+                .filter(item => !item.endDate)
+                .map(item => ({
+                    id: item.id,
+                    author: item.book.author,
+                    title: item.book.title,
+                    bookingDate: item.createdDate,
+                    bookImageUrl: item.book.pictureUrl,
+                }));
+
+            /*
+             * const userBooksData = [
+             *     {
+             *         id: 1,
+             *         author: 'author1',
+             *         title: 'title1',
+             *         bookingDate: new Date(1876, 3, 27),
+             *         bookImageUrl: 'https://picsum.photos/200/300',
+             *     },
+             *     {
+             *         id: 2,
+             *         author: 'author2',
+             *         title: 'title2',
+             *         bookingDate: new Date(1876, 3, 27),
+             *     },
+             *     {
+             *         id: 3,
+             *         author: 'author3',
+             *         title: 'title4',
+             *         bookingDate: new Date(1876, 3, 27),
+             *     },
+             *     {
+             *         id: 4,
+             *         author: 'author6',
+             *         title: 'title5',
+             *         bookingDate: new Date(1876, 3, 27),
+             *     },
+             *     {
+             *         id: 5,
+             *         author: 'author7',
+             *         title: 'title7',
+             *         bookingDate: new Date(1876, 3, 27),
+             *     },
+             *     {
+             *         id: 6,
+             *         author: 'author8',
+             *         title: 'title8',
+             *         bookingDate: new Date(1876, 3, 27),
+             *     },
+             * ];
+             */
 
             runInAction(() => {
                 this.userData = {

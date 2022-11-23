@@ -83,16 +83,22 @@ export const BookSummary = provide({
                         Ժանրեր
                     </BodyText>
                     <Form.Group>
-                        {categoriesIds.map(id => (
-                            <Form.Togglebox
-                                key={id}
-                                className="m-b-2-i"
-                                checked={bookForm.$.categoryIds.$.get(id)!.value}
-                                value={!bookForm.$.categoryIds.$.get(id)!.value}
-                                onClick={bookForm.$.categoryIds.$.get(id)!.onChange}
-                                label={categories.get(id)}
-                            />
-                        ))}
+                        {categoriesIds.map(id => {
+                            if (!bookForm.$.categoryIds.$.get(id)) {
+                                return null;
+                            }
+
+                            return (
+                                <Form.Togglebox
+                                    key={id}
+                                    className="m-b-2-i"
+                                    checked={bookForm.$.categoryIds.$.get(id)!.value}
+                                    value={!bookForm.$.categoryIds.$.get(id)!.value}
+                                    onClick={bookForm.$.categoryIds.$.get(id)!.onChange}
+                                    label={categories.get(id)}
+                                />
+                            );
+                        })}
                     </Form.Group>
                 </Stack>
                 <Divider className="m-y-3" />
