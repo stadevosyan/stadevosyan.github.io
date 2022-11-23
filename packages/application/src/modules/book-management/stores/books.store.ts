@@ -40,7 +40,6 @@ export class BooksStore {
         @inject(ELibraryApi) private eLibraryApi: ELibraryApi
     ) {
         makeObservable(this);
-        this.init().catch(null);
         this.searchDebounced = debounce(this.getBooksList, 300);
     }
 

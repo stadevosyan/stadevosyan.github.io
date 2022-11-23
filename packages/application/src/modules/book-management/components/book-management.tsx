@@ -13,7 +13,7 @@ import { AuthStore } from '../../common/stores/auth.store';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
 
 import * as Styles from './book-managment.module.less';
-import { SyntheticEvent } from 'react';
+import { SyntheticEvent, useEffect } from 'react';
 
 export const BookManagement = provide({ singletons: [NewBookStore, FilePickerStore] })(
     observer(() => {
@@ -23,6 +23,10 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
             AuthStore
         );
         const history = useHistory();
+
+        useEffect(() => {
+            bookStore.init();
+        }, [bookStore, bookStore.init]);
 
         const handleSelectBook = async (data: any) => {
             if (authStore.isAdmin) {
