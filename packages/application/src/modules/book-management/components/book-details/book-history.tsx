@@ -17,6 +17,13 @@ export const BookHistory = provide({ singletons: [BookHistoryStore] })(
         const { id } = useParams<{ id: string }>();
 
         useEffect(() => {
+            const elements = document.getElementsByClassName('Modal__header-title');
+            if (elements.length) {
+                elements[0].textContent = 'Ջնջել';
+            }
+        }, []);
+
+        useEffect(() => {
             init(+id);
         }, [id, init]);
 
