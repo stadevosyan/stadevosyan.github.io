@@ -5,10 +5,22 @@ import { LoadStatus } from '../../../common/enums/load-status';
 import { BodyText, Button, Headline, Icon, Stack } from '@servicetitan/design-system';
 import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
 import { CommentCard } from '../comment-card/comment-card';
+import { AuthStore } from '../../../common/stores/auth.store';
+import { useConfirm } from '@servicetitan/confirm';
 
 export const ReviewsSection = observer(() => {
-    const [{ openModal, fetchBookReviewsLoadStatus, bookReviews }] =
-        useDependencies(UserBookDetailsStore);
+    const [
+        {
+            openModal,
+            fetchBookReviewsLoadStatus,
+            bookReviews,
+            handleEditReview,
+            handleDeleteReview,
+            removeReview,
+        },
+        { user },
+    ] = useDependencies(UserBookDetailsStore, AuthStore);
+    const [HookConfirm, hookHandler] = useConfirm(removeReview);
 
     const loadingReviews = fetchBookReviewsLoadStatus === LoadStatus.Loading;
     const noReviews = bookReviews.length === 0 && fetchBookReviewsLoadStatus === LoadStatus.Ok;
@@ -46,11 +58,22 @@ export const ReviewsSection = observer(() => {
                             id={item.id}
                             name={item.user.name}
                             review={item.review}
+                            image={item.user.profilePictureUrl}
+                            deletable={item.user.id === user?.id}
+                            editable={item.user.id === user?.id}
+                            onEdit={() => {
+                                handleEditReview(item.id);
+                            }}
+                            onDelete={() => {
+                                hookHandler();
+                                handleDeleteReview(item.id);
+                            }}
                             createdOn={item.created_at.toString()}
                         />
                     ))}
                 </Stack>
             )}
+            <HookConfirm title="Ջնջե՞լ" />
         </Stack>
     );
 });
