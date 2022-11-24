@@ -21,7 +21,7 @@ import { ContactDetails } from './modules/contacts/components/contact-details/co
 import { UserBookDetails } from './modules/book-management/components/user-book-details/user-book-details';
 
 const isProd = process.env.NODE_ENV === 'production';
-export const baseUrl = isProd ? 'https://mcm-qa-env-api.st.dev' : 'http://localhost:3000';
+export const baseUrl = isProd ? 'https://api.talinlibrary.am' : 'http://localhost:3000';
 
 export const App = provide({
     singletons: [
