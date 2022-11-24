@@ -132,8 +132,8 @@ export class BookDetailsStore {
             const book = (await this.eLibraryApi.booksController_getBookById(id)).data;
             await when(() => this.generalDataStore.fetchCategoriesStatus === LoadStatus.Ok);
 
-            this.createCategories();
             this.initState(book);
+            this.createCategories();
             this.setBookDetailsReadyStatus(LoadStatus.Ok);
         } catch (e) {
             this.setBookDetailsReadyStatus(LoadStatus.Error);
