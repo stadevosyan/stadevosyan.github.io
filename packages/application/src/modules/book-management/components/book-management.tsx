@@ -34,11 +34,11 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
         const handleSelectBook = async (data: any) => {
             if (authStore.isAdmin) {
                 await bookStore.handleSelect(data); // process logic
-                history.push(`/book/${data.book.id}`);
+                history.push(`/book/${data.id}`);
             }
             if (authStore.isUser) {
                 await bookStore.handleSelect(data); // process logic
-                history.push(`/user/${data.book.id}`);
+                history.push(`/user/${data.id}`);
             }
         };
 

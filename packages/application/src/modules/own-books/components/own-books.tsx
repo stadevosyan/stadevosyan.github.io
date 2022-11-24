@@ -63,7 +63,7 @@ export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
 
                             return (
                                 <BookCardExpanded
-                                    id={item.id}
+                                    id={item.book.id}
                                     name={item.book.title}
                                     author={item.book.author}
                                     imgUrl={item.book.pictureUrl}
