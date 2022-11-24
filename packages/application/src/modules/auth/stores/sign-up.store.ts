@@ -2,10 +2,11 @@ import { inject, injectable } from '@servicetitan/react-ioc';
 
 import { FormState } from 'formstate';
 import { formStateToJS, FormValidators, InputFieldState } from '@servicetitan/form';
-import { CreateUserDto, ELibraryApi } from '../../common/api/e-library.client';
+import { CreateUserDto, ELibraryApi, LoginUserDto } from '../../common/api/e-library.client';
 import { action, makeObservable, observable } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
 import { FilePickerStore } from '../../common/stores/file-picker.store';
+import { AuthStore } from '../../common/stores/auth.store';
 
 @injectable()
 export class SignUpStore {
@@ -20,7 +21,8 @@ export class SignUpStore {
 
     constructor(
         @inject(ELibraryApi) private readonly api: ELibraryApi,
-        @inject(FilePickerStore) private readonly imageStore: FilePickerStore
+        @inject(FilePickerStore) private readonly imageStore: FilePickerStore,
+        @inject(AuthStore) private readonly authStore: AuthStore
     ) {
         makeObservable(this);
         this.form = new FormState({
@@ -74,6 +76,10 @@ export class SignUpStore {
                 profilePictureUrl,
             } as CreateUserDto);
 
+            await this.authStore.login({
+                email,
+                password,
+            } as LoginUserDto);
             this.setRegisterStatus(LoadStatus.Ok);
 
             return true;
