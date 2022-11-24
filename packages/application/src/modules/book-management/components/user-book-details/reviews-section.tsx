@@ -7,6 +7,7 @@ import { CenteredSpinner } from '../../../common/components/centered-spinner/cen
 import { CommentCard } from '../comment-card/comment-card';
 import { AuthStore } from '../../../common/stores/auth.store';
 import { useConfirm } from '@servicetitan/confirm';
+import moment from 'moment/moment';
 
 export const ReviewsSection = observer(() => {
     const [
@@ -68,7 +69,7 @@ export const ReviewsSection = observer(() => {
                                 hookHandler();
                                 handleDeleteReview(item.id);
                             }}
-                            createdOn={item.created_at.toString()}
+                            createdOn={item.created_at ? moment(item.created_at).format('l') : '--'}
                         />
                     ))}
                 </Stack>
