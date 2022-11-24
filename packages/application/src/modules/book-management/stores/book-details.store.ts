@@ -39,7 +39,6 @@ export class BookDetailsStore {
             FormValidators.maxLength(124)
         ),
         description: new InputFieldState('').validators(
-            requiredWithCustomText(errorMessages.RequiredDesc),
             FormValidators.maxLength(1024)
         ),
         categoryIds: new FormState<Map<number, CheckboxFieldState>>(new Map()),
