@@ -6,11 +6,13 @@ import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
 import { baseUrl } from '../../../../app';
 import { UserModel } from '../../api/e-library.client';
 import { urlToShow } from '../../utils/url-helpers';
+import moment from 'moment';
 
 interface BookCardExpandedProps extends BookCardProps {
     name?: string;
     user?: UserModel;
     onClick: (selfProps: BookCardProps) => void;
+    holdedDate?: Date;
 }
 
 export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
@@ -90,7 +92,7 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                             Վարձակալման ամսաթիվ
                         </BodyText>
                         <BodyText className="m-b-2 t-truncate" size="small">
-                            12/11/22
+                            {props.holdedDate ? moment().format('l') : '--'}
                         </BodyText>
                     </Stack>
                 </Stack>

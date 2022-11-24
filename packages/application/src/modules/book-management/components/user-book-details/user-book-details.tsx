@@ -25,7 +25,7 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
         }, [id, init]);
 
         return (
-            <Stack direction="column" className="filters p-b-3">
+            <Stack direction="column">
                 <Stack direction="column" className="p-b-3">
                     <Stack direction="column" className="p-3">
                         <Stack direction="column">

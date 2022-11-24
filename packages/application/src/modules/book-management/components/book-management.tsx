@@ -122,6 +122,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                                     user={book.holdedUser}
                                     key={book.id}
                                     tagToShow={tagToShow}
+                                    holdedDate={book.holdedDate}
                                 />
                             );
                         })}
