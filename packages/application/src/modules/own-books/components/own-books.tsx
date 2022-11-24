@@ -11,7 +11,7 @@ import { SomethingWentWrong } from '../../common/components/something-went-wrong
 
 export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
     observer(() => {
-        const [{ searchForm, count, booksToShow, booksHistory, loadingOwnBooksStatus }] =
+        const [{ searchForm, booksToShow, booksHistory, loadingOwnBooksStatus }] =
             useDependencies(OwnBooksStore);
         const history = useHistory();
 
@@ -30,7 +30,7 @@ export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
                 <Stack direction="column" className="filters p-b-3">
                     <Stack>
                         <Headline className="m-b-2 t-truncate" size="large">
-                            {`Իմ գրքերը (${count})`}
+                            {`Իմ գրքերը (${booksToShow.length})`}
                         </Headline>
                     </Stack>
                     <Stack justifyContent="space-between" alignItems="center">
