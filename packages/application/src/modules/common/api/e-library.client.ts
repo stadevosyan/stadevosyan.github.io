@@ -370,6 +370,45 @@ export class ELibraryApi {
         return this.opts.axios.request<BookModel>(options_);
     }
 
+    booksController_getRentHistoryByUserId(userId: number, cancelToken?: CancelToken): AxiosPromise<UserRentHistoryResponseDto> {
+        let url_ = "/books/admin/history/{userId}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<UserRentHistoryResponseDto>(options_);
+    }
+
+    booksController_getLoggedInUserRentHistory(cancelToken?: CancelToken): AxiosPromise<UserRentHistoryResponseDto> {
+        let url_ = "/books/user/history";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            baseURL: this.opts.baseUrl,
+            cancelToken,
+            url: url_,
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.opts.axios.request<UserRentHistoryResponseDto>(options_);
+    }
+
     booksController_getBookHistory(id: number, cancelToken?: CancelToken): AxiosPromise<BookRentHistoryResponseDto> {
         let url_ = "/books/{id}/history";
         if (id === undefined || id === null)
@@ -389,27 +428,6 @@ export class ELibraryApi {
         };
 
         return this.opts.axios.request<BookRentHistoryResponseDto>(options_);
-    }
-
-    booksController_getRentHistoryByUserId(userId: number, cancelToken?: CancelToken): AxiosPromise<UserRentHistoryResponseDto> {
-        let url_ = "/books/history/{userId}";
-        if (userId === undefined || userId === null)
-            throw new Error("The parameter 'userId' must be defined.");
-        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <AxiosRequestConfig>{
-            baseURL: this.opts.baseUrl,
-            cancelToken,
-            url: url_,
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
-        };
-
-        return this.opts.axios.request<UserRentHistoryResponseDto>(options_);
     }
 
     categoryController_addCategory(body: CreateCategoryDto, cancelToken?: CancelToken): AxiosPromise<void> {
@@ -1303,6 +1321,7 @@ export class BookModel implements IBookModel {
     pictureUrl!: string | undefined;
     categories!: CategoryEntity[];
     holdedUser!: UserModel;
+    holdedDate!: Date;
 
     [key: string]: any;
 
@@ -1335,6 +1354,7 @@ export class BookModel implements IBookModel {
                     this.categories!.push(CategoryEntity.fromJS(item));
             }
             this.holdedUser = _data["holdedUser"] ? UserModel.fromJS(_data["holdedUser"]) : <any>undefined;
+            this.holdedDate = _data["holdedDate"] ? new Date(_data["holdedDate"].toString()) : <any>undefined;
         }
     }
 
@@ -1362,6 +1382,7 @@ export class BookModel implements IBookModel {
                 data["categories"].push(item.toJSON());
         }
         data["holdedUser"] = this.holdedUser ? this.holdedUser.toJSON() : <any>undefined;
+        data["holdedDate"] = this.holdedDate ? this.holdedDate.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -1374,6 +1395,7 @@ export interface IBookModel {
     pictureUrl: string | undefined;
     categories: CategoryEntity[];
     holdedUser: UserModel;
+    holdedDate: Date;
 
     [key: string]: any;
 }
@@ -1436,132 +1458,6 @@ export class GetBooksResponseDto implements IGetBooksResponseDto {
 
 export interface IGetBooksResponseDto {
     data: BookModel[];
-    count: number;
-
-    [key: string]: any;
-}
-
-export class BookRentHistoryModel implements IBookRentHistoryModel {
-    id!: number;
-    createdDate!: Date;
-    endDate!: Date;
-    user!: UserModel;
-
-    [key: string]: any;
-
-    constructor(data?: IBookRentHistoryModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.user = new UserModel();
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            this.id = _data["id"];
-            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
-            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
-            this.user = _data["user"] ? UserModel.fromJS(_data["user"]) : new UserModel();
-        }
-    }
-
-    static fromJS(data: any): BookRentHistoryModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new BookRentHistoryModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        data["id"] = this.id;
-        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
-        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        return data;
-    }
-}
-
-export interface IBookRentHistoryModel {
-    id: number;
-    createdDate: Date;
-    endDate: Date;
-    user: UserModel;
-
-    [key: string]: any;
-}
-
-export class BookRentHistoryResponseDto implements IBookRentHistoryResponseDto {
-    data!: BookRentHistoryModel[];
-    count!: number;
-
-    [key: string]: any;
-
-    constructor(data?: IBookRentHistoryResponseDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-        if (!data) {
-            this.data = [];
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            for (var property in _data) {
-                if (_data.hasOwnProperty(property))
-                    this[property] = _data[property];
-            }
-            if (Array.isArray(_data["data"])) {
-                this.data = [] as any;
-                for (let item of _data["data"])
-                    this.data!.push(BookRentHistoryModel.fromJS(item));
-            }
-            this.count = _data["count"];
-        }
-    }
-
-    static fromJS(data: any): BookRentHistoryResponseDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new BookRentHistoryResponseDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        for (var property in this) {
-            if (this.hasOwnProperty(property))
-                data[property] = this[property];
-        }
-        if (Array.isArray(this.data)) {
-            data["data"] = [];
-            for (let item of this.data)
-                data["data"].push(item.toJSON());
-        }
-        data["count"] = this.count;
-        return data;
-    }
-}
-
-export interface IBookRentHistoryResponseDto {
-    data: BookRentHistoryModel[];
     count: number;
 
     [key: string]: any;
@@ -1688,6 +1584,132 @@ export class UserRentHistoryResponseDto implements IUserRentHistoryResponseDto {
 
 export interface IUserRentHistoryResponseDto {
     data: UserRentHistoryModel[];
+    count: number;
+
+    [key: string]: any;
+}
+
+export class BookRentHistoryModel implements IBookRentHistoryModel {
+    id!: number;
+    createdDate!: Date;
+    endDate!: Date;
+    user!: UserModel;
+
+    [key: string]: any;
+
+    constructor(data?: IBookRentHistoryModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.user = new UserModel();
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.id = _data["id"];
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.user = _data["user"] ? UserModel.fromJS(_data["user"]) : new UserModel();
+        }
+    }
+
+    static fromJS(data: any): BookRentHistoryModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookRentHistoryModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["id"] = this.id;
+        data["createdDate"] = this.createdDate ? this.createdDate.toISOString() : <any>undefined;
+        data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IBookRentHistoryModel {
+    id: number;
+    createdDate: Date;
+    endDate: Date;
+    user: UserModel;
+
+    [key: string]: any;
+}
+
+export class BookRentHistoryResponseDto implements IBookRentHistoryResponseDto {
+    data!: BookRentHistoryModel[];
+    count!: number;
+
+    [key: string]: any;
+
+    constructor(data?: IBookRentHistoryResponseDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.data = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            if (Array.isArray(_data["data"])) {
+                this.data = [] as any;
+                for (let item of _data["data"])
+                    this.data!.push(BookRentHistoryModel.fromJS(item));
+            }
+            this.count = _data["count"];
+        }
+    }
+
+    static fromJS(data: any): BookRentHistoryResponseDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BookRentHistoryResponseDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        if (Array.isArray(this.data)) {
+            data["data"] = [];
+            for (let item of this.data)
+                data["data"].push(item.toJSON());
+        }
+        data["count"] = this.count;
+        return data;
+    }
+}
+
+export interface IBookRentHistoryResponseDto {
+    data: BookRentHistoryModel[];
     count: number;
 
     [key: string]: any;

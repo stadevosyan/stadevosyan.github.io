@@ -1,5 +1,5 @@
 import { FC, Fragment } from 'react';
-import { Avatar, BodyText, Card, Divider, Headline, Stack, Tag } from '@servicetitan/design-system';
+import { Avatar, BodyText, Card, Divider, Headline, Stack } from '@servicetitan/design-system';
 
 import { BookCardProps } from '../book-card/book-card';
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
@@ -52,12 +52,7 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                                 <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
                                     {props.author}
                                 </BodyText>
-                                {!props.status && (
-                                    <Tag color="success" subtle>
-                                        Հասանելի է
-                                    </Tag>
-                                )}
-                                {props.status && <Tag>Վարձակալված է</Tag>}
+                                {props.tagToShow}
                             </Stack>
                         </Stack.Item>
                     </Stack>

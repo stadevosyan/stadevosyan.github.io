@@ -9,7 +9,7 @@
   },
   "codeGenerators": {
     "openApiToTypeScriptClient": {
-      "className": "NewELibraryApi",
+      "className": "ELibraryApi",
       "moduleName": "",
       "namespace": "",
       "typeScriptVersion": 2.7,
@@ -65,7 +65,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../../packages/application/src/modules/common/api/new-e-library.client.ts",
+      "output": "../../packages/application/src/modules/common/api/e-library.client.ts",
       "newLineBehavior": "Auto"
     }
   }

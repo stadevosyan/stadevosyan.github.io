@@ -9,7 +9,7 @@ import {
     Stack,
 } from '@servicetitan/design-system';
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import * as Styles from './main-wrapper.module.less';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
@@ -60,7 +60,25 @@ export const MainWrapper: FC = provide({ singletons: [GeneralDataStore] })(
 
 const MySideBar: FC = observer(() => {
     const [{ isAdmin, isUser, logout }] = useDependencies(AuthStore);
-    const [activeRoute, setActiveRoute] = useState(1);
+    const [activeRoute, setActiveRoute] = useState(0);
+
+    const history = useHistory();
+    useEffect(() => {
+        switch (history.location.pathname) {
+            case '/':
+                setActiveRoute(1);
+                break;
+            case '/my-books':
+                setActiveRoute(2);
+                break;
+            case '/contacts':
+                setActiveRoute(3);
+                break;
+            case '/account':
+                setActiveRoute(4);
+                break;
+        }
+    }, [history.location.pathname]);
 
     const isActive = useCallback(
         route => {

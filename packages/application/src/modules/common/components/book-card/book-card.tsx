@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { BodyText, Card, Headline, Stack, Tag } from '@servicetitan/design-system';
+import { BodyText, Card, Headline, Stack } from '@servicetitan/design-system';
 import { ImagePlaceholder } from '../image-placeholder/image-placeholder';
 import { baseUrl } from '../../../../app';
 
@@ -8,7 +8,7 @@ export interface BookCardProps {
     name?: string;
     author?: string;
     imgUrl?: string;
-    status?: boolean;
+    tagToShow: JSX.Element;
     onClick: (selfProps: BookCardProps) => void;
 }
 
@@ -52,9 +52,7 @@ export const BookCard: FC<BookCardProps> = props => {
                 <BodyText size="small" className="m-0 p-t-1 p-b-1  t-truncate">
                     {props.author}
                 </BodyText>
-                <Tag color="success" subtle>
-                    Հասանելի է
-                </Tag>
+                {props.tagToShow}
             </Card.Section>
         </Card>
     );

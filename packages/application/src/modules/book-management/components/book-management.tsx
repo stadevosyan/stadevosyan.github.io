@@ -1,4 +1,4 @@
-import { BodyText, Button, Form, Headline, Stack } from '@servicetitan/design-system';
+import { BodyText, Button, Form, Headline, Stack, Tag } from '@servicetitan/design-system';
 import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { observer } from 'mobx-react';
 import { useHistory } from 'react-router-dom';
@@ -103,33 +103,53 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
                         spacing={2}
                         style={{ minWidth: '800px' }}
                     >
-                        {bookStore.booksToShow.map(book => (
-                            <BookCardExpanded
-                                id={book.id}
-                                name={book.title}
-                                author={book.author}
-                                imgUrl={book.pictureUrl}
-                                onClick={handleSelectBook}
-                                status={!!book.holdedUser}
-                                user={book.holdedUser}
-                                key={book.id}
-                            />
-                        ))}
-                    </Stack>
-                ) : (
-                    <Stack wrap="wrap" className={Styles.bookList} spacing={2}>
-                        {bookStore.booksToShow.map(book => (
-                            <Stack.Item key={book.id}>
-                                <BookCard
+                        {bookStore.booksToShow.map(book => {
+                            const tagToShow = !book.holdedUser ? (
+                                <Tag color="success" subtle>
+                                    Հասանելի է
+                                </Tag>
+                            ) : (
+                                <Tag>Վարձակալված է</Tag>
+                            );
+
+                            return (
+                                <BookCardExpanded
                                     id={book.id}
                                     name={book.title}
                                     author={book.author}
                                     imgUrl={book.pictureUrl}
-                                    status={!!book.holdedUser}
                                     onClick={handleSelectBook}
+                                    user={book.holdedUser}
+                                    key={book.id}
+                                    tagToShow={tagToShow}
                                 />
-                            </Stack.Item>
-                        ))}
+                            );
+                        })}
+                    </Stack>
+                ) : (
+                    <Stack wrap="wrap" className={Styles.bookList} spacing={2}>
+                        {bookStore.booksToShow.map(book => {
+                            const tagToShow = !book.holdedUser ? (
+                                <Tag color="success" subtle>
+                                    Հասանելի է
+                                </Tag>
+                            ) : (
+                                <Tag>Վարձակալված է</Tag>
+                            );
+
+                            return (
+                                <Stack.Item key={book.id}>
+                                    <BookCard
+                                        id={book.id}
+                                        name={book.title}
+                                        author={book.author}
+                                        imgUrl={book.pictureUrl}
+                                        onClick={handleSelectBook}
+                                        tagToShow={tagToShow}
+                                    />
+                                </Stack.Item>
+                            );
+                        })}
                     </Stack>
                 )}
                 {newBookStore.open && <NewBookTakeover />}

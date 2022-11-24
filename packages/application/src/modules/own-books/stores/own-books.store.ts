@@ -1,52 +1,55 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, makeObservable, observable, runInAction } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
 import { BookModel, ELibraryApi } from '../../common/api/e-library.client';
 import { FormState } from 'formstate';
 import { InputFieldState } from '@servicetitan/form';
-import { debounce } from 'debounce';
+
+export interface IBookHistory {
+    id: number;
+    isReading: boolean;
+    book: BookModel;
+}
 
 @injectable()
 export class OwnBooksStore {
     @observable loadingOwnBooksStatus = LoadStatus.None;
-    @observable books: BookModel[] = [];
-    @observable booksToShow: BookModel[] = [];
+    @observable booksHistory: IBookHistory[] = [];
     @observable count = 0;
 
-    searchDebounced: (() => void) & { clear(): void } & { flush(): void };
     searchForm = new FormState({
         search: new InputFieldState(''),
     });
 
     constructor(@inject(ELibraryApi) private eLibraryApi: ELibraryApi) {
         makeObservable(this);
-        this.searchDebounced = debounce(this.filterBooks, 400);
+        this.init().catch();
     }
 
-    filterBooks = () => {
-        runInAction(() => {
-            this.booksToShow = this.books.filter(item =>
-                item.title
-                    .toLowerCase()
-                    .includes(this.searchForm.$.search.value.trim().toLowerCase())
-            );
-        });
-    };
+    @computed get booksToShow() {
+        return this.booksHistory.filter(item =>
+            item.book.title
+                .toLowerCase()
+                .includes(this.searchForm.$.search.value.trim().toLowerCase())
+        );
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    init = async (id: number) => {
+    init = async () => {
         this.setLoadingOwnBooksStatus(LoadStatus.Loading);
         try {
-            // TODO should be by endpoint of user books
-            const { data: books } = await this.eLibraryApi.booksController_getBooks(
-                undefined,
-                undefined,
-                undefined
-            );
+            const { data: books } =
+                await this.eLibraryApi.booksController_getLoggedInUserRentHistory();
+            const { data } = books;
+
             runInAction(() => {
-                this.books = books.data;
-                this.booksToShow = books.data;
-                this.count = books.count;
+                this.booksHistory = data
+                    .sort((item1, item2) => item2.id - item1.id)
+                    .map(item => ({
+                        id: item.id,
+                        isReading: !item.endDate,
+                        startDate: item.createdDate,
+                        book: item.book,
+                    }));
             });
 
             this.setLoadingOwnBooksStatus(LoadStatus.Ok);
