@@ -98,7 +98,7 @@ export const NewBookTakeover = observer(() => {
                             />
                         </Form.Group>
                         <Form.TextArea
-                            label="Նկարագրություն (ոչ պարտադիր)"
+                            label="Նկարագրություն"
                             value={$.description.value}
                             onChange={$.description.onChangeHandler}
                             error={$.description.error}
