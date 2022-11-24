@@ -18,6 +18,7 @@ import { LoadStatus } from '../../../common/enums/load-status';
 import { BookReviews } from './book-reviews';
 import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
 import { BookDetailsStore } from '../../stores/book-details.store';
+import { SomethingWentWrong } from '../../../common/components/something-went-wrong/something-went-wrong';
 
 export const BookDetails = provide({ singletons: [BookDetailsStore, FilePickerStore] })(
     observer(() => {
@@ -42,6 +43,13 @@ export const BookDetails = provide({ singletons: [BookDetailsStore, FilePickerSt
 
         if (bookDetailsReadyStatus === LoadStatus.Loading) {
             return <CenteredSpinner />;
+        }
+
+        if (
+            bookDetailsReadyStatus === LoadStatus.Error ||
+            bookUpdateLoadStatus === LoadStatus.Error
+        ) {
+            return <SomethingWentWrong />;
         }
 
         return (

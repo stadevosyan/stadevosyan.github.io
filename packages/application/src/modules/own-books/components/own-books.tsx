@@ -7,6 +7,7 @@ import { BookCardExpanded } from '../../common/components/book-card-expanded/boo
 import { IBookHistory, OwnBooksStore } from '../stores/own-books.store';
 import { LoadStatus } from '../../common/enums/load-status';
 import { CenteredSpinner } from '../../common/components/centered-spinner/centered-spinner';
+import { SomethingWentWrong } from '../../common/components/something-went-wrong/something-went-wrong';
 
 export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
     observer(() => {
@@ -19,6 +20,10 @@ export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
         };
 
         const noBooks = booksHistory.length === 0 && loadingOwnBooksStatus === LoadStatus.Ok;
+
+        if (loadingOwnBooksStatus === LoadStatus.Error) {
+            return <SomethingWentWrong />;
+        }
 
         return (
             <Stack direction="column" className="p-3" style={{ height: 'calc(100% - 80px)' }}>

@@ -18,6 +18,7 @@ import { CenteredSpinner } from '../../../common/components/centered-spinner/cen
 import { AddContactTakeover } from '../add-contact-takeover/add-contact-takeover';
 import { NameCell } from './name-cell';
 import * as Styles from './contacts.module.less';
+import { SomethingWentWrong } from '../../../common/components/something-went-wrong/something-went-wrong';
 
 export const Contacts = observer(() => {
     const [
@@ -54,6 +55,10 @@ export const Contacts = observer(() => {
     };
 
     const dataExists = contactsLoadStatus === LoadStatus.Ok && !!contactsTableState?.data.length;
+
+    if (contactsLoadStatus === LoadStatus.Error) {
+        return <SomethingWentWrong />;
+    }
 
     return (
         <Fragment>

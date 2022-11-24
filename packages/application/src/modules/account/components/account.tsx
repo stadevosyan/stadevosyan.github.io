@@ -8,12 +8,16 @@ import { AccountStore } from '../stores/account.store';
 import * as Styles from './account.module.less';
 import { Fragment } from 'react';
 import { ChangePasswordModal } from './change-password-modal';
+import { LoadStatus } from '../../common/enums/load-status';
+import { SomethingWentWrong } from '../../common/components/something-went-wrong/something-went-wrong';
+import { CenteredSpinner } from '../../common/components/centered-spinner/centered-spinner';
 
 export const Account = provide({
     singletons: [FilePickerStore, AccountStore],
 })(
     observer(() => {
-        const [{ form, setModalOpen, modalOpen }] = useDependencies(AccountStore);
+        const [{ form, setModalOpen, modalOpen, accountUpdateStatus }] =
+            useDependencies(AccountStore);
         const {
             $: { name, email, phoneNumber, profilePictureUrl },
         } = form;
@@ -21,6 +25,14 @@ export const Account = provide({
         const handleModalOpen = () => {
             setModalOpen(true);
         };
+
+        if (accountUpdateStatus === LoadStatus.Error) {
+            return <SomethingWentWrong />;
+        }
+
+        if (accountUpdateStatus === LoadStatus.Loading) {
+            return <CenteredSpinner />;
+        }
 
         return (
             <Fragment>

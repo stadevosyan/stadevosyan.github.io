@@ -16,6 +16,7 @@ import * as Styles from './book-managment.module.less';
 import { SyntheticEvent, useEffect } from 'react';
 import { LoadStatus } from '../../common/enums/load-status';
 import { CenteredSpinner } from '../../common/components/centered-spinner/centered-spinner';
+import { SomethingWentWrong } from '../../common/components/something-went-wrong/something-went-wrong';
 
 export const BookManagement = provide({ singletons: [NewBookStore, FilePickerStore] })(
     observer(() => {
@@ -51,6 +52,10 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
 
         const showEmpty =
             bookStore.books.length === 0 && bookStore.fetchBooksLoadStatus === LoadStatus.Ok;
+
+        if (bookStore.fetchBooksLoadStatus === LoadStatus.Error) {
+            return <SomethingWentWrong />;
+        }
 
         return (
             <Stack direction="column" className="p-3" style={{ height: 'calc(100% - 50px)' }}>

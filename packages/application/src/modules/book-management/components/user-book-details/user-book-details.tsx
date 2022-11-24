@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
 import { WriteReviewModal } from './write-review-modal';
 import { ReviewsSection } from './reviews-section';
+import { SomethingWentWrong } from '../../../common/components/something-went-wrong/something-went-wrong';
 
 export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
     observer(() => {
@@ -23,6 +24,10 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                 init(+id);
             }
         }, [id, init]);
+
+        if (fetchBookDetailsLoadStatus === LoadStatus.Error) {
+            return <SomethingWentWrong />;
+        }
 
         return (
             <Stack direction="column">

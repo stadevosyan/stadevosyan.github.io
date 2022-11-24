@@ -11,6 +11,7 @@ import { baseUrl } from '../../../../app';
 import { LabelValueInfo } from '../../../common/components/label-value-info/label-value-info';
 import { phoneNumberToThreeDigitFormat } from '../../../common/utils/phone-number-utils';
 import { UserBookCard } from './book-card';
+import { SomethingWentWrong } from '../../../common/components/something-went-wrong/something-went-wrong';
 
 export const ContactDetails = provide({ singletons: [ContactDetailsStore] })(
     observer(() => {
@@ -23,6 +24,10 @@ export const ContactDetails = provide({ singletons: [ContactDetailsStore] })(
 
         if (fetchContactDataStatus === LoadStatus.Loading || !userData) {
             return <CenteredSpinner />;
+        }
+
+        if (fetchContactDataStatus === LoadStatus.Error) {
+            return <SomethingWentWrong />;
         }
 
         return (
