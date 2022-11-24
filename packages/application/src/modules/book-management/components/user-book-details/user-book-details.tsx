@@ -48,9 +48,13 @@ export const UserBookDetails = provide({ singletons: [UserBookDetailsStore] })(
                                     <Stack direction="column" className="m-l-2">
                                         <Headline className="m-b-2 t-truncate" size="large">
                                             {book?.title ?? '--'}
-                                            <Tag className="m-l-2" color="success" subtle>
-                                                Հասանելի է
-                                            </Tag>
+                                            {!book?.holdedUser ? (
+                                                <Tag color="success" subtle className="m-l-2">
+                                                    Հասանելի է
+                                                </Tag>
+                                            ) : (
+                                                <Tag className="m-l-2">Վարձակալված է</Tag>
+                                            )}
                                         </Headline>
                                         <Eyebrow className="m-b-2 t-truncate" size="medium">
                                             {book?.author ?? '--'}
