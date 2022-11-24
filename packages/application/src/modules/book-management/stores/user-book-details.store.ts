@@ -10,6 +10,8 @@ export class UserBookDetailsStore {
     @observable open = false;
     @observable book?: BookModel;
     @observable bookReviews: ReviewModel[] = [];
+    @observable singleReviews?: ReviewModel;
+    @observable singleReviewsForDelete?: ReviewModel;
 
     constructor(@inject(ELibraryApi) private eLibraryApi: ELibraryApi) {
         makeObservable(this);
@@ -17,6 +19,7 @@ export class UserBookDetailsStore {
 
     @action openModal = () => (this.open = true);
     @action closeModal = () => {
+        this.singleReviews = undefined;
         this.open = false;
     };
 
@@ -52,6 +55,37 @@ export class UserBookDetailsStore {
             this.setFetchBookReviewsLoadStatus(LoadStatus.Ok);
         } catch {
             this.setFetchBookReviewsLoadStatus(LoadStatus.Error);
+        }
+    };
+
+    removeReview = async () => {
+        try {
+            if (this.singleReviewsForDelete?.id && this.book?.id) {
+                await this.eLibraryApi.reviewsController_deleteReview(
+                    this.singleReviewsForDelete?.id
+                );
+                await this.fetchReviews(this.book?.id);
+            }
+            runInAction(() => {
+                this.singleReviewsForDelete = undefined;
+            });
+        } catch {
+            //
+        }
+    };
+
+    @action handleEditReview = (reviewId: number) => {
+        const review = this.bookReviews.find(review => review.id === reviewId);
+        if (review) {
+            this.singleReviews = review;
+            this.openModal();
+        }
+    };
+
+    @action handleDeleteReview = (reviewId: number) => {
+        const review = this.bookReviews.find(review => review.id === reviewId);
+        if (review) {
+            this.singleReviewsForDelete = review;
         }
     };
 

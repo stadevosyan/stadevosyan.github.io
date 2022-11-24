@@ -70,7 +70,7 @@ export const BookReviews = provide({ singletons: [BookReviewsStore] })(
                             ))}
                         </Stack>
                     ))}
-                <HookConfirm title="" />
+                <HookConfirm title="Ջնջե՞լ" />
             </Fragment>
         );
     })

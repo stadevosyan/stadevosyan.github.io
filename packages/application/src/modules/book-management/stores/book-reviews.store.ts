@@ -19,7 +19,10 @@ export class BookReviewsStore {
     @action setReviewLoading = (loading: LoadStatus) => (this.reviewLoading = loading);
     @action setReviewId = (reviewId: number | undefined) => (this.reviewId = reviewId);
 
-    init = async (bookId: number) => {
+    init = (bookId: number) => {
+        runInAction(() => {
+            this.bookId = bookId;
+        });
         this.getReviews(bookId).catch();
     };
 
@@ -31,9 +34,10 @@ export class BookReviewsStore {
             if (this.reviewId) {
                 await this.eLibraryApi.reviewsController_deleteReview(this.reviewId);
             }
-            await this.getReviews(this.bookId);
         } catch {
             //
+        } finally {
+            await this.getReviews(this.bookId);
         }
         runInAction(() => {
             this.removeLoading = LoadStatus.Ok;
