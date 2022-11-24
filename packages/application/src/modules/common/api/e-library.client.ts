@@ -541,7 +541,7 @@ export class ELibraryApi {
      * @body file to upload
      */
     uploadController_uploadFile(body: any, cancelToken?: CancelToken): AxiosPromise<FileUploadResponseDto> {
-        let url_ = "/upload";
+        let url_ = "/file-upload";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = body;
