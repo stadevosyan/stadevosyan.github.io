@@ -40,7 +40,9 @@ export const UserBookCard: FC<{ bookData: IUserBook }> = ({ bookData }) => {
                     <BodyText className="m-b-1" size="xsmall" subdued>
                         "Վարձակալման ամսաթիվ
                     </BodyText>
-                    <BodyText size="xsmall">{bookData.bookingDate.toDateString()}</BodyText>
+                    <BodyText size="xsmall">
+                        {new Date(bookData.bookingDate).toDateString()}
+                    </BodyText>
                 </Stack>
             </Stack>
         </Card>
