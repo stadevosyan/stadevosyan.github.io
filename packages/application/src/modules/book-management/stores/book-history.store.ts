@@ -1,5 +1,5 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable, observable, runInAction } from 'mobx';
 import { ELibraryApi } from '../../common/api/e-library.client';
 import { InMemoryDataSource, TableState } from '@servicetitan/table';
 import { pageSize } from '../../contacts/stores/contacts.store';
@@ -18,7 +18,7 @@ export interface HisRecord {
 @injectable()
 export class BookHistoryStore {
     @observable historyTableLoadStatus = LoadStatus.None;
-
+    @observable historyRecordsExists = false;
     @observable historyTableState: TableState<HisRecord, number> = new TableState<
         HisRecord,
         number
@@ -44,6 +44,9 @@ export class BookHistoryStore {
             data: { data },
         } = await this.eLibraryApi.booksController_getBookHistory(bookId);
 
+        runInAction(() => {
+            this.historyRecordsExists = !!data.length;
+        });
         const currentData = data
             .sort((item1, item2) => item1.id - item2.id)
             .map(record => ({
