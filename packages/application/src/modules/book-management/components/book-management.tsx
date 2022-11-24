@@ -161,7 +161,7 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
 );
 
 const EmptyBooksPlaceholder = () => {
-    const [{ handleOpen }] = useDependencies(NewBookStore);
+    const [{ handleOpen }, { isAdmin }] = useDependencies(NewBookStore, AuthStore);
 
     return (
         <Stack alignItems="center" justifyContent="center" className="h-100">
@@ -173,14 +173,16 @@ const EmptyBooksPlaceholder = () => {
             >
                 <img src={require('../../common/assets/no-data-1.png')} />
                 <BodyText className="ta-center m-t-2-i">Այս պահին ավելացված գրքեր չկան</BodyText>
-                <Button
-                    primary
-                    onClick={handleOpen}
-                    style={{ width: '225px', marginLeft: '40px' }}
-                    className="m-t-2-i"
-                >
-                    + Ավելացնել գիրք
-                </Button>
+                {isAdmin && (
+                    <Button
+                        primary
+                        onClick={handleOpen}
+                        style={{ width: '225px', marginLeft: '40px' }}
+                        className="m-t-2-i"
+                    >
+                        + Ավելացնել գիրք
+                    </Button>
+                )}
             </Stack>
         </Stack>
     );

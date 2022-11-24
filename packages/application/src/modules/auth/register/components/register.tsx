@@ -83,7 +83,7 @@ const Footer = () => {
         const isSuccessful = await registerStore.register();
 
         if (isSuccessful) {
-            history.push(AuthPaths.login);
+            history.push('/');
         }
     };
 
