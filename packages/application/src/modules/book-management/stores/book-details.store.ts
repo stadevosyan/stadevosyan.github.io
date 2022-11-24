@@ -38,9 +38,7 @@ export class BookDetailsStore {
             requiredWithCustomText(errorMessages.RequiredAuthor),
             FormValidators.maxLength(124)
         ),
-        description: new InputFieldState('').validators(
-            FormValidators.maxLength(1024)
-        ),
+        description: new InputFieldState('').validators(FormValidators.maxLength(1024)),
         categoryIds: new FormState<Map<number, CheckboxFieldState>>(new Map()),
         pictureUrl: new InputFieldState(''),
         isAvailable: new CheckboxFieldState(false),
@@ -107,15 +105,16 @@ export class BookDetailsStore {
                 }
             });
 
-            const response = await this.eLibraryApi.booksController_editBook(bookId, {
+            await this.eLibraryApi.booksController_editBook(bookId, {
                 title,
                 description,
                 author,
                 pictureUrl: profilePictureUrl ?? '',
                 categoryIds,
             } as unknown as EditBookDto);
-            this.initState(response.data);
+            const response = (await this.eLibraryApi.booksController_getBookById(bookId)).data;
 
+            this.initState(response);
             this.setBookUpdateLoadStatus(LoadStatus.Ok);
         } catch (e) {
             this.setBookUpdateLoadStatus(LoadStatus.Error);
@@ -132,6 +131,7 @@ export class BookDetailsStore {
         try {
             const book = (await this.eLibraryApi.booksController_getBookById(id)).data;
             await when(() => this.generalDataStore.fetchCategoriesStatus === LoadStatus.Ok);
+
             this.createCategories();
             this.initState(book);
             this.setBookDetailsReadyStatus(LoadStatus.Ok);
