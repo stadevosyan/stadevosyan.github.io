@@ -11,7 +11,7 @@ export interface HisRecord {
     id: number;
     profilePictureUrl: string;
     startDate: string;
-    endDate: string;
+    endDate?: string;
     name: string;
 }
 
@@ -53,8 +53,8 @@ export class BookHistoryStore {
                 id: record.id,
                 name: record.user.name,
                 profilePictureUrl: record.user.profilePictureUrl ?? '',
-                startDate: moment(record.createdDate).format('l'),
-                endDate: moment(record.endDate).format('l'),
+                startDate: record.createdDate ? moment(record.createdDate).format('l') : '--',
+                endDate: record.endDate ? moment(record.endDate).format('l') : '--',
             }));
 
         await this.historyTableState.setDataSource(new InMemoryDataSource(currentData));
