@@ -6,7 +6,6 @@ import {
     EditBookDto,
     ELibraryApi,
     HoldBookDto,
-    UserModel,
 } from '../../common/api/e-library.client';
 import { FormState } from 'formstate';
 import {
@@ -26,15 +25,10 @@ export class BookDetailsStore {
     @observable bookUpdateLoadStatus: LoadStatus = LoadStatus.None;
     @observable bookDetailsReadyStatus: LoadStatus = LoadStatus.None;
     @observable selectedBook?: BookModel;
-    @observable categoriesIds: number[] = [];
     @observable activeTab = 0; // REM
-    @observable users: Map<number, UserModel> = new Map();
     @observable assignModal = false;
     @observable assignModalLoading = false;
-    @observable usersIds: number[] = [];
-    @observable holderUserId?: number;
-
-    userForm = new FormState<Map<number, CheckboxFieldState>>(new Map());
+    @observable newHolder?: number | null = undefined;
 
     bookForm = new FormState({
         title: new InputFieldState('').validators(
@@ -51,8 +45,11 @@ export class BookDetailsStore {
         categoryIds: new FormState<Map<number, CheckboxFieldState>>(new Map()),
         pictureUrl: new InputFieldState(''),
         isAvailable: new CheckboxFieldState(false),
-        holdUser: new InputFieldState<number | undefined>(undefined),
     });
+
+    @computed get holderUserId() {
+        return this.selectedBook?.holdedUser?.id;
+    }
 
     @computed get categories() {
         return this.generalDataStore.categories;
@@ -79,50 +76,13 @@ export class BookDetailsStore {
     };
 
     @action resetForm = () => {
-        this.categoriesIds = [];
         this.bookForm.reset();
         this.createCategories();
-        // need to fix
         this.bookForm.$.pictureUrl.onChange(this.selectedBook?.pictureUrl ?? '');
     };
 
-    handleAssignToUser = () => {
-        this.closeAssignBookModal();
-    };
-
-    resetAssignForm = () => {
-        this.userForm.reset();
-        this.closeAssignBookModal();
-    };
-
-    updateUserId = (id: number) => {
-        if (this.holderUserId === id) {
-            this.userForm.$.get(id)!.onChange(false);
-        } else {
-            this.userForm.$.get(id)!.onChange(true);
-            this.holderUserId = id;
-        }
-    };
-
-    @action openAssignBookModal = async () => {
-        this.assignModalLoading = false;
+    @action openAssignBookModal = () => {
         this.assignModal = true;
-        this.userForm = new FormState(new Map());
-        this.users = new Map();
-        this.usersIds = [];
-
-        const holderUserId = this.selectedBook?.holdedUser?.id;
-
-        const users = (await this.eLibraryApi.usersController_getUsers('', 1, 1000)).data;
-
-        users.data.forEach(user => {
-            this.userForm.$.set(user.id, new CheckboxFieldState(holderUserId === user.id));
-            this.users.set(user.id, user);
-            this.usersIds.push(user.id);
-        });
-
-        this.holderUserId = holderUserId;
-        this.assignModalLoading = true;
     };
 
     @action updateBook = async () => {
@@ -140,7 +100,7 @@ export class BookDetailsStore {
 
         try {
             // update
-            this.updateBookHoldStatus(bookId);
+            await this.updateBookHoldStatus(bookId);
 
             this.bookForm.$.categoryIds.$.forEach((category, id) => {
                 if (category.value) {
@@ -148,17 +108,14 @@ export class BookDetailsStore {
                 }
             });
 
-            await this.eLibraryApi.booksController_editBook(bookId, {
+            const response = await this.eLibraryApi.booksController_editBook(bookId, {
                 title,
                 description,
                 author,
                 pictureUrl: profilePictureUrl ?? '',
                 categoryIds,
             } as unknown as EditBookDto);
-
-            runInAction(() => {
-                // this.selectedBook = savebook;
-            });
+            this.initState(response.data);
 
             this.setBookUpdateLoadStatus(LoadStatus.Ok);
         } catch (e) {
@@ -174,37 +131,32 @@ export class BookDetailsStore {
     initDetails = async (id: number) => {
         this.setBookDetailsReadyStatus(LoadStatus.Loading);
         try {
-            this.selectedBook = (await this.eLibraryApi.booksController_getBookById(id)).data;
-
-            setFormStateValues(this.bookForm, {
-                title: this.selectedBook?.title ?? '',
-                description: this.selectedBook?.description ?? '',
-                author: this.selectedBook?.author ?? '',
-                pictureUrl: this.selectedBook?.pictureUrl ?? '',
-                isAvailable: !!this.selectedBook?.holdedUser,
-            });
-
-            this.bookForm.$.holdUser.onChange(
-                this.selectedBook?.holdedUser ? this.selectedBook?.holdedUser.id : undefined
-            );
-
-            await when(() => this.generalDataStore.fetchCategoriesStatus !== LoadStatus.Loading);
+            const book = (await this.eLibraryApi.booksController_getBookById(id)).data;
+            await when(() => this.generalDataStore.fetchCategoriesStatus === LoadStatus.Ok);
             this.createCategories();
-
-            commitFormState(this.bookForm);
-
-            // this.filePickerStore.setSavedImageUrl(`${baseUrl}${this.selectedBook?.pictureUrl}`);
+            this.initState(book);
             this.setBookDetailsReadyStatus(LoadStatus.Ok);
         } catch (e) {
             this.setBookDetailsReadyStatus(LoadStatus.Error);
         }
     };
 
+    @action initState = (book: BookModel) => {
+        setFormStateValues(this.bookForm, {
+            title: book?.title ?? '',
+            description: book?.description ?? '',
+            author: book?.author ?? '',
+            pictureUrl: book?.pictureUrl ?? '',
+            isAvailable: !!book?.holdedUser,
+        });
+
+        commitFormState(this.bookForm);
+        this.selectedBook = book;
+    };
+
     createCategories = () => {
-        this.categoriesIds = [];
         const ids = this.selectedBook?.categories.map(c => c.id) ?? [];
         for (const category of this.categories) {
-            this.categoriesIds.push(category.id);
             this.bookForm.$.categoryIds.$.set(
                 category.id,
                 new CheckboxFieldState(ids.includes(category.id))
@@ -212,34 +164,29 @@ export class BookDetailsStore {
         }
     };
 
-    updateBookHoldStatus = (bookId: number) => {
-        const prevHolderUser = this.selectedBook?.holdedUser;
-        let userId: number | undefined;
-
-        this.userForm.$.forEach((user, id) => {
-            if (user) {
-                userId = id;
-            }
-        });
-
-        // assign book
-        if (userId && this.bookForm.$.isAvailable.value) {
-            this.eLibraryApi.booksController_holdBook({
+    updateBookHoldStatus = async (bookId: number) => {
+        if (
+            this.newHolder !== undefined &&
+            this.holderUserId &&
+            !this.bookForm.$.isAvailable.value
+        ) {
+            await this.eLibraryApi.booksController_unHoldBook({
                 bookId,
-                userId,
+                userId: this.holderUserId,
             } as HoldBookDto);
         }
 
-        // unassign book
-        if (prevHolderUser && !this.bookForm.$.isAvailable.value && this.selectedBook?.holdedUser) {
-            this.eLibraryApi.booksController_unHoldBook({
+        if (this.newHolder) {
+            await this.eLibraryApi.booksController_holdBook({
                 bookId,
-                userId: prevHolderUser.id,
+                userId: this.newHolder,
             } as HoldBookDto);
-            this.bookForm.$.holdUser.onChange(undefined);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            this.selectedBook.holdedUser = null;
         }
+
+        runInAction(() => (this.newHolder = undefined));
+    };
+
+    @action unsetHolder = () => {
+        this.newHolder = null;
     };
 }

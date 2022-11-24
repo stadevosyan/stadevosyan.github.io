@@ -20,10 +20,13 @@ import { GeneralDataStore } from '../../stores/general-data.store';
 
 export const MainWrapper: FC = provide({ singletons: [GeneralDataStore] })(
     observer(({ children }) => {
-        const [{ user }, { init }] = useDependencies(AuthStore, GeneralDataStore);
+        const [{ user }, { init: initGeneralDataStore }] = useDependencies(
+            AuthStore,
+            GeneralDataStore
+        );
         useEffect(() => {
-            init();
-        }, [init]);
+            initGeneralDataStore();
+        }, [initGeneralDataStore]);
 
         return (
             <Page

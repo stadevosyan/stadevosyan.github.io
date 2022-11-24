@@ -1,5 +1,5 @@
 import { inject, injectable } from '@servicetitan/react-ioc';
-import { action, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, when } from 'mobx';
 import { LoadStatus } from '../../common/enums/load-status';
 import { ELibraryApi } from '../../common/api/e-library.client';
 import { InputFieldState } from '@servicetitan/form';
@@ -7,6 +7,7 @@ import { FormState } from 'formstate';
 import { InMemoryDataSource, TableState } from '@servicetitan/table';
 import { getFilterSet } from '../utils/table-utils';
 import { debounce } from 'debounce';
+import { GeneralDataStore } from '../../common/stores/general-data.store';
 
 export interface Contact {
     id: number;
@@ -31,35 +32,41 @@ export class ContactsStore {
         searchField: new InputFieldState(''),
     });
 
+    @computed get usersData() {
+        return this.generalDataStore.users.map(item => ({
+            id: item.id,
+            name: item.name,
+            phoneNumber: item.phoneNumber,
+            email: item.email,
+            profilePictureUrl: item.profilePictureUrl,
+        }));
+    }
+
     searchDebounced: ((name: string) => void) & { clear(): void } & { flush(): void };
 
-    constructor(@inject(ELibraryApi) private readonly api: ELibraryApi) {
+    constructor(
+        @inject(ELibraryApi) private readonly api: ELibraryApi,
+        @inject(GeneralDataStore) private readonly generalDataStore: GeneralDataStore
+    ) {
         makeObservable(this);
-        this.fetchContactsData().catch(null);
+        this.init().catch(null);
         this.searchDebounced = debounce(this.refresh, 300);
     }
 
-    fetchContactsData = async (name?: string, pageNumber?: number, pageSize?: number) => {
+    reSet = async () => {
+        this.generalDataStore.fetchUsers().catch();
+        await this.init();
+    };
+
+    init = async () => {
         this.setContactsLoadStatus(LoadStatus.Loading);
 
         try {
-            const { data: response } = await this.api.usersController_getUsers(
-                name ?? '',
-                pageNumber,
-                pageSize
-            );
+            await when(() => this.generalDataStore.fetchUsersStatus === LoadStatus.Ok);
 
-            const data: Contact[] = response.data
-                .sort((item1, item2) => item1.id - item2.id)
-                .map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    phoneNumber: item.phoneNumber,
-                    email: item.email,
-                    profilePictureUrl: item.profilePictureUrl,
-                }));
-
-            this.contactsTableState.setDataSource(new InMemoryDataSource(data ?? [])).catch();
+            this.contactsTableState
+                .setDataSource(new InMemoryDataSource(this.usersData ?? []))
+                .catch();
 
             this.setContactsLoadStatus(LoadStatus.Ok);
         } catch {

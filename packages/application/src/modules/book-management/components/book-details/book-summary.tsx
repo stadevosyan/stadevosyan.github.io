@@ -9,42 +9,40 @@ import {
 } from '@servicetitan/design-system';
 import { FilePicker } from '../../../common/components/file-picker/file-picker';
 import { observer } from 'mobx-react';
-import { useDependencies } from '@servicetitan/react-ioc';
+import { provide, useDependencies } from '@servicetitan/react-ioc';
 import { useEffect } from 'react';
 import { GeneralDataStore } from '../../../common/stores/general-data.store';
+import { BookDetailsStore } from '../../stores/book-details.store';
 import { LoadStatus } from '../../../common/enums/load-status';
 import { CenteredSpinner } from '../../../common/components/centered-spinner/centered-spinner';
-import { BookDetailsStore } from '../../stores/book-details.store';
+import { HoldBookDrawerStore } from '../../stores/hold-book-drawer.store';
 
 export const BookSummary = observer(() => {
     const [
         {
-            users,
             bookForm,
             categoriesMap,
             cleanBookEditState,
             openAssignBookModal,
-            closeAssignBookModal,
             assignModal,
-            usersIds,
-            categoriesIds,
-            resetAssignForm,
-            handleAssignToUser,
-            updateUserId,
-            holderUserId,
+            bookDetailsReadyStatus,
+            bookUpdateLoadStatus,
+            unsetHolder,
         },
-        { fetchCategoriesStatus },
+        { categoryIds },
     ] = useDependencies(BookDetailsStore, GeneralDataStore);
 
     useEffect(() => {
-        /*
-         * return () => {
-         *     cleanBookEditState();
-         * };
-         */
+        return () => {
+            cleanBookEditState();
+        };
     }, [cleanBookEditState]);
 
-    if (fetchCategoriesStatus === LoadStatus.Loading) {
+    const loading =
+        bookDetailsReadyStatus === LoadStatus.Loading ||
+        bookUpdateLoadStatus === LoadStatus.Loading;
+
+    if (loading) {
         return <CenteredSpinner />;
     }
 
@@ -89,9 +87,9 @@ export const BookSummary = observer(() => {
                 <BodyText el="div" size="small" bold className="m-b-1 d-b">
                     Ժանրեր
                 </BodyText>
-                {!!categoriesIds.length && !!bookForm.$.categoryIds.$.size && (
+                {!!categoryIds.length && !!bookForm.$.categoryIds.$.size && (
                     <Form.Group>
-                        {categoriesIds.map(id => {
+                        {categoryIds.map(id => {
                             if (!bookForm.$.categoryIds.$.get(id)) {
                                 return <div />;
                             }
@@ -119,7 +117,10 @@ export const BookSummary = observer(() => {
                     control="radio"
                     value={!bookForm.$.isAvailable.value}
                     checked={bookForm.$.isAvailable.value === false}
-                    onClick={bookForm.$.isAvailable.onChange}
+                    onClick={(value, checked) => {
+                        unsetHolder();
+                        bookForm.$.isAvailable.onChange(checked);
+                    }}
                     title="Հասանելի"
                     label=""
                 />
@@ -142,21 +143,40 @@ export const BookSummary = observer(() => {
                     նշել վարձակալի անունը
                 </Button>
             )}
+            {assignModal && <HoldBookDrawer />}
+        </div>
+    );
+});
+
+const HoldBookDrawer = provide({
+    singletons: [HoldBookDrawerStore],
+})(
+    observer(() => {
+        const [
+            { closeAssignBookModal },
+            { users, usersIds, onConfirm, updateSelectedUser, holderUserId },
+        ] = useDependencies(BookDetailsStore, HoldBookDrawerStore);
+
+        return (
             <Drawer
+                open
                 backdrop
                 header="Նշել վարձակալին"
-                open={assignModal}
                 onClose={closeAssignBookModal}
                 footer={
                     <ButtonGroup>
-                        <Button onClick={resetAssignForm}>Չեղարկել</Button>
-                        <Button primary onClick={handleAssignToUser}>
+                        <Button onClick={closeAssignBookModal}>Չեղարկել</Button>
+                        <Button primary onClick={onConfirm}>
                             Կիրառել
                         </Button>
                     </ButtonGroup>
                 }
             >
                 {usersIds.map(id => {
+                    const handleUpdate = () => {
+                        updateSelectedUser(id);
+                    };
+
                     return (
                         <Form.Togglebox
                             key={id}
@@ -165,13 +185,13 @@ export const BookSummary = observer(() => {
                             checked={id === holderUserId}
                             value={id}
                             onClick={() => {
-                                updateUserId(id);
+                                handleUpdate();
                             }}
                             label={users.get(id)!.name}
                         />
                     );
                 })}
             </Drawer>
-        </div>
-    );
-});
+        );
+    })
+);

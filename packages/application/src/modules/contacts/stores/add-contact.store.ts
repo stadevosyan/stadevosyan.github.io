@@ -82,7 +82,7 @@ export class AddContactStore {
                 phoneNumber,
                 profilePictureUrl,
             } as CreateUserDto);
-            await this.contactsStore.fetchContactsData();
+            await this.contactsStore.reSet();
 
             this.setAddContactStatus(LoadStatus.Ok);
             this.contactsStore.hideTakeover();
