@@ -1,8 +1,10 @@
 import { FC } from 'react';
+import moment from 'moment';
 import { IUserBook } from '../../stores/contact-details.store';
 import { BodyText, Card, Headline, Stack } from '@servicetitan/design-system';
-import * as Styles from './book-card.module.less';
 import { ImagePlaceholder } from '../../../common/components/image-placeholder/image-placeholder';
+
+import * as Styles from './book-card.module.less';
 
 export const UserBookCard: FC<{ bookData: IUserBook }> = ({ bookData }) => {
     return (
@@ -38,10 +40,10 @@ export const UserBookCard: FC<{ bookData: IUserBook }> = ({ bookData }) => {
                         {bookData.author}
                     </BodyText>
                     <BodyText className="m-b-1" size="xsmall" subdued>
-                        "Վարձակալման ամսաթիվ
+                        Վարձակալման ամսաթիվ
                     </BodyText>
                     <BodyText size="xsmall">
-                        {new Date(bookData.bookingDate).toDateString()}
+                        {bookData.bookingDate ? moment(bookData.bookingDate).format('l') : '--'}
                     </BodyText>
                 </Stack>
             </Stack>
