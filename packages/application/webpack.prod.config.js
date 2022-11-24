@@ -6,7 +6,7 @@ module.exports = createWebpackConfig({
     },
     plugins: {
         HtmlWebpackPlugin: {
-            title: 'Բի-Բի Բուքս',
+            title: 'Էլ Գրադարան',
             favicon: './src/modules/common/assets/favicon.ico',
         },
     },
