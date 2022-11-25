@@ -94,6 +94,7 @@ export class AccountStore {
             profilePictureUrl: this.user?.profilePictureUrl,
         });
         commitFormState(this.form);
+        this.form.reset();
         this.imageStore.reset();
     };
 

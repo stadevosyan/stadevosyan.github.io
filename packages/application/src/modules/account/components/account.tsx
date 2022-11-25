@@ -92,10 +92,10 @@ const Footer = observer(() => {
     return (
         <div className="m-l-auto">
             <ButtonGroup>
-                <Button small color="grey" onClick={resetForm} inactive={!isDirty}>
+                <Button small color="grey" onClick={resetForm} disabled={!isDirty}>
                     Չեղարկել
                 </Button>
-                <Button small primary onClick={handleAccountUpdate}>
+                <Button small primary onClick={handleAccountUpdate} disabled={!isDirty}>
                     Պահպանել փոփոխությունները
                 </Button>
             </ButtonGroup>

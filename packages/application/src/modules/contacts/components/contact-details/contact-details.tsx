@@ -51,7 +51,7 @@ export const ContactDetails = provide({ singletons: [ContactDetailsStore] })(
                         </Stack>
                     </Stack>
                     <Divider />
-                    <Headline>Ներկա պահին վարձակալած գրքեր</Headline>
+                    <Headline>Այս պահին վարձակալած գրքեր</Headline>
                     <Stack spacing={2} wrap="wrap" style={{ maxWidth: '800px' }}>
                         {userData.books.map(item => (
                             <UserBookCard key={item.id} bookData={item} />
