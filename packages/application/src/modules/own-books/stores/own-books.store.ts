@@ -9,6 +9,8 @@ export interface IBookHistory {
     id: number;
     isReading: boolean;
     book: BookModel;
+    startDate?: Date;
+    endDate?: Date;
 }
 
 @injectable()
@@ -48,6 +50,7 @@ export class OwnBooksStore {
                         id: item.id,
                         isReading: !item.endDate,
                         startDate: item.createdDate,
+                        endDate: item.endDate,
                         book: item.book,
                     }));
             });

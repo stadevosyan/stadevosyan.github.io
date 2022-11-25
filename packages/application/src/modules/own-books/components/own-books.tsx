@@ -63,6 +63,7 @@ export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
 
                             return (
                                 <BookCardExpanded
+                                    isMyBook
                                     id={item.book.id}
                                     name={item.book.title}
                                     author={item.book.author}
@@ -70,6 +71,8 @@ export const OwnBooks = provide({ singletons: [OwnBooksStore] })(
                                     onClick={handleSelectBook}
                                     key={item.id}
                                     tagToShow={tagToShow}
+                                    endDate={item.endDate}
+                                    holdedDate={item.startDate}
                                 />
                             );
                         })}
