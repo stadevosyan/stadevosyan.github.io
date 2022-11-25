@@ -29,8 +29,8 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                     className="w-33 h-100"
                     style={{ minWidth: '350px' }}
                 >
-                    <Stack justifyContent="flex-start" style={{ height: 120, width: 100 }}>
-                        {props.imgUrl ? (
+                    {props.imgUrl ? (
+                        <Stack style={{ height: 120, width: 100 }}>
                             <img
                                 className="m-r-3"
                                 src={`${baseUrl}${props.imgUrl}`}
@@ -42,27 +42,26 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                                     objectFit: 'contain',
                                 }}
                             />
-                        ) : (
-                            <ImagePlaceholder classes="m-r-3" />
-                        )}
-                        <Stack.Item fill>
-                            <Stack
-                                className="m-r-3"
-                                direction="column"
-                                justifyContent="center"
-                                alignItems="flex-start"
-                            >
-                                <Stack>
-                                    <Headline size="small" className="m-0 t-truncate">
-                                        {props.name}
-                                    </Headline>
-                                </Stack>
-                                <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
-                                    {props.author}
-                                </BodyText>
-                                {props.tagToShow}
-                            </Stack>
-                        </Stack.Item>
+                        </Stack>
+                    ) : (
+                        <ImagePlaceholder classes="m-r-3" />
+                    )}
+                    <Stack
+                        style={{
+                            width: 'calc(100% - 100px)',
+                        }}
+                        className="m-r-3"
+                        direction="column"
+                        justifyContent="center"
+                        alignItems="flex-start"
+                    >
+                        <Headline size="small" className="m-0 w-100 t-truncate">
+                            {props.name}
+                        </Headline>
+                        <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
+                            {props.author}
+                        </BodyText>
+                        {props.tagToShow}
                     </Stack>
                     <Divider vertical alignContent="end" />
                 </Stack>
