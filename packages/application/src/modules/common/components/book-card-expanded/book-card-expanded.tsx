@@ -9,10 +9,12 @@ import { urlToShow } from '../../utils/url-helpers';
 import moment from 'moment';
 
 interface BookCardExpandedProps extends BookCardProps {
+    isMyBook?: boolean;
     name?: string;
     user?: UserModel;
     onClick: (selfProps: BookCardProps) => void;
     holdedDate?: Date;
+    endDate?: Date;
 }
 
 export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
@@ -68,33 +70,40 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                 <Stack justifyContent="space-between" className="w-33 h-100">
                     <Stack direction="column" alignItems="flex-start" justifyContent="center">
                         <BodyText className="m-b-2" inline subdued>
-                            Վարձակալի անուն
+                            {props.isMyBook ? 'Վարձակալման ամսաթիվ' : 'Վարձակալի անուն'}
                         </BodyText>
-                        <Stack justifyContent="center" alignItems="center">
-                            {props.user?.name ? (
-                                <Fragment>
-                                    <Avatar
-                                        name={props.user?.name.charAt(0)}
-                                        image={urlToShow(props.user?.profilePictureUrl)}
-                                        autoColor
-                                    />
-                                    <BodyText className="p-l-1 t-truncate" size="medium">
-                                        {props.user?.name ?? '--'}
+                        {props.isMyBook && (
+                            <BodyText className="m-b-2 t-truncate" size="small">
+                                {props.holdedDate ? moment().format('l') : '--'}
+                            </BodyText>
+                        )}
+                        {!props.isMyBook && (
+                            <Stack justifyContent="center" alignItems="center">
+                                {props.user?.name ? (
+                                    <Fragment>
+                                        <Avatar
+                                            name={props.user?.name.charAt(0)}
+                                            image={urlToShow(props.user?.profilePictureUrl)}
+                                            autoColor
+                                        />
+                                        <BodyText className="p-l-1 t-truncate" size="medium">
+                                            {props.user?.name ?? '--'}
+                                        </BodyText>
+                                    </Fragment>
+                                ) : (
+                                    <BodyText className="m-b-2 t-truncate" size="small">
+                                        --
                                     </BodyText>
-                                </Fragment>
-                            ) : (
-                                <BodyText className="m-b-2 t-truncate" size="small">
-                                    --
-                                </BodyText>
-                            )}
-                        </Stack>
+                                )}
+                            </Stack>
+                        )}
                     </Stack>
                     <Divider vertical />
                 </Stack>
                 <Stack justifyContent="space-between" className="w-33 h-100">
                     <Stack direction="column" alignItems="flex-start" justifyContent="center">
                         <BodyText className="m-b-2" inline subdued>
-                            Վարձակալման ամսաթիվ
+                            {props.isMyBook ? 'Վերադարձման ամսաթիվ' : 'Վարձակալման ամսաթիվ'}
                         </BodyText>
                         <BodyText className="m-b-2 t-truncate" size="small">
                             {props.holdedDate ? moment().format('l') : '--'}
