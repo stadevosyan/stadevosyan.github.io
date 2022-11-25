@@ -5,6 +5,7 @@ import { BodyText, Card, Headline, Stack } from '@servicetitan/design-system';
 import { ImagePlaceholder } from '../../../common/components/image-placeholder/image-placeholder';
 
 import * as Styles from './book-card.module.less';
+import { baseUrl } from '../../../../app';
 
 export const UserBookCard: FC<{ bookData: IUserBook }> = ({ bookData }) => {
     return (
@@ -21,11 +22,13 @@ export const UserBookCard: FC<{ bookData: IUserBook }> = ({ bookData }) => {
                         }}
                     >
                         <img
-                            src={bookData.bookImageUrl}
+                            src={`${baseUrl}${bookData.bookImageUrl}`}
                             style={{
                                 height: 'auto',
-                                display: 'block',
-                                maxWidth: '100%',
+                                width: 'auto',
+                                maxWidth: '100px',
+                                maxHeight: '120px',
+                                objectFit: 'contain',
                             }}
                         />
                     </Stack>
