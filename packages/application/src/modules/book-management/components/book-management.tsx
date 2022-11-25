@@ -51,7 +51,9 @@ export const BookManagement = provide({ singletons: [NewBookStore, FilePickerSto
         };
 
         const showEmpty =
-            bookStore.books.length === 0 && bookStore.fetchBooksLoadStatus === LoadStatus.Ok;
+            bookStore.books.length === 0 &&
+            bookStore.fetchBooksLoadStatus === LoadStatus.Ok &&
+            !bookStore.searchForm.$.search.value;
 
         if (bookStore.fetchBooksLoadStatus === LoadStatus.Error) {
             return <SomethingWentWrong />;

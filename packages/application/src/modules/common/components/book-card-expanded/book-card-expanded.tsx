@@ -24,7 +24,11 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
             }}
         >
             <Stack alignItems="center" justifyContent="space-between" spacing="4">
-                <Stack justifyContent="space-between" className="w-33 h-100">
+                <Stack
+                    justifyContent="space-between"
+                    className="w-33 h-100"
+                    style={{ minWidth: '350px' }}
+                >
                     <Stack justifyContent="flex-start" style={{ height: 120, width: 100 }}>
                         {props.imgUrl ? (
                             <img
@@ -48,9 +52,11 @@ export const BookCardExpanded: FC<BookCardExpandedProps> = props => {
                                 justifyContent="center"
                                 alignItems="flex-start"
                             >
-                                <Headline size="small" className="m-0 t-truncate">
-                                    {props.name}
-                                </Headline>
+                                <Stack>
+                                    <Headline size="small" className="m-0 t-truncate">
+                                        {props.name}
+                                    </Headline>
+                                </Stack>
                                 <BodyText size="small" className="m-0 p-t-1 p-b-1 t-truncate">
                                     {props.author}
                                 </BodyText>
