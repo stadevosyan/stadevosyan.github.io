@@ -63,7 +63,6 @@ export class AccountStore {
         if (!this.isDirty) {
             return false;
         }
-
         this.setAccountUpdateStatus(LoadStatus.Loading);
         const res = await this.form.validate();
         if (res.hasError || this.imageStore.error) {
@@ -81,6 +80,8 @@ export class AccountStore {
             } as EditUserDto);
         } catch {
             this.setAccountUpdateStatus(LoadStatus.Error);
+        } finally {
+            this.setAccountUpdateStatus(LoadStatus.Ok);
         }
         this.resetForm();
     };
